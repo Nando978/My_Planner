@@ -292,6 +292,10 @@
             <h3 class="text-md font-bold text-gray-800 dark:text-gray-100">Personalizar Colores 🎨</h3>
             <div class="space-y-3">
                 <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Color Principal (Acento)</label>
+                    <input type="color" id="customPrimary" value="#9333ea" class="w-full h-10 rounded-xl cursor-pointer border-0">
+                </div>
+                <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Color de Fondo General</label>
                     <input type="color" id="customBg" value="#fcf8f7" class="w-full h-10 rounded-xl cursor-pointer border-0">
                 </div>
@@ -548,7 +552,7 @@
 
             document.getElementById('headerPoints').innerText = `${totalPoints} Pts Hoy`;
             document.getElementById('pointsRatioText').innerText = `${totalPoints} / 100 pts`;
-            document.getElementById('pointsProgressBar').style.width = `${Math.min((totalPoints / 100) * 100, 100)}%`;
+            document.getElementById('pointsProgressBar'].style.width = `${Math.min((totalPoints / 100) * 100, 100)}%`;
             document.getElementById('summaryTotalPoints').innerText = `${totalPoints} pts`;
             document.getElementById('summaryCompletedTasks').innerText = `${completedCount} / ${tasks.length}`;
 
@@ -703,23 +707,28 @@
             const body = document.getElementById('mainBody');
             body.classList.remove('dark');
             body.style.backgroundColor = '';
+            document.documentElement.style.removeProperty('--primary-color');
 
             if (theme === 'pastel-day') {
                 body.className = "bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col";
                 localStorage.setItem('my_planner_theme', 'pastel-day');
                 localStorage.removeItem('my_planner_custom_bg');
+                localStorage.removeItem('my_planner_custom_primary');
             } else if (theme === 'pastel-night') {
                 body.className = "bg-slate-900 text-gray-100 min-h-screen flex flex-col dark";
                 localStorage.setItem('my_planner_theme', 'pastel-night');
                 localStorage.removeItem('my_planner_custom_bg');
+                localStorage.removeItem('my_planner_custom_primary');
             } else if (theme === 'matcha') {
                 body.className = "bg-[#f4f7f4] text-gray-700 min-h-screen flex flex-col";
                 localStorage.setItem('my_planner_theme', 'matcha');
                 localStorage.removeItem('my_planner_custom_bg');
+                localStorage.removeItem('my_planner_custom_primary');
             } else if (theme === 'lavender') {
                 body.className = "bg-[#f3eef8] text-purple-950 min-h-screen flex flex-col";
                 localStorage.setItem('my_planner_theme', 'lavender');
                 localStorage.removeItem('my_planner_custom_bg');
+                localStorage.removeItem('my_planner_custom_primary');
             } else if (theme === 'custom') {
                 document.getElementById('customThemeModal').classList.remove('hidden');
             }
@@ -728,11 +737,15 @@
         function loadTheme() {
             const saved = localStorage.getItem('my_planner_theme') || 'pastel-day';
             const customBg = localStorage.getItem('my_planner_custom_bg');
+            const customPrimary = localStorage.getItem('my_planner_custom_primary');
             
             if (saved === 'custom' && customBg) {
                 document.getElementById('themeSelector').value = 'custom';
                 document.getElementById('mainBody').className = "text-gray-700 min-h-screen flex flex-col";
                 document.getElementById('mainBody').style.backgroundColor = customBg;
+                if (customPrimary) {
+                    document.documentElement.style.setProperty('--primary-color', customPrimary);
+                }
             } else {
                 document.getElementById('themeSelector').value = saved;
                 changeTheme(saved);
@@ -751,12 +764,16 @@
 
         function applyCustomColors() {
             const bg = document.getElementById('customBg').value;
+            const primary = document.getElementById('customPrimary').value;
             const body = document.getElementById('mainBody');
             
             body.className = "text-gray-700 min-h-screen flex flex-col";
             body.style.backgroundColor = bg;
+            document.documentElement.style.setProperty('--primary-color', primary);
+            
             localStorage.setItem('my_planner_theme', 'custom');
             localStorage.setItem('my_planner_custom_bg', bg);
+            localStorage.setItem('my_planner_custom_primary', primary);
             closeCustomThemeModal();
         }
     </script>
