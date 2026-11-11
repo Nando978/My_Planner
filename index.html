@@ -401,7 +401,7 @@
         let rewardSecondsLeft = 3600;
         let currentMood = '🌟 Excelente';
         let pipWindow = null;
-        let alarmInterval = null; // Variable para controlar el bucle de la alarma
+        let alarmInterval = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             try {
@@ -412,6 +412,7 @@
                 renderTasks();
                 renderGoalsUI();
                 updateTimerDisplay();
+                updatePointsAndProgress(); // Recalcula puntos al iniciar sin requerir interacción
             } catch (error) {
                 console.error("Error al iniciar:", error);
                 localStorage.clear();
@@ -498,7 +499,7 @@
                 const gainNode = audioCtx.createGain();
 
                 oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Tono más agudo
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
                 gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
 
                 oscillator.connect(gainNode);
@@ -511,16 +512,14 @@
             }
         }
 
-        // Inicia la alarma en bucle continuo hasta que se haga clic en completar
         function startContinuousAlarm() {
             if (alarmInterval) return;
-            playAlarmBeep(); // Suena inmediatamente
+            playAlarmBeep();
             alarmInterval = setInterval(() => {
                 playAlarmBeep();
-            }, 1000); // Se repite cada 1 segundo
+            }, 1000);
         }
 
-        // Detiene el bucle de la alarma
         function stopContinuousAlarm() {
             if (alarmInterval) {
                 clearInterval(alarmInterval);
@@ -960,7 +959,6 @@
             }
         }
 
-        // CORRECCIÓN: Calcula automáticamente los segundos exactos según la hora de inicio y fin de la actividad
         function loadTaskToWidget(id) {
             const task = tasks.find(t => t.id === id);
             if (task) {
@@ -974,11 +972,10 @@
                     if (titleEl) titleEl.innerText = titleText;
                 }
 
-                // Cálculo de la duración en segundos basada en start y end
                 const startMin = timeToMinutes(task.start);
                 const endMin = timeToMinutes(task.end);
                 let diffMin = endMin - startMin;
-                if (diffMin <= 0) diffMin += 24 * 60; // Por seguridad si cruza medianoche
+                if (diffMin <= 0) diffMin += 24 * 60;
 
                 secondsLeft = diffMin * 60;
                 stopContinuousAlarm();
@@ -994,7 +991,7 @@
                     updateTimerDisplay();
                 } else {
                     stopWidgetTimer();
-                    startContinuousAlarm(); // Alarma en bucle continuo hasta completar
+                    startContinuousAlarm();
                 }
             }, 1000);
         }
@@ -1024,7 +1021,7 @@
         }
 
         function completeCurrentActiveTask() {
-            stopContinuousAlarm(); // Detiene la alarma continua al hacer clic en completar
+            stopContinuousAlarm();
             if (activeTaskId) {
                 const task = tasks.find(t => t.id === activeTaskId);
                 if (task) {
