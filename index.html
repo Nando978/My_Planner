@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planificador & Metas</title>
-    <!-- Favicon de Copo de Nieve Limpio basado en trazos -->
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239333ea' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 2v20M17 5l-10 14M7 5l10 14M2 12h20M5 7l14 10M5 17l14-10'/></svg>">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -55,14 +55,12 @@
 </head>
 <body class="bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col selection:bg-purple-200" id="mainBody">
 
-    <!-- HEADER / BARRA SUPERIOR -->
+    <!-- HEADER -->
     <header class="w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
             
-            <!-- Logo & Title -->
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-400 to-pink-400 flex items-center justify-center shadow-sm text-white">
-                    <!-- Copo de Nieve SVG con diseño limpio de trazos -->
                     <svg class="w-6 h-6 animate-spin" style="animation-duration: 20s;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <path d="M12 2v20M17 5l-10 14M7 5l10 14M2 12h20M5 7l14 10M5 17l14-10"/>
                     </svg>
@@ -73,28 +71,23 @@
                 </div>
             </div>
 
-            <!-- Stats & Streak -->
             <div class="flex items-center space-x-2">
-                <!-- Racha de la Llama -->
                 <div class="flex items-center space-x-1.5 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/50 px-3 py-1.5 rounded-full shadow-sm">
                     <span class="text-lg">🔥</span>
                     <span class="text-sm font-bold text-orange-600 dark:text-orange-400" id="streakCounter">1 Días</span>
                 </div>
-                <!-- Puntos Hoy -->
                 <div class="flex items-center space-x-1.5 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/50 px-3 py-1.5 rounded-full shadow-sm">
                     <span class="text-lg">🏆</span>
                     <span class="text-sm font-bold text-purple-600 dark:text-purple-300" id="headerPoints">0 Pts Hoy</span>
                 </div>
             </div>
 
-            <!-- Controls: Reloj flotante, selector de temas y cierre -->
             <div class="flex items-center space-x-2 flex-wrap">
                 <button onclick="toggleFloatingWidget()" class="bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/50 dark:hover:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Reloj Flotante (Siempre Visible)</span>
+                    <span>Reloj Flotante</span>
                 </button>
 
-                <!-- Selector de Tema -->
                 <div class="relative">
                     <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 text-xs font-semibold px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 outline-none cursor-pointer">
                         <option value="pastel-day">🌷 Día Pastel</option>
@@ -115,10 +108,9 @@
     <!-- MAIN CONTAINER -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- COLUMNA IZQUIERDA: Formulario, Progreso y Gestión de Categorías -->
+        <!-- COLUMNA IZQUIERDA -->
         <div class="space-y-6">
             
-            <!-- Barra de Progreso y Meta Hora Libre (100 pts) -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm relative overflow-hidden">
                 <div class="flex items-center justify-between mb-2">
                     <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200">Meta Diaria (Hora Libre)</h3>
@@ -129,14 +121,12 @@
                 </div>
                 <p class="text-xs text-gray-400 dark:text-gray-400 mb-4" id="pointsStatusMsg">Completa al menos 100 puntos en actividades para desbloquear tu hora libre.</p>
                 
-                <!-- Botón Hora Libre (Bloqueado / Desbloqueado) -->
                 <button id="freeHourBtn" onclick="openFreeHour()" disabled class="w-full py-3 px-4 rounded-2xl font-bold text-sm transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner">
                     <span id="freeHourIcon">🔒</span>
                     <span id="freeHourText">Hora Libre Bloqueada (Faltan pts)</span>
                 </button>
             </div>
 
-            <!-- Formulario Nueva Actividad -->
             <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm">
                 <h2 class="text-md font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center space-x-2">
                     <span>✨ Nueva Actividad</span>
@@ -162,12 +152,11 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Categoría</label>
                             <select id="taskCategory" onchange="onCategoryChange(this.value)" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
-                                <!-- Se llena dinámicamente -->
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Puntos de Actividad</label>
-                            <input type="number" id="taskPoints" min="1" max="500" required class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none" title="Puntos otorgados">
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Puntos</label>
+                            <input type="number" id="taskPoints" min="1" max="500" required class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                         </div>
                     </div>
 
@@ -182,7 +171,6 @@
                 </form>
             </div>
 
-            <!-- Gestión de Categorías y Puntos Personalizados -->
             <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm space-y-4">
                 <h2 class="text-md font-bold text-gray-800 dark:text-gray-100 flex items-center space-x-2">
                     <span>🏷️ Administrar Categorías & Puntos</span>
@@ -190,7 +178,7 @@
                 <form onsubmit="handleAddCategory(event)" class="space-y-3">
                     <div class="flex space-x-2">
                         <input type="text" id="newCatEmoji" required placeholder="🎨" maxlength="2" class="w-16 bg-gray-50 dark:bg-slate-800 text-center text-sm py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none" title="Emoticón">
-                        <input type="text" id="newCatName" required placeholder="Nombre (ej. Deporte)" class="flex-1 bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                        <input type="text" id="newCatName" required placeholder="Nombre..." class="flex-1 bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                     </div>
                     <div class="flex items-center space-x-2">
                         <span class="text-xs font-semibold text-gray-500">Puntos Base:</span>
@@ -201,43 +189,35 @@
                     </div>
                 </form>
                 <div id="categoryManagerList" class="space-y-2 pt-2 border-t border-gray-100 dark:border-slate-800 max-h-48 overflow-y-auto">
-                    <!-- Se llena por JS -->
                 </div>
             </div>
         </div>
 
-        <!-- COLUMNA CENTRAL Y DERECHA: Listado y Cronograma -->
+        <!-- COLUMNA CENTRAL Y DERECHA -->
         <div class="lg:col-span-2 space-y-6">
-            
-            <!-- Filtros y Cabecera de Franjas -->
             <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <div>
                         <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100">Mi Día en Franjas</h2>
                         <p class="text-xs text-gray-400 dark:text-gray-400">Organiza tu tiempo, completa actividades y gana puntos</p>
                     </div>
-                    <!-- Filtros por Categoría dinámicos -->
                     <div id="categoryFiltersContainer" class="flex items-center space-x-1.5 overflow-x-auto pb-1">
-                        <!-- Se llena por JS -->
                     </div>
                 </div>
 
-                <!-- Lista de Tareas -->
                 <div id="taskListContainer" class="space-y-3">
-                    <!-- Se inyecta por JS -->
                 </div>
             </div>
-
         </div>
 
     </main>
 
-    <!-- FOOTER / PIE DE PÁGINA -->
+    <!-- FOOTER -->
     <footer class="w-full py-6 text-center text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-slate-800 mt-auto">
         <p>Elaborado por: Pablo Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
     </footer>
 
-    <!-- WIDGET / CRONÓMETRO FLOTANTE (Plantilla oculta para PiP Real) -->
+    <!-- WIDGET TEMPLATE PARA PIP -->
     <div id="floatingWidgetContent" class="hidden">
         <div style="background-color: #1e1e2f; color: white; padding: 20px; font-family: 'Quicksand', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; text-align: center;">
             <div id="pipTaskTitle" style="font-size: 13px; font-weight: 600; color: #dfccfd; margin-bottom: 8px;">Cronómetro de Enfoque</div>
@@ -250,7 +230,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE HORA LIBRE -->
+    <!-- MODAL HORA LIBRE -->
     <div id="freeHourModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl max-w-md w-full text-center space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
             <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center mx-auto text-2xl">🎉</div>
@@ -296,7 +276,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Reflexión del Día / Logros</label>
-                    <textarea id="dailyReflection" rows="3" placeholder="¿Qué aprendiste hoy? ¿Qué mejoras para mañana?" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none"></textarea>
+                    <textarea id="dailyReflection" rows="3" placeholder="¿Qué aprendiste hoy?" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none"></textarea>
                 </div>
             </div>
 
@@ -306,15 +286,11 @@
         </div>
     </div>
 
-    <!-- MODAL PERSONALIZADOR DE COLORES -->
+    <!-- MODAL PERSONALIZAR COLORES -->
     <div id="customThemeModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-sm w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
             <h3 class="text-md font-bold text-gray-800 dark:text-gray-100">Personalizar Colores 🎨</h3>
             <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 mb-1">Color Principal (Acento)</label>
-                    <input type="color" id="customPrimary" value="#dfccfd" class="w-full h-10 rounded-xl cursor-pointer border-0">
-                </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Color de Fondo General</label>
                     <input type="color" id="customBg" value="#fcf8f7" class="w-full h-10 rounded-xl cursor-pointer border-0">
@@ -327,22 +303,8 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE LA APLICACIÓN Y SEGURIDAD -->
+    <!-- SCRIPT -->
     <script>
-        // Protección Básica Anti-Inspección / Anti-Robo
-        document.addEventListener('contextmenu', event => event.preventDefault());
-        document.addEventListener('keydown', (e) => {
-            if (
-                e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
-                (e.ctrlKey && e.key === 'U')
-            ) {
-                e.preventDefault();
-                alert('Acción bloqueada por seguridad 🔒');
-            }
-        });
-
-        // ESTADO GLOBAL
         let tasks = JSON.parse(localStorage.getItem('my_planner_tasks')) || [];
         let categories = JSON.parse(localStorage.getItem('my_planner_categories')) || [
             { name: 'Trabajo', emoji: '💼', defaultPoints: 50 },
@@ -357,11 +319,10 @@
         let timerInterval = null;
         let secondsLeft = 25 * 60;
         let freeHourInterval = null;
-        let freeHourSeconds = 3600; // 60 minutos
+        let freeHourSeconds = 3600;
         let currentMood = '🌟 Excelente';
         let pipWindow = null;
 
-        // INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', () => {
             checkStreak();
             updateDateHeader();
@@ -382,18 +343,14 @@
             if (lastAccessDate && lastAccessDate !== today) {
                 const diffTime = Math.abs(new Date(today) - new Date(lastAccessDate));
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays === 1) {
-                    streak++;
-                } else if (diffDays > 2) {
-                    streak = 1;
-                }
+                if (diffDays === 1) streak++;
+                else if (diffDays > 2) streak = 1;
             }
             localStorage.setItem('my_planner_last_date', today);
             localStorage.setItem('my_planner_streak', streak);
             document.getElementById('streakCounter').innerText = `${streak} Días`;
         }
 
-        // GENERADOR DE SONIDO (AUDIO API)
         function playAlarmSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -409,24 +366,11 @@
 
                 oscillator.start();
                 oscillator.stop(audioCtx.currentTime + 0.8);
-
-                setTimeout(() => {
-                    const osc2 = audioCtx.createOscillator();
-                    const gain2 = audioCtx.createGain();
-                    osc2.type = 'sine';
-                    osc2.frequency.setValueAtTime(880, audioCtx.currentTime);
-                    gain2.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    osc2.connect(gain2);
-                    gain2.connect(audioCtx.destination);
-                    osc2.start();
-                    osc2.stop(audioCtx.currentTime + 1.2);
-                }, 300);
             } catch (e) {
-                console.log("Audio no permitido aún.");
+                console.log("Audio no permitido.");
             }
         }
 
-        // GESTIÓN DE CATEGORÍAS DINÁMICAS & PUNTOS
         function renderCategoriesUI() {
             const selectEl = document.getElementById('taskCategory');
             selectEl.innerHTML = '';
@@ -462,9 +406,9 @@
                 row.innerHTML = `
                     <span class="font-semibold text-gray-700 dark:text-gray-300 truncate">${cat.emoji} ${cat.name}</span>
                     <div class="flex items-center space-x-1">
-                        <input type="number" value="${cat.defaultPoints}" min="1" max="500" onchange="updateCategoryPoints('${cat.name}', this.value)" class="w-16 bg-white dark:bg-slate-900 text-center text-xs font-bold py-1 rounded-lg border border-gray-200 dark:border-slate-700" title="Puntos por defecto">
+                        <input type="number" value="${cat.defaultPoints}" min="1" max="500" onchange="updateCategoryPoints('${cat.name}', this.value)" class="w-16 bg-white dark:bg-slate-900 text-center text-xs font-bold py-1 rounded-lg border border-gray-200 dark:border-slate-700">
                         <span class="text-gray-400">pts</span>
-                        <button onclick="deleteCategory('${cat.name}')" class="text-rose-500 hover:text-rose-700 font-bold px-1.5 py-0.5 rounded ml-1" title="Eliminar">&times;</button>
+                        <button onclick="deleteCategory('${cat.name}')" class="text-rose-500 hover:text-rose-700 font-bold px-1.5 py-0.5 rounded ml-1">&times;</button>
                     </div>
                 `;
                 managerList.appendChild(row);
@@ -473,9 +417,7 @@
 
         function onCategoryChange(catName) {
             const found = categories.find(c => c.name === catName);
-            if (found) {
-                document.getElementById('taskPoints').value = found.defaultPoints;
-            }
+            if (found) document.getElementById('taskPoints').value = found.defaultPoints;
         }
 
         function updateCategoryPoints(catName, newPts) {
@@ -493,7 +435,7 @@
             const name = document.getElementById('newCatName').value.trim();
             const defaultPoints = parseInt(document.getElementById('newCatDefaultPoints').value) || 25;
 
-            if(name && !categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+            if (name && !categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
                 categories.push({ name, emoji, defaultPoints });
                 localStorage.setItem('my_planner_categories', JSON.stringify(categories));
                 renderCategoriesUI();
@@ -506,13 +448,13 @@
         }
 
         function deleteCategory(catName) {
-            if(categories.length <= 1) {
+            if (categories.length <= 1) {
                 alert('Debes tener al menos una categoría.');
                 return;
             }
             categories = categories.filter(c => c.name !== catName);
             localStorage.setItem('my_planner_categories', JSON.stringify(categories));
-            if(currentFilter === catName) currentFilter = 'Todas';
+            if (currentFilter === catName) currentFilter = 'Todas';
             renderCategoriesUI();
             renderTasks();
         }
@@ -522,7 +464,6 @@
             return found ? found.emoji : '📌';
         }
 
-        // TAREAS & CRUD
         function handleAddTask(e) {
             e.preventDefault();
             const title = document.getElementById('taskTitle').value;
@@ -532,18 +473,7 @@
             const points = parseInt(document.getElementById('taskPoints').value) || 25;
             const notes = document.getElementById('taskNotes').value;
 
-            const newTask = {
-                id: Date.now(),
-                title,
-                start,
-                end,
-                category,
-                points,
-                notes,
-                completed: false
-            };
-
-            tasks.push(newTask);
+            tasks.push({ id: Date.now(), title, start, end, category, points, notes, completed: false });
             saveAndRender();
             document.getElementById('taskForm').reset();
             onCategoryChange(document.getElementById('taskCategory').value);
@@ -612,7 +542,6 @@
             });
         }
 
-        // PUNTOS Y HORA LIBRE
         function updatePointsAndProgress() {
             const totalPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
             const completedCount = tasks.filter(t => t.completed).length;
@@ -643,10 +572,9 @@
             }
         }
 
-        // PICTURE-IN-PICTURE NATIVO REAL (Ventana flotante siempre encima en todo el sistema)
         async function toggleFloatingWidget() {
             if (!('documentPictureInPicture' in window)) {
-                alert('Tu navegador no soporta la ventana flotante Picture-in-Picture. Asegúrate de usar Google Chrome o Microsoft Edge actualizado.');
+                alert('Tu navegador no soporta la ventana flotante Picture-in-Picture.');
                 return;
             }
 
@@ -657,23 +585,16 @@
             }
 
             try {
-                pipWindow = await window.documentPictureInPicture.requestWindow({
-                    width: 320,
-                    height: 200,
-                });
-
+                pipWindow = await window.documentPictureInPicture.requestWindow({ width: 320, height: 200 });
                 const content = document.getElementById('floatingWidgetContent').cloneNode(true);
                 content.classList.remove('hidden');
                 pipWindow.document.body.style.margin = '0';
                 pipWindow.document.body.appendChild(content);
 
-                pipWindow.addEventListener('unload', () => {
-                    pipWindow = null;
-                });
-
+                pipWindow.addEventListener('unload', () => { pipWindow = null; });
                 updateTimerDisplay();
             } catch (err) {
-                console.log("Error al abrir PiP:", err);
+                console.log("Error PiP:", err);
             }
         }
 
@@ -688,9 +609,7 @@
                 }
                 secondsLeft = 25 * 60;
                 updateTimerDisplay();
-                if (!pipWindow || pipWindow.closed) {
-                    toggleFloatingWidget();
-                }
+                if (!pipWindow || pipWindow.closed) toggleFloatingWidget();
             }
         }
 
@@ -703,7 +622,7 @@
                 } else {
                     stopWidgetTimer();
                     playAlarmSound();
-                    alert('🔔 ¡Tiempo cumplido para esta actividad!');
+                    alert('🔔 ¡Tiempo cumplido!');
                 }
             }, 1000);
         }
@@ -744,14 +663,8 @@
             }
         }
 
-        // HORA LIBRE MODAL & CRONÓMETRO
-        function openFreeHour() {
-            document.getElementById('freeHourModal').classList.remove('hidden');
-        }
-
-        function closeFreeHourModal() {
-            document.getElementById('freeHourModal').classList.add('hidden');
-        }
+        function openFreeHour() { document.getElementById('freeHourModal').classList.remove('hidden'); }
+        function closeFreeHourModal() { document.getElementById('freeHourModal').classList.add('hidden'); }
 
         function startFreeHourTimer() {
             if (freeHourInterval) return;
@@ -769,32 +682,23 @@
             }, 1000);
         }
 
-        // CIERRE DE DÍA
-        function openCloseDayModal() {
-            document.getElementById('closeDayModal').classList.remove('hidden');
-        }
-
-        function closeCloseDayModal() {
-            document.getElementById('closeDayModal').classList.add('hidden');
-        }
+        function openCloseDayModal() { document.getElementById('closeDayModal').classList.remove('hidden'); }
+        function closeCloseDayModal() { document.getElementById('closeDayModal').classList.add('hidden'); }
 
         function setMood(mood) {
             currentMood = mood;
             document.querySelectorAll('.mood-btn').forEach(btn => {
                 btn.classList.remove('bg-purple-100', 'border-purple-400');
-                if(btn.innerText.includes(mood)) {
-                    btn.classList.add('bg-purple-100', 'border-purple-400');
-                }
+                if (btn.innerText.includes(mood)) btn.classList.add('bg-purple-100', 'border-purple-400');
             });
         }
 
         function saveAndResetDay() {
             const reflection = document.getElementById('dailyReflection').value;
-            alert(`Cierre de día guardado con éxito.\nEstado: ${currentMood}\nReflexión: ${reflection || 'Sin notas'}`);
+            alert(`Cierre guardado.\nEstado: ${currentMood}\nReflexión: ${reflection || 'Sin notas'}`);
             closeCloseDayModal();
         }
 
-        // TEMAS Y PERSONALIZADOR CORREGIDO
         function changeTheme(theme) {
             const body = document.getElementById('mainBody');
             body.classList.remove('dark');
@@ -837,7 +741,7 @@
 
         function closeCustomThemeModal() {
             document.getElementById('customThemeModal').classList.add('hidden');
-            if(!localStorage.getItem('my_planner_theme') || (localStorage.getItem('my_planner_theme') === 'custom' && !localStorage.getItem('my_planner_custom_bg'))) {
+            if (!localStorage.getItem('my_planner_theme') || (localStorage.getItem('my_planner_theme') === 'custom' && !localStorage.getItem('my_planner_custom_bg'))) {
                 document.getElementById('themeSelector').value = 'pastel-day';
                 changeTheme('pastel-day');
             } else {
