@@ -125,7 +125,7 @@
                 </div>
             </div>
 
-            <!-- METAS DIARIAS MÚLTIPLES (CON OPCIÓN DE ELIMINAR) -->
+            <!-- METAS DIARIAS MÚLTIPLES (CON BOTÓN DE DESBLOQUEO Y ELIMINAR) -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center space-x-1.5">
@@ -136,8 +136,8 @@
                     </button>
                 </div>
                 
-                <div id="goalsListContainer" class="space-y-3 max-h-72 overflow-y-auto pr-1">
-                    <!-- Se generan dinámicamente -->
+                <div id="goalsListContainer" class="space-y-4 max-h-80 overflow-y-auto pr-1">
+                    <!-- Se generan dinámicamente con su barra y su botón de desbloqueo -->
                 </div>
             </div>
 
@@ -240,7 +240,7 @@
             <form onsubmit="handleSaveNewGoal(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Nombre de la Recompensa</label>
-                    <input type="text" id="goalTitleInput" required placeholder="Ej. Ver una película, Café..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                    <input type="text" id="goalTitleInput" required placeholder="Ej. Ver película, Café..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Puntos Necesarios</label>
@@ -251,6 +251,20 @@
                     <button type="button" onclick="closeAddGoalModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-2.5 rounded-xl text-xs">Cancelar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL TEMPORIZADOR DE RECOMPENSA -->
+    <div id="rewardModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl max-w-md w-full text-center space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
+            <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center mx-auto text-2xl">🎉</div>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100" id="rewardModalTitle">¡Meta Alcanzada!</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400" id="rewardModalDesc">Disfruta de tu tiempo de recompensa.</p>
+            <div id="rewardTimerDisplay" class="text-4xl font-black text-purple-600 dark:text-purple-300 font-mono py-2">60:00</div>
+            <div class="flex space-x-3 pt-2">
+                <button onclick="startRewardTimer()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Iniciar Temporizador</button>
+                <button onclick="closeRewardModal()" class="flex-1 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm transition">Cerrar</button>
+            </div>
         </div>
     </div>
 
@@ -354,6 +368,8 @@
         let activeTaskId = null;
         let timerInterval = null;
         let secondsLeft = 25 * 60;
+        let rewardTimerInterval = null;
+        let rewardSecondsLeft = 3600;
         let currentMood = '🌟 Excelente';
         let pipWindow = null;
 
@@ -627,7 +643,7 @@
             });
         }
 
-        // GESTIÓN DE METAS MÚLTIPLES Y ELIMINACIÓN
+        // GESTIÓN DE METAS MÚLTIPLES CON BOTONES DE DESBLOQUEO E INTERACTIVIDAD
         function openAddGoalModal() {
             document.getElementById('goalTitleInput').value = '';
             document.getElementById('goalPointsInput').value = '50';
@@ -669,7 +685,7 @@
 
             goals.forEach(goal => {
                 const card = document.createElement('div');
-                card.className = "bg-gray-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2 text-xs relative";
+                card.className = "bg-gray-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2.5 text-xs relative";
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
                         <span class="font-bold text-gray-800 dark:text-gray-200">🎯 ${goal.title}</span>
@@ -681,6 +697,10 @@
                     <div class="w-full bg-gray-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
                         <div id="goal-bar-${goal.id}" class="bg-gradient-to-r from-purple-400 to-pink-400 h-full w-0 transition-all duration-500"></div>
                     </div>
+                    <button id="goal-btn-${goal.id}" onclick="openRewardModal('${goal.title}')" disabled class="w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner">
+                        <span id="goal-icon-${goal.id}">🔒</span>
+                        <span id="goal-text-${goal.id}">Faltan ${goal.target} pts</span>
+                    </button>
                 `;
                 container.appendChild(card);
             });
@@ -694,16 +714,63 @@
             document.getElementById('summaryTotalPoints').innerText = `${totalPoints} pts`;
             document.getElementById('summaryCompletedTasks').innerText = `${completedCount} / ${tasks.length}`;
 
-            // Actualizar barras individuales de cada meta
+            // Actualizar barras, porcentajes y botones interactivos de cada meta
             goals.forEach(goal => {
                 const ratioEl = document.getElementById(`goal-ratio-${goal.id}`);
                 const barEl = document.getElementById(`goal-bar-${goal.id}`);
-                if (ratioEl && barEl) {
+                const btnEl = document.getElementById(`goal-btn-${goal.id}`);
+                const iconEl = document.getElementById(`goal-icon-${goal.id}`);
+                const textEl = document.getElementById(`goal-text-${goal.id}`);
+
+                if (ratioEl && barEl && btnEl) {
                     ratioEl.innerText = `${totalPoints} / ${goal.target} pts`;
                     const percent = Math.min((totalPoints / goal.target) * 100, 100);
                     barEl.style.width = `${percent}%`;
+
+                    if (totalPoints >= goal.target) {
+                        btnEl.disabled = false;
+                        btnEl.className = "w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-400 to-teal-500 hover:opacity-90 text-white shadow-md cursor-pointer animate-bounce";
+                        if (iconEl) iconEl.innerText = "🎉";
+                        if (textEl) textEl.innerText = `¡Desbloquear ${goal.title}!`;
+                    } else {
+                        btnEl.disabled = true;
+                        btnEl.className = "w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner";
+                        if (iconEl) iconEl.innerText = "🔒";
+                        if (textEl) textEl.innerText = `Faltan ${goal.target - totalPoints} pts`;
+                    }
                 }
             });
+        }
+
+        function openRewardModal(goalTitle) {
+            document.getElementById('rewardModalTitle').innerText = `¡${goalTitle} Desbloqueada!`;
+            document.getElementById('rewardModalDesc').innerText = `Has alcanzado la meta para "${goalTitle}". Disfruta de tu recompensa.`;
+            rewardSecondsLeft = 3600;
+            document.getElementById('rewardTimerDisplay').innerText = "60:00";
+            document.getElementById('rewardModal').classList.remove('hidden');
+        }
+
+        function closeRewardModal() {
+            clearInterval(rewardTimerInterval);
+            rewardTimerInterval = null;
+            document.getElementById('rewardModal').classList.add('hidden');
+        }
+
+        function startRewardTimer() {
+            if (rewardTimerInterval) return;
+            rewardTimerInterval = setInterval(() => {
+                if (rewardSecondsLeft > 0) {
+                    rewardSecondsLeft--;
+                    const m = Math.floor(rewardSecondsLeft / 60);
+                    const s = rewardSecondsLeft % 60;
+                    document.getElementById('rewardTimerDisplay').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                } else {
+                    clearInterval(rewardTimerInterval);
+                    rewardTimerInterval = null;
+                    playAlarmSound();
+                    alert('🎉 ¡Tu tiempo de recompensa ha concluido!');
+                }
+            }, 1000);
         }
 
         // VENTANA FLOTANTE PICTURE-IN-PICTURE (CON NOMBRE CREATIVO)
