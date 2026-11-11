@@ -395,8 +395,11 @@
 
         let currentFilter = 'Todas';
         let activeTaskId = null;
+        let activeTaskTitleText = "⚡ Tu Enfoque en Franjas";
         let timerInterval = null;
         let secondsLeft = 25 * 60;
+        let totalSecondsForTask = 25 * 60;
+        let timerEndTime = null; // Almacena el timestamp exacto en que debe terminar el reloj
         let rewardTimerInterval = null;
         let rewardSecondsLeft = 3600;
         let currentMood = '🌟 Excelente';
@@ -412,7 +415,7 @@
                 renderTasks();
                 renderGoalsUI();
                 updateTimerDisplay();
-                updatePointsAndProgress(); // Recalcula puntos al iniciar sin requerir interacción
+                updatePointsAndProgress();
             } catch (error) {
                 console.error("Error al iniciar:", error);
                 localStorage.clear();
@@ -938,7 +941,7 @@
 
                 pipWindow.document.body.innerHTML = `
                     <div style="background-color: #1e1e2f; color: white; padding: 16px; font-family: 'Quicksand', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; text-align: center; margin: 0; overflow: hidden;">
-                        <div id="pipTaskTitle" style="font-size: 12px; font-weight: 600; color: #dfccfd; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;">⚡ Tu Enfoque en Franjas</div>
+                        <div id="pipTaskTitle" style="font-size: 12px; font-weight: 600; color: #dfccfd; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;">${activeTaskTitleText}</div>
                         <div id="pipTimerDisplay" style="font-size: 38px; font-weight: 900; font-family: monospace; letter-spacing: 2px; margin-bottom: 12px;">25:00</div>
                         <div style="display: flex; gap: 10px;">
                             <button id="pipStartBtn" style="background-color: #9333ea; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">▶</button>
@@ -963,13 +966,13 @@
             const task = tasks.find(t => t.id === id);
             if (task) {
                 activeTaskId = task.id;
-                const titleText = `${task.category}: ${task.title}`;
+                activeTaskTitleText = `${task.category}: ${task.title}`;
                 
-                document.getElementById('mainTaskTitle').innerText = titleText;
+                document.getElementById('mainTaskTitle').innerText = activeTaskTitleText;
 
                 if (pipWindow && !pipWindow.closed) {
                     const titleEl = pipWindow.document.getElementById('pipTaskTitle');
-                    if (titleEl) titleEl.innerText = titleText;
+                    if (titleEl) titleEl.innerText = activeTaskTitleText;
                 }
 
                 const startMin = timeToMinutes(task.start);
@@ -977,19 +980,28 @@
                 let diffMin = endMin - startMin;
                 if (diffMin <= 0) diffMin += 24 * 60;
 
-                secondsLeft = diffMin * 60;
+                totalSecondsForTask = diffMin * 60;
+                secondsLeft = totalSecondsForTask;
                 stopContinuousAlarm();
                 updateTimerDisplay();
             }
         }
 
+        // CORRECCIÓN: Uso de marcas de tiempo reales (Date.now) para que el tiempo no falle al cambiar de pestaña
         function startWidgetTimer() {
             if (timerInterval) return;
+            
+            // Calculamos exactamente a qué hora debe terminar el cronómetro en tiempo real del sistema
+            timerEndTime = Date.now() + (secondsLeft * 1000);
+
             timerInterval = setInterval(() => {
-                if (secondsLeft > 0) {
-                    secondsLeft--;
-                    updateTimerDisplay();
-                } else {
+                const now = Date.now();
+                const diffMs = timerEndTime - now;
+                secondsLeft = Math.max(0, Math.ceil(diffMs / 1000));
+
+                updateTimerDisplay();
+
+                if (secondsLeft <= 0) {
                     stopWidgetTimer();
                     startContinuousAlarm();
                 }
@@ -999,11 +1011,16 @@
         function pauseWidgetTimer() {
             clearInterval(timerInterval);
             timerInterval = null;
+            if (timerEndTime) {
+                const diffMs = timerEndTime - Date.now();
+                secondsLeft = Math.max(0, Math.ceil(diffMs / 1000));
+            }
         }
 
         function stopWidgetTimer() {
             clearInterval(timerInterval);
             timerInterval = null;
+            timerEndTime = null;
         }
 
         function updateTimerDisplay() {
@@ -1028,10 +1045,11 @@
                     task.completed = true;
                     saveAndRender();
                     stopWidgetTimer();
-                    document.getElementById('mainTaskTitle').innerText = "¡Actividad completada!";
+                    activeTaskTitleText = "¡Actividad completada!";
+                    document.getElementById('mainTaskTitle').innerText = activeTaskTitleText;
                     if (pipWindow && !pipWindow.closed) {
                         const titleEl = pipWindow.document.getElementById('pipTaskTitle');
-                        if (titleEl) titleEl.innerText = "¡Actividad completada!";
+                        if (titleEl) titleEl.innerText = activeTaskTitleText;
                     }
                 }
             }
