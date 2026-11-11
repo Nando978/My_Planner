@@ -8,6 +8,8 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239333ea' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 2v20M17 5l-10 14M7 5l10 14M2 12h20M5 7l14 10M5 17l14-10'/></svg>">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -125,7 +127,7 @@
                 </div>
             </div>
 
-            <!-- METAS DIARIAS MÚLTIPLES (CON BOTÓN DE DESBLOQUEO Y ELIMINAR) -->
+            <!-- METAS DIARIAS MÚLTIPLES -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center space-x-1.5">
@@ -137,7 +139,7 @@
                 </div>
                 
                 <div id="goalsListContainer" class="space-y-4 max-h-80 overflow-y-auto pr-1">
-                    <!-- Se generan dinámicamente con su barra y su botón de desbloqueo -->
+                    <!-- Se generan dinámicamente -->
                 </div>
             </div>
 
@@ -412,6 +414,44 @@
             document.getElementById('streakCounter').innerText = `${streak} Días`;
         }
 
+        function playCelebrationSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Secuencia de notas festivas (acorde de triunfo)
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, index) => {
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime + (index * 0.1));
+                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + (index * 0.1));
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (index * 0.1) + 0.4);
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+
+                    oscillator.start(audioCtx.currentTime + (index * 0.1));
+                    oscillator.stop(audioCtx.currentTime + (index * 0.1) + 0.4);
+                });
+            } catch (e) {
+                console.log("Audio no permitido.");
+            }
+        }
+
+        function triggerConfetti() {
+            try {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            } catch (e) {
+                console.log("Confetti no cargado.");
+            }
+        }
+
         function playAlarmSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -643,7 +683,7 @@
             });
         }
 
-        // GESTIÓN DE METAS MÚLTIPLES CON BOTONES DE DESBLOQUEO E INTERACTIVIDAD
+        // GESTIÓN DE METAS MÚLTIPLES CON CONFETI Y SONIDO DE CELEBRACIÓN
         function openAddGoalModal() {
             document.getElementById('goalTitleInput').value = '';
             document.getElementById('goalPointsInput').value = '50';
@@ -697,7 +737,7 @@
                     <div class="w-full bg-gray-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
                         <div id="goal-bar-${goal.id}" class="bg-gradient-to-r from-purple-400 to-pink-400 h-full w-0 transition-all duration-500"></div>
                     </div>
-                    <button id="goal-btn-${goal.id}" onclick="openRewardModal('${goal.title}')" disabled class="w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner">
+                    <button id="goal-btn-${goal.id}" onclick="unlockGoal('${goal.title}')" disabled class="w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner">
                         <span id="goal-icon-${goal.id}">🔒</span>
                         <span id="goal-text-${goal.id}">Faltan ${goal.target} pts</span>
                     </button>
@@ -714,7 +754,6 @@
             document.getElementById('summaryTotalPoints').innerText = `${totalPoints} pts`;
             document.getElementById('summaryCompletedTasks').innerText = `${completedCount} / ${tasks.length}`;
 
-            // Actualizar barras, porcentajes y botones interactivos de cada meta
             goals.forEach(goal => {
                 const ratioEl = document.getElementById(`goal-ratio-${goal.id}`);
                 const barEl = document.getElementById(`goal-bar-${goal.id}`);
@@ -742,7 +781,11 @@
             });
         }
 
-        function openRewardModal(goalTitle) {
+        function unlockGoal(goalTitle) {
+            // Activar confeti y sonido festivo
+            triggerConfetti();
+            playCelebrationSound();
+
             document.getElementById('rewardModalTitle').innerText = `¡${goalTitle} Desbloqueada!`;
             document.getElementById('rewardModalDesc').innerText = `Has alcanzado la meta para "${goalTitle}". Disfruta de tu recompensa.`;
             rewardSecondsLeft = 3600;
@@ -773,7 +816,7 @@
             }, 1000);
         }
 
-        // VENTANA FLOTANTE PICTURE-IN-PICTURE (CON NOMBRE CREATIVO)
+        // VENTANA FLOTANTE PICTURE-IN-PICTURE
         async function toggleFloatingWidget() {
             if (!('documentPictureInPicture' in window)) {
                 alert('Tu navegador no soporta la ventana flotante Picture-in-Picture.');
