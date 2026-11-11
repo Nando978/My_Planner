@@ -394,12 +394,12 @@
         let lastClosedDateStr = localStorage.getItem('my_planner_last_closed_date') || '';
 
         let currentFilter = 'Todas';
-        let activeTaskId = null;
-        let activeTaskTitleText = "⚡ Tu Enfoque en Franjas";
+        let activeTaskId = localStorage.getItem('my_planner_active_task_id') ? parseInt(localStorage.getItem('my_planner_active_task_id')) : null;
+        let activeTaskTitleText = localStorage.getItem('my_planner_active_task_title') || "⚡ Tu Enfoque en Franjas";
         let timerInterval = null;
         let secondsLeft = 25 * 60;
         let totalSecondsForTask = 25 * 60;
-        let timerEndTime = null; // Almacena el timestamp exacto en que debe terminar el reloj
+        let timerEndTime = localStorage.getItem('my_planner_timer_end') ? parseInt(localStorage.getItem('my_planner_timer_end')) : null;
         let rewardTimerInterval = null;
         let rewardSecondsLeft = 3600;
         let currentMood = '🌟 Excelente';
@@ -414,7 +414,25 @@
                 renderCategoriesUI();
                 renderTasks();
                 renderGoalsUI();
-                updateTimerDisplay();
+                
+                // Restaurar estado del temporizador activo si existía antes de recargar
+                if (activeTaskId) {
+                    document.getElementById('mainTaskTitle').innerText = activeTaskTitleText;
+                    if (timerEndTime) {
+                        const now = Date.now();
+                        const diffMs = timerEndTime - now;
+                        secondsLeft = Math.max(0, Math.ceil(diffMs / 1000));
+                        if (secondsLeft > 0) {
+                            startWidgetTimer();
+                        } else {
+                            secondsLeft = 0;
+                            startContinuousAlarm();
+                        }
+                    }
+                } else {
+                    updateTimerDisplay();
+                }
+
                 updatePointsAndProgress();
             } catch (error) {
                 console.error("Error al iniciar:", error);
@@ -683,6 +701,9 @@
                 if (task.completed && activeTaskId === id) {
                     stopWidgetTimer();
                     stopContinuousAlarm();
+                    localStorage.removeItem('my_planner_active_task_id');
+                    localStorage.removeItem('my_planner_active_task_title');
+                    localStorage.removeItem('my_planner_timer_end');
                 }
                 saveAndRender();
             }
@@ -693,6 +714,9 @@
             if (activeTaskId === id) {
                 stopWidgetTimer();
                 stopContinuousAlarm();
+                localStorage.removeItem('my_planner_active_task_id');
+                localStorage.removeItem('my_planner_active_task_title');
+                localStorage.removeItem('my_planner_timer_end');
             }
             saveAndRender();
         }
@@ -982,17 +1006,25 @@
 
                 totalSecondsForTask = diffMin * 60;
                 secondsLeft = totalSecondsForTask;
+                
+                // Guardamos en localStorage para persistir ante recargas o fallas de internet
+                timerEndTime = Date.now() + (secondsLeft * 1000);
+                localStorage.setItem('my_planner_active_task_id', activeTaskId);
+                localStorage.setItem('my_planner_active_task_title', activeTaskTitleText);
+                localStorage.setItem('my_planner_timer_end', timerEndTime);
+
                 stopContinuousAlarm();
-                updateTimerDisplay();
+                startWidgetTimer(); // Inicia automáticamente al cargar la tarea al reloj
             }
         }
 
-        // CORRECCIÓN: Uso de marcas de tiempo reales (Date.now) para que el tiempo no falle al cambiar de pestaña
         function startWidgetTimer() {
             if (timerInterval) return;
             
-            // Calculamos exactamente a qué hora debe terminar el cronómetro en tiempo real del sistema
-            timerEndTime = Date.now() + (secondsLeft * 1000);
+            if (!timerEndTime && secondsLeft > 0) {
+                timerEndTime = Date.now() + (secondsLeft * 1000);
+                localStorage.setItem('my_planner_timer_end', timerEndTime);
+            }
 
             timerInterval = setInterval(() => {
                 const now = Date.now();
@@ -1014,6 +1046,7 @@
             if (timerEndTime) {
                 const diffMs = timerEndTime - Date.now();
                 secondsLeft = Math.max(0, Math.ceil(diffMs / 1000));
+                localStorage.removeItem('my_planner_timer_end');
             }
         }
 
@@ -1021,6 +1054,7 @@
             clearInterval(timerInterval);
             timerInterval = null;
             timerEndTime = null;
+            localStorage.removeItem('my_planner_timer_end');
         }
 
         function updateTimerDisplay() {
@@ -1051,6 +1085,10 @@
                         const titleEl = pipWindow.document.getElementById('pipTaskTitle');
                         if (titleEl) titleEl.innerText = activeTaskTitleText;
                     }
+                    localStorage.removeItem('my_planner_active_task_id');
+                    localStorage.removeItem('my_planner_active_task_title');
+                    localStorage.removeItem('my_planner_timer_end');
+                    activeTaskId = null;
                 }
             }
         }
@@ -1179,7 +1217,7 @@
                 localStorage.removeItem('my_planner_custom_bg');
                 localStorage.removeItem('my_planner_custom_primary');
             } else if (theme === 'lavender') {
-                body.className = "bg-[#f3eef8] text-purple-950 min-h-screen flex flex-col";
+                body.className, "bg-[#f3eef8] text-purple-950 min-h-screen flex flex-col";
                 localStorage.setItem('my_planner_theme', 'lavender');
                 localStorage.removeItem('my_planner_custom_bg');
                 localStorage.removeItem('my_planner_custom_primary');
