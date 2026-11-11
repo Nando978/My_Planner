@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Planner & Goals</title>
+    <!-- Favicon de Copo de Nieve Limpio basado en trazos -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239333ea' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 2v20M17 5l-10 14M7 5l10 14M2 12h20M5 7l14 10M5 17l14-10'/></svg>">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            pink: '#ffd1dc',
+                            purple: '#e8dff5',
+                            blue: '#f0efeb',
+                            mint: '#d0f4de',
+                            peach: '#fcf6bd',
+                            yellow: '#f9f871',
+                            lavender: '#dfccfd',
+                            darkBg: '#1e1e2f',
+                            darkCard: '#2a2a40'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.03);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.15);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.25);
+        }
+    </style>
+</head>
+<body class="bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col selection:bg-purple-200" id="mainBody">
+
+    <!-- HEADER / BARRA SUPERIOR -->
+    <header class="w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-400 to-pink-400 flex items-center justify-center shadow-sm text-white">
+                    <!-- Copo de Nieve SVG con diseño limpio de trazos -->
+                    <svg class="w-6 h-6 animate-spin" style="animation-duration: 20s;" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M12 2v20M17 5l-10 14M7 5l10 14M2 12h20M5 7l14 10M5 17l14-10"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">My Planner & Goals</h1>
+                    <p class="text-xs text-gray-400 dark:text-gray-400" id="currentDateHeader">Cargando fecha...</p>
+                </div>
+            </div>
+
+            <!-- Stats & Streak -->
+            <div class="flex items-center space-x-2">
+                <!-- Racha de la Llama -->
+                <div class="flex items-center space-x-1.5 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/50 px-3 py-1.5 rounded-full shadow-sm">
+                    <span class="text-lg">🔥</span>
+                    <span class="text-sm font-bold text-orange-600 dark:text-orange-400" id="streakCounter">1 Días</span>
+                </div>
+                <!-- Puntos Hoy -->
+                <div class="flex items-center space-x-1.5 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/50 px-3 py-1.5 rounded-full shadow-sm">
+                    <span class="text-lg">🏆</span>
+                    <span class="text-sm font-bold text-purple-600 dark:text-purple-300" id="headerPoints">0 Pts Hoy</span>
+                </div>
+            </div>
+
+            <!-- Controls: Reloj flotante, selector de temas y cierre -->
+            <div class="flex items-center space-x-2 flex-wrap">
+                <button onclick="toggleFloatingWidget()" class="bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/50 dark:hover:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Reloj Flotante</span>
+                </button>
+
+                <!-- Selector de Tema -->
+                <div class="relative">
+                    <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 text-xs font-semibold px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 outline-none cursor-pointer">
+                        <option value="pastel-day">🌷 Día Pastel</option>
+                        <option value="pastel-night">🌙 Noche Nocturna</option>
+                        <option value="matcha">🍵 Matcha Mint</option>
+                        <option value="lavender">💜 Lavanda Sunset</option>
+                        <option value="custom">🎨 Personalizado...</option>
+                    </select>
+                </div>
+
+                <button onclick="openCloseDayModal()" class="bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
+                    <span>Cierre de Día</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- COLUMNA IZQUIERDA: Formulario, Progreso y Gestión de Categorías -->
+        <div class="space-y-6">
+            
+            <!-- Barra de Progreso y Meta Hora Libre (100 pts) -->
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm relative overflow-hidden">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200">Meta Diaria (Hora Libre)</h3>
+                    <span id="pointsRatioText" class="text-xs font-bold text-purple-600 dark:text-purple-400">0 / 100 pts</span>
+                </div>
+                <div class="w-full bg-gray-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden mb-3">
+                    <div id="pointsProgressBar" class="bg-gradient-to-r from-purple-400 to-pink-400 h-full w-0 transition-all duration-500"></div>
+                </div>
+                <p class="text-xs text-gray-400 dark:text-gray-400 mb-4" id="pointsStatusMsg">Completa al menos 100 puntos en actividades para desbloquear tu hora libre.</p>
+                
+                <!-- Botón Hora Libre (Bloqueado / Desbloqueado) -->
+                <button id="freeHourBtn" onclick="openFreeHour()" disabled class="w-full py-3 px-4 rounded-2xl font-bold text-sm transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner">
+                    <span id="freeHourIcon">🔒</span>
+                    <span id="freeHourText">Hora Libre Bloqueada (Faltan pts)</span>
+                </button>
+            </div>
+
+            <!-- Formulario Nueva Actividad -->
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm">
+                <h2 class="text-md font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center space-x-2">
+                    <span>✨ Nueva Actividad</span>
+                </h2>
+                <form id="taskForm" onsubmit="handleAddTask(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre de la Actividad</label>
+                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Frontend..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 dark:focus:ring-purple-600">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Hora Inicio</label>
+                            <input type="time" id="taskStart" required class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Hora Fin</label>
+                            <input type="time" id="taskEnd" required class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Categoría</label>
+                            <select id="taskCategory" onchange="onCategoryChange(this.value)" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Puntos de Actividad</label>
+                            <input type="number" id="taskPoints" min="1" max="500" required class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none" title="Puntos otorgados">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Notas Opcionales</label>
+                        <textarea id="taskNotes" rows="2" placeholder="Detalles o subtareas..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white font-bold text-sm py-3 rounded-xl shadow-md transition transform active:scale-95">
+                        Agregar al Planner 🚀
+                    </button>
+                </form>
+            </div>
+
+            <!-- Gestión de Categorías y Puntos Personalizados -->
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm space-y-4">
+                <h2 class="text-md font-bold text-gray-800 dark:text-gray-100 flex items-center space-x-2">
+                    <span>🏷️ Administrar Categorías & Puntos</span>
+                </h2>
+                <form onsubmit="handleAddCategory(event)" class="space-y-3">
+                    <div class="flex space-x-2">
+                        <input type="text" id="newCatEmoji" required placeholder="🎨" maxlength="2" class="w-16 bg-gray-50 dark:bg-slate-800 text-center text-sm py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none" title="Emoticón">
+                        <input type="text" id="newCatName" required placeholder="Nombre (ej. Deporte)" class="flex-1 bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-semibold text-gray-500">Puntos Base:</span>
+                        <input type="number" id="newCatDefaultPoints" required value="25" min="1" max="500" class="w-24 bg-gray-50 dark:bg-slate-800 text-sm px-3 py-1.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                        <button type="submit" class="flex-1 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 dark:hover:bg-purple-900 text-purple-700 dark:text-purple-300 font-bold text-xs py-2 rounded-xl transition">
+                            Crear Categoría +
+                        </button>
+                    </div>
+                </form>
+                <div id="categoryManagerList" class="space-y-2 pt-2 border-t border-gray-100 dark:border-slate-800 max-h-48 overflow-y-auto">
+                    <!-- Se llena por JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA CENTRAL Y DERECHA: Listado y Cronograma -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Filtros y Cabecera de Franjas -->
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100">Mi Día en Franjas</h2>
+                        <p class="text-xs text-gray-400 dark:text-gray-400">Organiza tu tiempo, completa actividades y gana puntos</p>
+                    </div>
+                    <!-- Filtros por Categoría dinámicos -->
+                    <div id="categoryFiltersContainer" class="flex items-center space-x-1.5 overflow-x-auto pb-1">
+                        <!-- Se llena por JS -->
+                    </div>
+                </div>
+
+                <!-- Lista de Tareas -->
+                <div id="taskListContainer" class="space-y-3">
+                    <!-- Se inyecta por JS -->
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER / PIE DE PÁGINA -->
+    <footer class="w-full py-6 text-center text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-slate-800 mt-auto">
+        <p>Elaborado por: Pablo Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
+    </footer>
+
+    <!-- MINI WIDGET / RELOJ FLOTANTE INTERNO (Draggable & Limpio sin URLs) -->
+    <div id="floatingWidget" class="fixed bottom-6 right-6 w-80 bg-slate-900/95 text-white p-4 rounded-3xl shadow-2xl backdrop-blur-md border border-slate-700 z-50 hidden transition-all">
+        <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800 cursor-move" id="widgetHeader">
+            <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse"></span>
+                <span class="text-xs font-bold tracking-wider uppercase text-slate-300">Daily Flow Widget</span>
+            </div>
+            <div class="flex items-center space-x-1">
+                <button onclick="toggleWidgetMinimize()" class="text-slate-400 hover:text-white px-1.5 text-sm">_</button>
+                <button onclick="toggleFloatingWidget()" class="text-slate-400 hover:text-white px-1.5 text-sm">&times;</button>
+            </div>
+        </div>
+        <div id="widgetBody" class="space-y-3 text-center">
+            <div id="widgetTaskTitle" class="text-xs font-semibold text-purple-300 truncate">Selecciona una actividad para iniciar</div>
+            <div id="widgetTimerDisplay" class="text-3xl font-black font-mono tracking-wider text-white">00:00:00</div>
+            <div class="flex items-center justify-center space-x-3 pt-1">
+                <button onclick="startWidgetTimer()" class="bg-purple-600 hover:bg-purple-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md transition">▶</button>
+                <button onclick="pauseWidgetTimer()" class="bg-amber-600 hover:bg-amber-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md transition">⏸</button>
+                <button onclick="completeCurrentActiveTask()" class="bg-emerald-600 hover:bg-emerald-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md transition" title="Completar">✓</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE HORA LIBRE -->
+    <div id="freeHourModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl max-w-md w-full text-center space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
+            <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center mx-auto text-2xl">🎉</div>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">¡Hora Libre Desbloqueada!</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Has superado la meta de 100 puntos diarios. Disfruta de tu tiempo libre sin culpa.</p>
+            <div id="freeHourTimer" class="text-4xl font-black text-purple-600 dark:text-purple-300 font-mono py-2">60:00</div>
+            <div class="flex space-x-3 pt-2">
+                <button onclick="startFreeHourTimer()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Iniciar Temporizador</button>
+                <button onclick="closeFreeHourModal()" class="flex-1 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm transition">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CIERRE DE DÍA -->
+    <div id="closeDayModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl max-w-lg w-full space-y-6 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">Cierre de Día & Reflexión</h3>
+                <button onclick="closeCloseDayModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-purple-50 dark:bg-slate-800 p-4 rounded-2xl text-center">
+                    <span class="block text-xs text-gray-400 dark:text-gray-400 mb-1">Puntos Totales</span>
+                    <span id="summaryTotalPoints" class="text-2xl font-black text-purple-600 dark:text-purple-300">0 pts</span>
+                </div>
+                <div class="bg-emerald-50 dark:bg-slate-800 p-4 rounded-2xl text-center">
+                    <span class="block text-xs text-gray-400 dark:text-gray-400 mb-1">Tareas Completadas</span>
+                    <span id="summaryCompletedTasks" class="text-2xl font-black text-emerald-600 dark:text-emerald-300">0 / 0</span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">¿Cómo te sentiste hoy?</label>
+                    <div class="flex justify-between space-x-2" id="moodSelector">
+                        <button type="button" onclick="setMood('🌟 Excelente')" class="mood-btn flex-1 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-xs font-bold hover:bg-purple-50">🌟 Excelente</button>
+                        <button type="button" onclick="setMood('⭐ Productivo')" class="mood-btn flex-1 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-xs font-bold hover:bg-purple-50">⭐ Productivo</button>
+                        <button type="button" onclick="setMood('☕ Normal')" class="mood-btn flex-1 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-xs font-bold hover:bg-purple-50">☕ Normal</button>
+                        <button type="button" onclick="setMood('🌧️ Cansado')" class="mood-btn flex-1 py-2 rounded-xl border border-gray-200 dark:border-slate-700 text-xs font-bold hover:bg-purple-50">🌧️ Cansado</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Reflexión del Día / Logros</label>
+                    <textarea id="dailyReflection" rows="3" placeholder="¿Qué aprendiste hoy? ¿Qué mejoras para mañana?" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none"></textarea>
+                </div>
+            </div>
+
+            <button onclick="saveAndResetDay()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-md">
+                Guardar Cierre y Finalizar Día ✨
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL PERSONALIZADOR DE COLORES -->
+    <div id="customThemeModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-sm w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
+            <h3 class="text-md font-bold text-gray-800 dark:text-gray-100">Personalizar Colores 🎨</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Color Principal (Acento)</label>
+                    <input type="color" id="customPrimary" value="#dfccfd" class="w-full h-10 rounded-xl cursor-pointer border-0">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Color de Fondo General</label>
+                    <input type="color" id="customBg" value="#fcf8f7" class="w-full h-10 rounded-xl cursor-pointer border-0">
+                </div>
+            </div>
+            <div class="flex space-x-2 pt-2">
+                <button onclick="applyCustomColors()" class="flex-1 bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs">Aplicar</button>
+                <button onclick="closeCustomThemeModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-2.5 rounded-xl text-xs">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE LA APLICACIÓN Y SEGURIDAD -->
+    <script>
+        // Protección Básica Anti-Inspección / Anti-Robo
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', (e) => {
+            if (
+                e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+                (e.ctrlKey && e.key === 'U')
+            ) {
+                e.preventDefault();
+                alert('Acción bloqueada por seguridad 🔒');
+            }
+        });
+
+        // ESTADO GLOBAL
+        let tasks = JSON.parse(localStorage.getItem('my_planner_tasks')) || [];
+        let categories = JSON.parse(localStorage.getItem('my_planner_categories')) || [
+            { name: 'Trabajo', emoji: '💼', defaultPoints: 50 },
+            { name: 'Estudio', emoji: '📚', defaultPoints: 40 },
+            { name: 'Salud', emoji: '🍎', defaultPoints: 25 },
+            { name: 'Personal', emoji: '🏡', defaultPoints: 20 }
+        ];
+        let streak = parseInt(localStorage.getItem('my_planner_streak')) || 1;
+        let lastAccessDate = localStorage.getItem('my_planner_last_date') || '';
+        let currentFilter = 'Todas';
+        let activeTaskId = null;
+        let timerInterval = null;
+        let secondsLeft = 0;
+        let freeHourInterval = null;
+        let freeHourSeconds = 3600; // 60 minutos
+        let currentMood = '🌟 Excelente';
+
+        // INICIALIZACIÓN
+        document.addEventListener('DOMContentLoaded', () => {
+            checkStreak();
+            updateDateHeader();
+            loadTheme();
+            renderCategoriesUI();
+            renderTasks();
+            updatePointsAndProgress();
+        });
+
+        function updateDateHeader() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const todayStr = new Date().toLocaleDateString('es-ES', options);
+            document.getElementById('currentDateHeader').innerText = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
+        }
+
+        function checkStreak() {
+            const today = new Date().toDateString();
+            if (lastAccessDate && lastAccessDate !== today) {
+                const diffTime = Math.abs(new Date(today) - new Date(lastAccessDate));
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                    streak++;
+                } else if (diffDays > 2) {
+                    streak = 1;
+                }
+            }
+            localStorage.setItem('my_planner_last_date', today);
+            localStorage.setItem('my_planner_streak', streak);
+            document.getElementById('streakCounter').innerText = `${streak} Días`;
+        }
+
+        // GENERADOR DE SONIDO (AUDIO API)
+        function playAlarmSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.8);
+
+                setTimeout(() => {
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(880, audioCtx.currentTime);
+                    gain2.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    osc2.start();
+                    osc2.stop(audioCtx.currentTime + 1.2);
+                }, 300);
+            } catch (e) {
+                console.log("Audio no permitido aún.");
+            }
+        }
+
+        // GESTIÓN DE CATEGORÍAS DINÁMICAS & PUNTOS
+        function renderCategoriesUI() {
+            const selectEl = document.getElementById('taskCategory');
+            selectEl.innerHTML = '';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat.name;
+                opt.innerText = `${cat.emoji} ${cat.name} (${cat.defaultPoints} pts)`;
+                selectEl.appendChild(opt);
+            });
+
+            if (categories.length > 0) {
+                document.getElementById('taskPoints').value = categories[0].defaultPoints;
+            }
+
+            const filtersEl = document.getElementById('categoryFiltersContainer');
+            filtersEl.innerHTML = `
+                <button onclick="filterCategory('Todas')" class="filter-btn ${currentFilter === 'Todas' ? 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300' : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400'} px-3.5 py-1.5 rounded-xl text-xs font-bold transition">Todas</button>
+            `;
+            categories.forEach(cat => {
+                const isActive = currentFilter === cat.name;
+                const btn = document.createElement('button');
+                btn.onclick = () => filterCategory(cat.name);
+                btn.className = `filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${isActive ? 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300' : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400'}`;
+                btn.innerText = `${cat.emoji} ${cat.name}`;
+                filtersEl.appendChild(btn);
+            });
+
+            const managerList = document.getElementById('categoryManagerList');
+            managerList.innerHTML = '';
+            categories.forEach(cat => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between bg-gray-50 dark:bg-slate-800 px-3 py-2 rounded-xl text-xs gap-2";
+                row.innerHTML = `
+                    <span class="font-semibold text-gray-700 dark:text-gray-300 truncate">${cat.emoji} ${cat.name}</span>
+                    <div class="flex items-center space-x-1">
+                        <input type="number" value="${cat.defaultPoints}" min="1" max="500" onchange="updateCategoryPoints('${cat.name}', this.value)" class="w-16 bg-white dark:bg-slate-900 text-center text-xs font-bold py-1 rounded-lg border border-gray-200 dark:border-slate-700" title="Puntos por defecto">
+                        <span class="text-gray-400">pts</span>
+                        <button onclick="deleteCategory('${cat.name}')" class="text-rose-500 hover:text-rose-700 font-bold px-1.5 py-0.5 rounded ml-1" title="Eliminar">&times;</button>
+                    </div>
+                `;
+                managerList.appendChild(row);
+            });
+        }
+
+        function onCategoryChange(catName) {
+            const found = categories.find(c => c.name === catName);
+            if (found) {
+                document.getElementById('taskPoints').value = found.defaultPoints;
+            }
+        }
+
+        function updateCategoryPoints(catName, newPts) {
+            const found = categories.find(c => c.name === catName);
+            if (found) {
+                found.defaultPoints = parseInt(newPts) || 25;
+                localStorage.setItem('my_planner_categories', JSON.stringify(categories));
+                renderCategoriesUI();
+            }
+        }
+
+        function handleAddCategory(e) {
+            e.preventDefault();
+            const emoji = document.getElementById('newCatEmoji').value.trim() || '📌';
+            const name = document.getElementById('newCatName').value.trim();
+            const defaultPoints = parseInt(document.getElementById('newCatDefaultPoints').value) || 25;
+
+            if(name && !categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+                categories.push({ name, emoji, defaultPoints });
+                localStorage.setItem('my_planner_categories', JSON.stringify(categories));
+                renderCategoriesUI();
+                document.getElementById('newCatName').value = '';
+                document.getElementById('newCatEmoji').value = '';
+                document.getElementById('newCatDefaultPoints').value = '25';
+            } else {
+                alert('La categoría ya existe o el nombre es inválido.');
+            }
+        }
+
+        function deleteCategory(catName) {
+            if(categories.length <= 1) {
+                alert('Debes tener al menos una categoría.');
+                return;
+            }
+            categories = categories.filter(c => c.name !== catName);
+            localStorage.setItem('my_planner_categories', JSON.stringify(categories));
+            if(currentFilter === catName) currentFilter = 'Todas';
+            renderCategoriesUI();
+            renderTasks();
+        }
+
+        function getCategoryEmoji(catName) {
+            const found = categories.find(c => c.name === catName);
+            return found ? found.emoji : '📌';
+        }
+
+        // TAREAS & CRUD
+        function handleAddTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('taskTitle').value;
+            const start = document.getElementById('taskStart').value;
+            const end = document.getElementById('taskEnd').value;
+            const category = document.getElementById('taskCategory').value;
+            const points = parseInt(document.getElementById('taskPoints').value) || 25;
+            const notes = document.getElementById('taskNotes').value;
+
+            const newTask = {
+                id: Date.now(),
+                title,
+                start,
+                end,
+                category,
+                points,
+                notes,
+                completed: false
+            };
+
+            tasks.push(newTask);
+            saveAndRender();
+            document.getElementById('taskForm').reset();
+            onCategoryChange(document.getElementById('taskCategory').value);
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveAndRender();
+            }
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            if (activeTaskId === id) stopWidgetTimer();
+            saveAndRender();
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('my_planner_tasks', JSON.stringify(tasks));
+            renderTasks();
+            updatePointsAndProgress();
+        }
+
+        function filterCategory(cat) {
+            currentFilter = cat;
+            renderCategoriesUI();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('taskListContainer');
+            container.innerHTML = '';
+
+            const filtered = currentFilter === 'Todas' ? tasks : tasks.filter(t => t.category === currentFilter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">No hay actividades registradas en esta categoría.</div>`;
+                return;
+            }
+
+            filtered.forEach(task => {
+                const catEmoji = getCategoryEmoji(task.category);
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border transition flex items-center justify-between gap-4 ${task.completed ? 'bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-800 opacity-75' : 'bg-white dark:bg-slate-800 border-purple-100 dark:border-slate-700 shadow-sm'}`;
+                
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                        <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleTask(${task.id})" class="w-5 h-5 rounded-md text-purple-600 accent-purple-600 cursor-pointer">
+                        <div class="min-w-0">
+                            <div class="flex items-center space-x-2">
+                                <h4 class="font-bold text-sm text-gray-800 dark:text-gray-200 truncate ${task.completed ? 'line-through text-gray-400 dark:text-gray-500' : ''}">${task.title}</h4>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300">${catEmoji} ${task.category}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300">+${task.points} pts</span>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-gray-400 font-mono mt-0.5">🕒 ${task.start} - ${task.end} ${task.notes ? '• ' + task.notes : ''}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <button onclick="loadTaskToWidget(${task.id})" class="p-2 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 hover:bg-purple-100 text-xs font-bold transition" title="Abrir en Widget">⏱️</button>
+                        <button onclick="deleteTask(${task.id})" class="p-2 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-500 hover:bg-rose-100 text-xs font-bold transition" title="Eliminar">&times;</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // PUNTOS Y HORA LIBRE
+        function updatePointsAndProgress() {
+            const totalPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+            const completedCount = tasks.filter(t => t.completed).length;
+
+            document.getElementById('headerPoints').innerText = `${totalPoints} Pts Hoy`;
+            document.getElementById('pointsRatioText').innerText = `${totalPoints} / 100 pts`;
+            document.getElementById('pointsProgressBar').style.width = `${Math.min((totalPoints / 100) * 100, 100)}%`;
+            document.getElementById('summaryTotalPoints').innerText = `${totalPoints} pts`;
+            document.getElementById('summaryCompletedTasks').innerText = `${completedCount} / ${tasks.length}`;
+
+            const freeHourBtn = document.getElementById('freeHourBtn');
+            const freeHourIcon = document.getElementById('freeHourIcon');
+            const freeHourText = document.getElementById('freeHourText');
+            const pointsStatusMsg = document.getElementById('pointsStatusMsg');
+
+            if (totalPoints >= 100) {
+                freeHourBtn.disabled = false;
+                freeHourBtn.className = "w-full py-3 px-4 rounded-2xl font-bold text-sm transition flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-400 to-teal-500 hover:opacity-90 text-white shadow-md cursor-pointer animate-bounce";
+                freeHourIcon.innerText = "🎉";
+                freeHourText.innerText = "¡Desbloquear Hora Libre!";
+                pointsStatusMsg.innerText = "¡Meta cumplida! Ya puedes disfrutar de tu hora libre.";
+            } else {
+                freeHourBtn.disabled = true;
+                freeHourBtn.className = "w-full py-3 px-4 rounded-2xl font-bold text-sm transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner";
+                freeHourIcon.innerText = "🔒";
+                freeHourText.innerText = `Faltan ${100 - totalPoints} pts para la Hora Libre`;
+                pointsStatusMsg.innerText = "Completa al menos 100 puntos en actividades para desbloquear tu hora libre.";
+            }
+        }
+
+        // WIDGET FLOTANTE INTERNO (Ultra limpio, arrastrable y sin barras de URL)
+        function toggleFloatingWidget() {
+            const widget = document.getElementById('floatingWidget');
+            widget.classList.toggle('hidden');
+        }
+
+        function loadTaskToWidget(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                activeTaskId = task.id;
+                document.getElementById('widgetTaskTitle').innerText = task.title;
+                secondsLeft = 25 * 60;
+                updateTimerDisplay();
+                document.getElementById('floatingWidget').classList.remove('hidden');
+            }
+        }
+
+        function startWidgetTimer() {
+            if (timerInterval) return;
+            timerInterval = setInterval(() => {
+                if (secondsLeft > 0) {
+                    secondsLeft--;
+                    updateTimerDisplay();
+                } else {
+                    stopWidgetTimer();
+                    playAlarmSound();
+                    alert('🔔 ¡Tiempo cumplido para esta actividad!');
+                }
+            }, 1000);
+        }
+
+        function pauseWidgetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function stopWidgetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(secondsLeft / 60);
+            const s = secondsLeft % 60;
+            document.getElementById('widgetTimerDisplay').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function completeCurrentActiveTask() {
+            if (activeTaskId) {
+                const task = tasks.find(t => t.id === activeTaskId);
+                if (task) {
+                    task.completed = true;
+                    saveAndRender();
+                    stopWidgetTimer();
+                    document.getElementById('widgetTaskTitle').innerText = "¡Actividad completada!";
+                }
+            }
+        }
+
+        // HORA LIBRE MODAL & CRONÓMETRO
+        function openFreeHour() {
+            document.getElementById('freeHourModal').classList.remove('hidden');
+        }
+
+        function closeFreeHourModal() {
+            document.getElementById('freeHourModal').classList.add('hidden');
+        }
+
+        function startFreeHourTimer() {
+            if (freeHourInterval) return;
+            freeHourInterval = setInterval(() => {
+                if (freeHourSeconds > 0) {
+                    freeHourSeconds--;
+                    const m = Math.floor(freeHourSeconds / 60);
+                    const s = freeHourSeconds % 60;
+                    document.getElementById('freeHourTimer').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                } else {
+                    clearInterval(freeHourInterval);
+                    playAlarmSound();
+                    alert('🎉 ¡Tu hora libre ha concluido!');
+                }
+            }, 1000);
+        }
+
+        // CIERRE DE DÍA
+        function openCloseDayModal() {
+            document.getElementById('closeDayModal').classList.remove('hidden');
+        }
+
+        function closeCloseDayModal() {
+            document.getElementById('closeDayModal').classList.add('hidden');
+        }
+
+        function setMood(mood) {
+            currentMood = mood;
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-100', 'border-purple-400');
+                if(btn.innerText.includes(mood)) {
+                    btn.classList.add('bg-purple-100', 'border-purple-400');
+                }
+            });
+        }
+
+        function saveAndResetDay() {
+            const reflection = document.getElementById('dailyReflection').value;
+            alert(`Cierre de día guardado con éxito.\nEstado: ${currentMood}\nReflexión: ${reflection || 'Sin notas'}`);
+            closeCloseDayModal();
+        }
+
+        // TEMAS Y PERSONALIZADOR CORREGIDO
+        function changeTheme(theme) {
+            const body = document.getElementById('mainBody');
+            body.classList.remove('dark');
+            body.style.backgroundColor = '';
+
+            if (theme === 'pastel-day') {
+                body.className = "bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col";
+                localStorage.setItem('my_planner_theme', 'pastel-day');
+                localStorage.removeItem('my_planner_custom_bg');
+            } else if (theme === 'pastel-night') {
+                body.className = "bg-slate-900 text-gray-100 min-h-screen flex flex-col dark";
+                localStorage.setItem('my_planner_theme', 'pastel-night');
+                localStorage.removeItem('my_planner_custom_bg');
+            } else if (theme === 'matcha') {
+                body.className = "bg-[#f4f7f4] text-gray-700 min-h-screen flex flex-col";
+                localStorage.setItem('my_planner_theme', 'matcha');
+                localStorage.removeItem('my_planner_custom_bg');
+            } else if (theme === 'lavender') {
+                body.className = "bg-[#f3eef8] text-purple-950 min-h-screen flex flex-col";
+                localStorage.setItem('my_planner_theme', 'lavender');
+                localStorage.removeItem('my_planner_custom_bg');
+            } else if (theme === 'custom') {
+                document.getElementById('customThemeModal').classList.remove('hidden');
+            }
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('my_planner_theme') || 'pastel-day';
+            const customBg = localStorage.getItem('my_planner_custom_bg');
+            
+            if (saved === 'custom' && customBg) {
+                document.getElementById('themeSelector').value = 'custom';
+                document.getElementById('mainBody').className = "text-gray-700 min-h-screen flex flex-col";
+                document.getElementById('mainBody').style.backgroundColor = customBg;
+            } else {
+                document.getElementById('themeSelector').value = saved;
+                changeTheme(saved);
+            }
+        }
+
+        function closeCustomThemeModal() {
+            document.getElementById('customThemeModal').classList.add('hidden');
+            if(!localStorage.getItem('my_planner_theme') || (localStorage.getItem('my_planner_theme') === 'custom' && !localStorage.getItem('my_planner_custom_bg'))) {
+                document.getElementById('themeSelector').value = 'pastel-day';
+                changeTheme('pastel-day');
+            } else {
+                document.getElementById('themeSelector').value = localStorage.getItem('my_planner_theme');
+            }
+        }
+
+        function applyCustomColors() {
+            const bg = document.getElementById('customBg').value;
+            const body = document.getElementById('mainBody');
+            
+            body.className = "text-gray-700 min-h-screen flex flex-col";
+            body.style.backgroundColor = bg;
+            localStorage.setItem('my_planner_theme', 'custom');
+            localStorage.setItem('my_planner_custom_bg', bg);
+            closeCustomThemeModal();
+        }
+
+        // DRAG AND DROP WIDGET INTERNO
+        const widget = document.getElementById('floatingWidget');
+        const header = document.getElementById('widgetHeader');
+        let isDragging = false, startX, startY, initialX, initialY;
+
+        header.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initialX = widget.offsetLeft;
+            initialY = widget.offsetTop;
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            widget.style.left = `${initialX + dx}px`;
+            widget.style.top = `${initialY + dy}px`;
+            widget.style.bottom = 'auto';
+            widget.style.right = 'auto';
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+
+        function toggleWidgetMinimize() {
+            const body = document.getElementById('widgetBody');
+            body.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
