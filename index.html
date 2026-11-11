@@ -164,7 +164,7 @@
                 <form id="taskForm" onsubmit="handleAddTask(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre de la Actividad</label>
-                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Frontend..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 dark:focus:ring-purple-600">
+                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Cocinar..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 dark:focus:ring-purple-600">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
@@ -404,13 +404,19 @@
         let pipWindow = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkStreakContinuity();
-            updateDateHeader();
-            loadTheme();
-            renderCategoriesUI();
-            renderTasks();
-            renderGoalsUI();
-            updateTimerDisplay();
+            try {
+                checkStreakContinuity();
+                updateDateHeader();
+                loadTheme();
+                renderCategoriesUI();
+                renderTasks();
+                renderGoalsUI();
+                updateTimerDisplay();
+            } catch (error) {
+                console.error("Error al iniciar:", error);
+                localStorage.clear();
+                location.reload();
+            }
         });
 
         function updateDateHeader() {
@@ -466,7 +472,6 @@
             }
         }
 
-        // CONFETI NATIVO (Garantiza que estalle al instante sin fallar)
         function triggerNativeConfetti() {
             const colors = ['#9333ea', '#ec4899', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
             for (let i = 0; i < 90; i++) {
@@ -841,7 +846,6 @@
             localStorage.setItem('my_planner_goals', JSON.stringify(goals));
             updatePointsAndProgress();
 
-            // Disparar animación de confeti nativa en pantalla y sonido festivo
             triggerNativeConfetti();
             playCelebrationSound();
 
@@ -890,7 +894,6 @@
             }, 1000);
         }
 
-        // VENTANA FLOTANTE PICTURE-IN-PICTURE
         async function toggleFloatingWidget() {
             if (!('documentPictureInPicture' in window)) {
                 alert('Tu navegador no soporta la ventana flotante Picture-in-Picture.');
@@ -1152,7 +1155,7 @@
         }
 
         function closeCustomThemeModal() {
-            document.getElementById('customThemeModal'].classList.add('hidden');
+            document.getElementById('customThemeModal').classList.add('hidden');
             if (!localStorage.getItem('my_planner_theme') || (localStorage.getItem('my_planner_theme') === 'custom' && !localStorage.getItem('my_planner_custom_bg'))) {
                 document.getElementById('themeSelector').value = 'pastel-day';
                 changeTheme('pastel-day');
