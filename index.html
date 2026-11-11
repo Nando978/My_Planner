@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Planner & Goals</title>
+    <title>Planificador & Metas</title>
     <!-- Favicon de Copo de Nieve Limpio basado en trazos -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239333ea' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 2v20M17 5l-10 14M7 5l10 14M2 12h20M5 7l14 10M5 17l14-10'/></svg>">
     <!-- Tailwind CSS CDN -->
@@ -68,7 +68,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">My Planner & Goals</h1>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Planificador & Metas</h1>
                     <p class="text-xs text-gray-400 dark:text-gray-400" id="currentDateHeader">Cargando fecha...</p>
                 </div>
             </div>
@@ -91,7 +91,7 @@
             <div class="flex items-center space-x-2 flex-wrap">
                 <button onclick="toggleFloatingWidget()" class="bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/50 dark:hover:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Reloj Flotante</span>
+                    <span>Reloj Flotante (Siempre Visible)</span>
                 </button>
 
                 <!-- Selector de Tema -->
@@ -177,7 +177,7 @@
                     </div>
 
                     <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white font-bold text-sm py-3 rounded-xl shadow-md transition transform active:scale-95">
-                        Agregar al Planner 🚀
+                        Agregar al Planificador 🚀
                     </button>
                 </form>
             </div>
@@ -237,25 +237,15 @@
         <p>Elaborado por: Pablo Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
     </footer>
 
-    <!-- MINI WIDGET / RELOJ FLOTANTE INTERNO (Draggable & Limpio sin URLs) -->
-    <div id="floatingWidget" class="fixed bottom-6 right-6 w-80 bg-slate-900/95 text-white p-4 rounded-3xl shadow-2xl backdrop-blur-md border border-slate-700 z-50 hidden transition-all">
-        <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800 cursor-move" id="widgetHeader">
-            <div class="flex items-center space-x-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse"></span>
-                <span class="text-xs font-bold tracking-wider uppercase text-slate-300">Daily Flow Widget</span>
-            </div>
-            <div class="flex items-center space-x-1">
-                <button onclick="toggleWidgetMinimize()" class="text-slate-400 hover:text-white px-1.5 text-sm">_</button>
-                <button onclick="toggleFloatingWidget()" class="text-slate-400 hover:text-white px-1.5 text-sm">&times;</button>
-            </div>
-        </div>
-        <div id="widgetBody" class="space-y-3 text-center">
-            <div id="widgetTaskTitle" class="text-xs font-semibold text-purple-300 truncate">Selecciona una actividad para iniciar</div>
-            <div id="widgetTimerDisplay" class="text-3xl font-black font-mono tracking-wider text-white">00:00:00</div>
-            <div class="flex items-center justify-center space-x-3 pt-1">
-                <button onclick="startWidgetTimer()" class="bg-purple-600 hover:bg-purple-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md transition">▶</button>
-                <button onclick="pauseWidgetTimer()" class="bg-amber-600 hover:bg-amber-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md transition">⏸</button>
-                <button onclick="completeCurrentActiveTask()" class="bg-emerald-600 hover:bg-emerald-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md transition" title="Completar">✓</button>
+    <!-- WIDGET / CRONÓMETRO FLOTANTE (Plantilla oculta para PiP Real) -->
+    <div id="floatingWidgetContent" class="hidden">
+        <div style="background-color: #1e1e2f; color: white; padding: 20px; font-family: 'Quicksand', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; text-align: center;">
+            <div id="pipTaskTitle" style="font-size: 13px; font-weight: 600; color: #dfccfd; margin-bottom: 8px;">Cronómetro de Enfoque</div>
+            <div id="pipTimerDisplay" style="font-size: 42px; font-weight: 900; font-family: monospace; letter-spacing: 2px; margin-bottom: 16px;">25:00</div>
+            <div style="display: flex; gap: 12px;">
+                <button onclick="startWidgetTimer()" style="background-color: #9333ea; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">▶</button>
+                <button onclick="pauseWidgetTimer()" style="background-color: #d97706; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">⏸</button>
+                <button onclick="completeCurrentActiveTask()" style="background-color: #059669; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" title="Completar">✓</button>
             </div>
         </div>
     </div>
@@ -365,10 +355,11 @@
         let currentFilter = 'Todas';
         let activeTaskId = null;
         let timerInterval = null;
-        let secondsLeft = 0;
+        let secondsLeft = 25 * 60;
         let freeHourInterval = null;
         let freeHourSeconds = 3600; // 60 minutos
         let currentMood = '🌟 Excelente';
+        let pipWindow = null;
 
         // INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', () => {
@@ -652,20 +643,54 @@
             }
         }
 
-        // WIDGET FLOTANTE INTERNO (Ultra limpio, arrastrable y sin barras de URL)
-        function toggleFloatingWidget() {
-            const widget = document.getElementById('floatingWidget');
-            widget.classList.toggle('hidden');
+        // PICTURE-IN-PICTURE NATIVO REAL (Ventana flotante siempre encima en todo el sistema)
+        async function toggleFloatingWidget() {
+            if (!('documentPictureInPicture' in window)) {
+                alert('Tu navegador no soporta la ventana flotante Picture-in-Picture. Asegúrate de usar Google Chrome o Microsoft Edge actualizado.');
+                return;
+            }
+
+            if (pipWindow && !pipWindow.closed) {
+                pipWindow.close();
+                pipWindow = null;
+                return;
+            }
+
+            try {
+                pipWindow = await window.documentPictureInPicture.requestWindow({
+                    width: 320,
+                    height: 200,
+                });
+
+                const content = document.getElementById('floatingWidgetContent').cloneNode(true);
+                content.classList.remove('hidden');
+                pipWindow.document.body.style.margin = '0';
+                pipWindow.document.body.appendChild(content);
+
+                pipWindow.addEventListener('unload', () => {
+                    pipWindow = null;
+                });
+
+                updateTimerDisplay();
+            } catch (err) {
+                console.log("Error al abrir PiP:", err);
+            }
         }
 
         function loadTaskToWidget(id) {
             const task = tasks.find(t => t.id === id);
             if (task) {
                 activeTaskId = task.id;
-                document.getElementById('widgetTaskTitle').innerText = task.title;
+                const titleText = `${task.category}: ${task.title}`;
+                if (pipWindow && !pipWindow.closed) {
+                    const titleEl = pipWindow.document.getElementById('pipTaskTitle');
+                    if (titleEl) titleEl.innerText = titleText;
+                }
                 secondsLeft = 25 * 60;
                 updateTimerDisplay();
-                document.getElementById('floatingWidget').classList.remove('hidden');
+                if (!pipWindow || pipWindow.closed) {
+                    toggleFloatingWidget();
+                }
             }
         }
 
@@ -696,7 +721,12 @@
         function updateTimerDisplay() {
             const m = Math.floor(secondsLeft / 60);
             const s = secondsLeft % 60;
-            document.getElementById('widgetTimerDisplay').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            const timeStr = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            
+            if (pipWindow && !pipWindow.closed) {
+                const timerEl = pipWindow.document.getElementById('pipTimerDisplay');
+                if (timerEl) timerEl.innerText = timeStr;
+            }
         }
 
         function completeCurrentActiveTask() {
@@ -706,7 +736,10 @@
                     task.completed = true;
                     saveAndRender();
                     stopWidgetTimer();
-                    document.getElementById('widgetTaskTitle').innerText = "¡Actividad completada!";
+                    if (pipWindow && !pipWindow.closed) {
+                        const titleEl = pipWindow.document.getElementById('pipTaskTitle');
+                        if (titleEl) titleEl.innerText = "¡Actividad completada!";
+                    }
                 }
             }
         }
@@ -821,42 +854,6 @@
             localStorage.setItem('my_planner_theme', 'custom');
             localStorage.setItem('my_planner_custom_bg', bg);
             closeCustomThemeModal();
-        }
-
-        // DRAG AND DROP WIDGET INTERNO
-        const widget = document.getElementById('floatingWidget');
-        const header = document.getElementById('widgetHeader');
-        let isDragging = false, startX, startY, initialX, initialY;
-
-        header.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            initialX = widget.offsetLeft;
-            initialY = widget.offsetTop;
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-
-        function onMouseMove(e) {
-            if (!isDragging) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-            widget.style.left = `${initialX + dx}px`;
-            widget.style.top = `${initialY + dy}px`;
-            widget.style.bottom = 'auto';
-            widget.style.right = 'auto';
-        }
-
-        function onMouseUp() {
-            isDragging = false;
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-        }
-
-        function toggleWidgetMinimize() {
-            const body = document.getElementById('widgetBody');
-            body.classList.toggle('hidden');
         }
     </script>
 </body>
