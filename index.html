@@ -71,7 +71,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 flex-wrap">
                 <div class="flex items-center space-x-1.5 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/50 px-3 py-1.5 rounded-full shadow-sm">
                     <span class="text-lg">🔥</span>
                     <span class="text-sm font-bold text-orange-600 dark:text-orange-400" id="streakCounter">1 Días</span>
@@ -80,6 +80,10 @@
                     <span class="text-lg">🏆</span>
                     <span class="text-sm font-bold text-purple-600 dark:text-purple-300" id="headerPoints">0 Pts Hoy</span>
                 </div>
+                <!-- BOTÓN HISTORIAL Y LOGROS DE DÍAS COMPLETADOS -->
+                <button onclick="openHistoryModal()" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900/50 text-xs font-bold px-3 py-1.5 rounded-full transition flex items-center space-x-1 shadow-sm">
+                    <span>📜 Historial / Logros</span>
+                </button>
             </div>
 
             <div class="flex items-center space-x-2 flex-wrap">
@@ -106,7 +110,7 @@
         <!-- COLUMNA IZQUIERDA -->
         <div class="space-y-6">
             
-            <!-- CRONÓMETRO PRINCIPAL (SOBRE LA META DIARIA) -->
+            <!-- CRONÓMETRO PRINCIPAL -->
             <div class="bg-slate-900 text-white p-5 rounded-3xl border border-purple-500/30 shadow-md relative overflow-hidden text-center">
                 <div class="flex items-center justify-between mb-2">
                     <span id="mainTaskTitle" class="text-xs font-semibold text-purple-300 truncate max-w-[180px]">⚡ Tu Enfoque en Franjas</span>
@@ -122,20 +126,23 @@
                 </div>
             </div>
 
-            <!-- META DIARIA -->
+            <!-- META DIARIA CONFIGURABLE -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm relative overflow-hidden">
                 <div class="flex items-center justify-between mb-2">
-                    <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200">Meta Diaria (Hora Libre)</h3>
-                    <span id="pointsRatioText" class="text-xs font-bold text-purple-600 dark:text-purple-400">0 / 100 pts</span>
+                    <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200" id="goalTitleLabel">Meta Diaria</h3>
+                    <div class="flex items-center space-x-2">
+                        <span id="pointsRatioText" class="text-xs font-bold text-purple-600 dark:text-purple-400">0 / 100 pts</span>
+                        <button onclick="openGoalConfigModal()" class="text-xs text-gray-400 hover:text-purple-600 font-bold" title="Configurar Meta">⚙️</button>
+                    </div>
                 </div>
                 <div class="w-full bg-gray-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden mb-3">
                     <div id="pointsProgressBar" class="bg-gradient-to-r from-purple-400 to-pink-400 h-full w-0 transition-all duration-500"></div>
                 </div>
-                <p class="text-xs text-gray-400 dark:text-gray-400 mb-4" id="pointsStatusMsg">Completa al menos 100 puntos en actividades para desbloquear tu hora libre.</p>
+                <p class="text-xs text-gray-400 dark:text-gray-400 mb-4" id="pointsStatusMsg">Completa tus puntos en actividades para desbloquear tu recompensa.</p>
                 
                 <button id="freeHourBtn" onclick="openFreeHour()" disabled class="w-full py-3 px-4 rounded-2xl font-bold text-sm transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner">
                     <span id="freeHourIcon">🔒</span>
-                    <span id="freeHourText">Hora Libre Bloqueada (Faltan pts)</span>
+                    <span id="freeHourText">Recompensa Bloqueada</span>
                 </button>
             </div>
 
@@ -231,16 +238,52 @@
         <p>Elaborado por: Pablo Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
     </footer>
 
-    <!-- MODAL HORA LIBRE -->
+    <!-- MODAL RECOMPENSA DE META DIARIA -->
     <div id="freeHourModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl max-w-md w-full text-center space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
             <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center mx-auto text-2xl">🎉</div>
-            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">¡Hora Libre Desbloqueada!</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Has superado la meta de 100 puntos diarios. Disfruta de tu tiempo libre sin culpa.</p>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100" id="rewardModalTitle">¡Recompensa Desbloqueada!</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400" id="rewardModalDesc">Has alcanzado tu meta diaria de puntos. Disfruta de tu logro.</p>
             <div id="freeHourTimer" class="text-4xl font-black text-purple-600 dark:text-purple-300 font-mono py-2">60:00</div>
             <div class="flex space-x-3 pt-2">
                 <button onclick="startFreeHourTimer()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Iniciar Temporizador</button>
                 <button onclick="closeFreeHourModal()" class="flex-1 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm transition">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AJUSTAR META DIARIA -->
+    <div id="goalConfigModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-sm w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
+            <h3 class="text-md font-bold text-gray-800 dark:text-gray-100">Configurar Meta Diaria 🎯</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Nombre de la Meta / Recompensa</label>
+                    <input type="text" id="goalRewardInput" value="Hora Libre" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Puntos a Lograr</label>
+                    <input type="number" id="goalTargetInput" value="100" min="10" max="1000" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                </div>
+            </div>
+            <div class="flex space-x-2 pt-2">
+                <button onclick="saveGoalConfig()" class="flex-1 bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs">Guardar Meta</button>
+                <button onclick="closeGoalConfigModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-2.5 rounded-xl text-xs">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL HISTORIAL Y LOGROS DE DÍAS ANTERIORES -->
+    <div id="historyModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-xl w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
+                <h3 class="text-md font-bold text-gray-800 dark:text-gray-100 flex items-center space-x-2">
+                    <span>📜 Historial de Días & Logros</span>
+                </h3>
+                <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            <div id="historyListContainer" class="space-y-3 overflow-y-auto flex-1 pr-1">
+                <!-- Se llena mediante JS -->
             </div>
         </div>
     </div>
@@ -317,8 +360,14 @@
             { name: 'Salud', emoji: '🍎', defaultPoints: 25 },
             { name: 'Personal', emoji: '🏡', defaultPoints: 20 }
         ];
-        let streak = parseInt(localStorage.getItem('my_planner_streak')) || 1;
-        let lastAccessDate = localStorage.getItem('my_planner_last_date') || '';
+        let historyLogs = JSON.parse(localStorage.getItem('my_planner_history')) || [];
+        let streak = parseInt(localStorage.getItem('my_planner_streak')) || 0;
+        let lastClosedDateStr = localStorage.getItem('my_planner_last_closed_date') || '';
+
+        // Configuración de la Meta Diaria
+        let goalTarget = parseInt(localStorage.getItem('my_planner_goal_target')) || 100;
+        let goalReward = localStorage.getItem('my_planner_goal_reward') || 'Hora Libre';
+
         let currentFilter = 'Todas';
         let activeTaskId = null;
         let timerInterval = null;
@@ -329,11 +378,12 @@
         let pipWindow = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkStreak();
+            checkStreakContinuity();
             updateDateHeader();
             loadTheme();
             renderCategoriesUI();
             renderTasks();
+            updateGoalCardUI();
             updatePointsAndProgress();
             updateTimerDisplay();
         });
@@ -344,16 +394,28 @@
             document.getElementById('currentDateHeader').innerText = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
         }
 
-        function checkStreak() {
-            const today = new Date().toDateString();
-            if (lastAccessDate && lastAccessDate !== today) {
-                const diffTime = Math.abs(new Date(today) - new Date(lastAccessDate));
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays === 1) streak++;
-                else if (diffDays > 2) streak = 1;
+        // CONTROL DE RACHA SEGÚN CIERRES DE DÍA
+        function checkStreakContinuity() {
+            if (!lastClosedDateStr) {
+                document.getElementById('streakCounter').innerText = `0 Días`;
+                return;
             }
-            localStorage.setItem('my_planner_last_date', today);
-            localStorage.setItem('my_planner_streak', streak);
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const lastClosed = new Date(lastClosedDateStr);
+            lastClosed.setHours(0, 0, 0, 0);
+
+            const diffTime = today - lastClosed;
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            // Si se omitió al menos un día completo de cierre, la racha se reinicia a 0
+            if (diffDays > 1) {
+                streak = 0;
+                localStorage.setItem('my_planner_streak', streak);
+            }
+
             document.getElementById('streakCounter').innerText = `${streak} Días`;
         }
 
@@ -588,13 +650,45 @@
             });
         }
 
+        // FUNCIONES DE META DIARIA PERSONALIZABLE
+        function updateGoalCardUI() {
+            document.getElementById('goalTitleLabel').innerText = `Meta Diaria (${goalReward})`;
+            document.getElementById('rewardModalTitle').innerText = `¡${goalReward} Desbloqueada!`;
+            document.getElementById('rewardModalDesc').innerText = `Has alcanzado la meta de ${goalTarget} puntos diarios. ¡Disfruta tu recompensa!`;
+        }
+
+        function openGoalConfigModal() {
+            document.getElementById('goalRewardInput').value = goalReward;
+            document.getElementById('goalTargetInput').value = goalTarget;
+            document.getElementById('goalConfigModal').classList.remove('hidden');
+        }
+
+        function closeGoalConfigModal() {
+            document.getElementById('goalConfigModal').classList.add('hidden');
+        }
+
+        function saveGoalConfig() {
+            const reward = document.getElementById('goalRewardInput').value.trim() || 'Hora Libre';
+            const target = parseInt(document.getElementById('goalTargetInput').value) || 100;
+
+            goalReward = reward;
+            goalTarget = target;
+
+            localStorage.setItem('my_planner_goal_reward', goalReward);
+            localStorage.setItem('my_planner_goal_target', goalTarget);
+
+            updateGoalCardUI();
+            updatePointsAndProgress();
+            closeGoalConfigModal();
+        }
+
         function updatePointsAndProgress() {
             const totalPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
             const completedCount = tasks.filter(t => t.completed).length;
 
             document.getElementById('headerPoints').innerText = `${totalPoints} Pts Hoy`;
-            document.getElementById('pointsRatioText').innerText = `${totalPoints} / 100 pts`;
-            document.getElementById('pointsProgressBar').style.width = `${Math.min((totalPoints / 100) * 100, 100)}%`;
+            document.getElementById('pointsRatioText').innerText = `${totalPoints} / ${goalTarget} pts`;
+            document.getElementById('pointsProgressBar').style.width = `${Math.min((totalPoints / goalTarget) * 100, 100)}%`;
             document.getElementById('summaryTotalPoints').innerText = `${totalPoints} pts`;
             document.getElementById('summaryCompletedTasks').innerText = `${completedCount} / ${tasks.length}`;
 
@@ -603,18 +697,18 @@
             const freeHourText = document.getElementById('freeHourText');
             const pointsStatusMsg = document.getElementById('pointsStatusMsg');
 
-            if (totalPoints >= 100) {
+            if (totalPoints >= goalTarget) {
                 freeHourBtn.disabled = false;
                 freeHourBtn.className = "w-full py-3 px-4 rounded-2xl font-bold text-sm transition flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-400 to-teal-500 hover:opacity-90 text-white shadow-md cursor-pointer animate-bounce";
                 freeHourIcon.innerText = "🎉";
-                freeHourText.innerText = "¡Desbloquear Hora Libre!";
-                pointsStatusMsg.innerText = "¡Meta cumplida! Ya puedes disfrutar de tu hora libre.";
+                freeHourText.innerText = `¡Desbloquear ${goalReward}!`;
+                pointsStatusMsg.innerText = `¡Meta cumplida! Ya puedes disfrutar de tu recompensa (${goalReward}).`;
             } else {
                 freeHourBtn.disabled = true;
                 freeHourBtn.className = "w-full py-3 px-4 rounded-2xl font-bold text-sm transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner";
                 freeHourIcon.innerText = "🔒";
-                freeHourText.innerText = `Faltan ${100 - totalPoints} pts para la Hora Libre`;
-                pointsStatusMsg.innerText = "Completa al menos 100 puntos en actividades para desbloquear tu hora libre.";
+                freeHourText.innerText = `Faltan ${goalTarget - totalPoints} pts para ${goalReward}`;
+                pointsStatusMsg.innerText = `Completa al menos ${goalTarget} puntos para desbloquear ${goalReward}.`;
             }
         }
 
@@ -746,7 +840,7 @@
                 } else {
                     clearInterval(freeHourInterval);
                     playAlarmSound();
-                    alert('🎉 ¡Tu hora libre ha concluido!');
+                    alert('🎉 ¡Tu tiempo de recompensa ha concluido!');
                 }
             }, 1000);
         }
@@ -762,10 +856,98 @@
             });
         }
 
+        // GUARDAR EL CIERRE Y ACTUALIZAR LA RACHA PERSISTENTE
         function saveAndResetDay() {
-            const reflection = document.getElementById('dailyReflection').value;
-            alert(`Cierre guardado.\nEstado: ${currentMood}\nReflexión: ${reflection || 'Sin notas'}`);
+            const reflection = document.getElementById('dailyReflection').value.trim();
+            const totalPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+            const completedCount = tasks.filter(t => t.completed).length;
+
+            const todayObj = new Date();
+            const dateStr = todayObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+            const todayISO = todayObj.toISOString().split('T')[0];
+
+            // Evaluar continuidad de racha
+            if (lastClosedDateStr) {
+                const lastClosed = new Date(lastClosedDateStr);
+                lastClosed.setHours(0, 0, 0, 0);
+
+                const currentToday = new Date(todayISO);
+                currentToday.setHours(0, 0, 0, 0);
+
+                const diffDays = Math.round((currentToday - lastClosed) / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 1) {
+                    streak++;
+                } else if (diffDays > 1) {
+                    streak = 1;
+                }
+            } else {
+                streak = 1;
+            }
+
+            lastClosedDateStr = todayISO;
+            localStorage.setItem('my_planner_streak', streak);
+            localStorage.setItem('my_planner_last_closed_date', lastClosedDateStr);
+
+            // Agregar registro al historial
+            historyLogs.unshift({
+                id: Date.now(),
+                date: dateStr,
+                points: totalPoints,
+                completedTasks: completedCount,
+                totalTasks: tasks.length,
+                mood: currentMood,
+                reflection: reflection || 'Sin reflexiones escritas.'
+            });
+
+            localStorage.setItem('my_planner_history', JSON.stringify(historyLogs));
+            document.getElementById('streakCounter').innerText = `${streak} Días`;
+
+            // Limpiar tareas para iniciar nuevo día
+            tasks = [];
+            saveAndRender();
+
+            alert(`✨ ¡Cierre de Día guardado exitosamente!\nRacha actual: ${streak} día(s).`);
             closeCloseDayModal();
+        }
+
+        // CONTROL DEL MODAL DE HISTORIAL
+        function openHistoryModal() {
+            renderHistoryUI();
+            document.getElementById('historyModal').classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.add('hidden');
+        }
+
+        function renderHistoryUI() {
+            const container = document.getElementById('historyListContainer');
+            container.innerHTML = '';
+
+            if (historyLogs.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">No hay registros de cierres anteriores. ¡Completa tu primer Cierre de Día!</div>`;
+                return;
+            }
+
+            historyLogs.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-gray-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2 text-xs";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-gray-200/50 dark:border-slate-700 pb-2">
+                        <span class="font-bold text-gray-800 dark:text-gray-200">${item.date}</span>
+                        <span class="px-2.5 py-1 rounded-full font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300">${item.mood}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 font-semibold pt-1">
+                        <span>🏆 Puntos: <strong class="text-purple-600 dark:text-purple-400">${item.points} pts</strong></span>
+                        <span>✅ Tareas: <strong class="text-emerald-600 dark:text-emerald-400">${item.completedTasks} / ${item.totalTasks}</strong></span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-100 dark:border-slate-800 italic mt-1">
+                        "${item.reflection}"
+                    </p>
+                `;
+                container.appendChild(card);
+            });
         }
 
         function changeTheme(theme) {
@@ -801,7 +983,6 @@
         function loadTheme() {
             const saved = localStorage.getItem('my_planner_theme') || 'pastel-day';
             const customBg = localStorage.getItem('my_planner_custom_bg');
-            const customPrimary = localStorage.getItem('my_planner_custom_primary');
             
             if (saved === 'custom' && customBg) {
                 document.getElementById('themeSelector').value = 'custom';
