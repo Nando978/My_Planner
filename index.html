@@ -464,7 +464,7 @@
             const startMin = timeToMinutes(start);
             const endMin = timeToMinutes(end);
             let diff = endMin - startMin;
-            if (diff < 0) diff += 24 * 60; // Por si cruza medianoche
+            if (diff < 0) diff += 24 * 60;
 
             const hrs = Math.floor(diff / 60);
             const mins = diff % 60;
@@ -603,7 +603,7 @@
             }
         }
 
-        // VENTANA FLOTANTE PICTURE-IN-PICTURE (Con eventos funcionales nativos)
+        // VENTANA FLOTANTE PICTURE-IN-PICTURE (Sin bordes blancos ni scroll)
         async function toggleFloatingWidget() {
             if (!('documentPictureInPicture' in window)) {
                 alert('Tu navegador no soporta la ventana flotante Picture-in-Picture.');
@@ -617,22 +617,24 @@
             }
 
             try {
-                pipWindow = await window.documentPictureInPicture.requestWindow({ width: 320, height: 210 });
+                pipWindow = await window.documentPictureInPicture.requestWindow({ width: 300, height: 180 });
                 
-                // Inyectar estilos y contenido directamente para asegurar interactividad completa
+                pipWindow.document.body.style.margin = '0';
+                pipWindow.document.body.style.overflow = 'hidden';
+                pipWindow.document.body.style.backgroundColor = '#1e1e2f';
+
                 pipWindow.document.body.innerHTML = `
-                    <div style="background-color: #1e1e2f; color: white; padding: 20px; font-family: 'Quicksand', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; text-align: center; margin: 0;">
-                        <div id="pipTaskTitle" style="font-size: 13px; font-weight: 600; color: #dfccfd; margin-bottom: 8px;">Cronómetro de Enfoque</div>
-                        <div id="pipTimerDisplay" style="font-size: 42px; font-weight: 900; font-family: monospace; letter-spacing: 2px; margin-bottom: 16px;">25:00</div>
-                        <div style="display: flex; gap: 12px;">
-                            <button id="pipStartBtn" style="background-color: #9333ea; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">▶</button>
-                            <button id="pipPauseBtn" style="background-color: #d97706; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">⏸</button>
-                            <button id="pipCompleteBtn" style="background-color: #059669; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" title="Completar">✓</button>
+                    <div style="background-color: #1e1e2f; color: white; padding: 16px; font-family: 'Quicksand', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; text-align: center; margin: 0; overflow: hidden;">
+                        <div id="pipTaskTitle" style="font-size: 12px; font-weight: 600; color: #dfccfd; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;">Cronómetro de Enfoque</div>
+                        <div id="pipTimerDisplay" style="font-size: 38px; font-weight: 900; font-family: monospace; letter-spacing: 2px; margin-bottom: 12px;">25:00</div>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="pipStartBtn" style="background-color: #9333ea; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">▶</button>
+                            <button id="pipPauseBtn" style="background-color: #d97706; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">⏸</button>
+                            <button id="pipCompleteBtn" style="background-color: #059669; color: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" title="Completar">✓</button>
                         </div>
                     </div>
                 `;
 
-                // Asignar eventos directamente en el contexto de la ventana PiP
                 pipWindow.document.getElementById('pipStartBtn').addEventListener('click', startWidgetTimer);
                 pipWindow.document.getElementById('pipPauseBtn').addEventListener('click', pauseWidgetTimer);
                 pipWindow.document.getElementById('pipCompleteBtn').addEventListener('click', completeCurrentActiveTask);
