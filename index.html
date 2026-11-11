@@ -552,7 +552,7 @@
 
             document.getElementById('headerPoints').innerText = `${totalPoints} Pts Hoy`;
             document.getElementById('pointsRatioText').innerText = `${totalPoints} / 100 pts`;
-            document.getElementById('pointsProgressBar'].style.width = `${Math.min((totalPoints / 100) * 100, 100)}%`;
+            document.getElementById('pointsProgressBar').style.width = `${Math.min((totalPoints / 100) * 100, 100)}%`;
             document.getElementById('summaryTotalPoints').innerText = `${totalPoints} pts`;
             document.getElementById('summaryCompletedTasks').innerText = `${completedCount} / ${tasks.length}`;
 
@@ -707,7 +707,6 @@
             const body = document.getElementById('mainBody');
             body.classList.remove('dark');
             body.style.backgroundColor = '';
-            document.documentElement.style.removeProperty('--primary-color');
 
             if (theme === 'pastel-day') {
                 body.className = "bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col";
@@ -743,9 +742,6 @@
                 document.getElementById('themeSelector').value = 'custom';
                 document.getElementById('mainBody').className = "text-gray-700 min-h-screen flex flex-col";
                 document.getElementById('mainBody').style.backgroundColor = customBg;
-                if (customPrimary) {
-                    document.documentElement.style.setProperty('--primary-color', customPrimary);
-                }
             } else {
                 document.getElementById('themeSelector').value = saved;
                 changeTheme(saved);
@@ -769,7 +765,6 @@
             
             body.className = "text-gray-700 min-h-screen flex flex-col";
             body.style.backgroundColor = bg;
-            document.documentElement.style.setProperty('--primary-color', primary);
             
             localStorage.setItem('my_planner_theme', 'custom');
             localStorage.setItem('my_planner_custom_bg', bg);
