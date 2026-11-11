@@ -235,18 +235,29 @@
         <p>Elaborado por: Pablo Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
     </footer>
 
-    <!-- MODAL CREAR NUEVA META -->
+    <!-- MODAL CREAR NUEVA META (CON SELECCIÓN DE TIPO) -->
     <div id="addGoalModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-sm w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
             <h3 class="text-md font-bold text-gray-800 dark:text-gray-100">Nueva Meta & Recompensa 🎯</h3>
             <form onsubmit="handleSaveNewGoal(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Nombre de la Recompensa</label>
-                    <input type="text" id="goalTitleInput" required placeholder="Ej. Ver película, Café..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                    <input type="text" id="goalTitleInput" required placeholder="Ej. Hora Libre, Café, Ver serie..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Puntos Necesarios</label>
                     <input type="number" id="goalPointsInput" required min="5" max="1000" value="50" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Tipo de Recompensa</label>
+                    <select id="goalTypeInput" onchange="toggleTimerInputUI(this.value)" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                        <option value="time">⏱️ Con Temporizador (Tiempo libre)</option>
+                        <option value="direct">🎁 Recompensa Directa (Sin tiempo)</option>
+                    </select>
+                </div>
+                <div id="goalMinutesGroup">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Duración en Minutos</label>
+                    <input type="number" id="goalMinutesInput" min="1" max="300" value="60" class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                 </div>
                 <div class="flex space-x-2 pt-2">
                     <button type="submit" class="flex-1 bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs">Guardar Meta</button>
@@ -256,21 +267,26 @@
         </div>
     </div>
 
-    <!-- MODAL TEMPORIZADOR DE RECOMPENSA -->
+    <!-- MODAL CELEBRACIÓN Y RECOMPENSA -->
     <div id="rewardModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl max-w-md w-full text-center space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
             <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center mx-auto text-2xl">🎉</div>
             <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100" id="rewardModalTitle">¡Meta Alcanzada!</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400" id="rewardModalDesc">Disfruta de tu tiempo de recompensa.</p>
-            <div id="rewardTimerDisplay" class="text-4xl font-black text-purple-600 dark:text-purple-300 font-mono py-2">60:00</div>
+            <p class="text-sm text-gray-500 dark:text-gray-400" id="rewardModalDesc">Disfruta de tu recompensa.</p>
+            
+            <!-- SECCIÓN CON TEMPORIZADOR (Si aplica) -->
+            <div id="rewardTimerSection" class="hidden">
+                <div id="rewardTimerDisplay" class="text-4xl font-black text-purple-600 dark:text-purple-300 font-mono py-2">60:00</div>
+                <button onclick="startRewardTimer()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-sm transition mb-2">Iniciar Temporizador</button>
+            </div>
+
             <div class="flex space-x-3 pt-2">
-                <button onclick="startRewardTimer()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Iniciar Temporizador</button>
-                <button onclick="closeRewardModal()" class="flex-1 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm transition">Cerrar</button>
+                <button onclick="closeRewardModal()" class="w-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm transition">Cerrar & Disfrutar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL HISTORIAL Y LOGROS DE DÍAS ANTERIORES -->
+    <!-- MODAL HISTORIAL Y LOGROS -->
     <div id="historyModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-xl w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[85vh] flex flex-col">
             <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
@@ -357,9 +373,10 @@
             { name: 'Personal', emoji: '🏡', defaultPoints: 20 }
         ];
         
+        // Metas con soporte para tipo 'time' / 'direct' y estado 'claimed'
         let goals = JSON.parse(localStorage.getItem('my_planner_goals')) || [
-            { id: 1, title: 'Hora Libre', target: 100 },
-            { id: 2, title: 'Café o Snack', target: 40 }
+            { id: 1, title: 'Hora Libre', target: 100, type: 'time', minutes: 60, claimed: false },
+            { id: 2, title: 'Café o Snack', target: 40, type: 'direct', minutes: 0, claimed: false }
         ];
 
         let historyLogs = JSON.parse(localStorage.getItem('my_planner_history')) || [];
@@ -417,9 +434,7 @@
         function playCelebrationSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Secuencia de notas festivas (acorde de triunfo)
-                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                const notes = [523.25, 659.25, 783.99, 1046.50];
                 notes.forEach((freq, index) => {
                     const oscillator = audioCtx.createOscillator();
                     const gainNode = audioCtx.createGain();
@@ -443,8 +458,8 @@
         function triggerConfetti() {
             try {
                 confetti({
-                    particleCount: 100,
-                    spread: 70,
+                    particleCount: 120,
+                    spread: 80,
                     origin: { y: 0.6 }
                 });
             } catch (e) {
@@ -683,10 +698,22 @@
             });
         }
 
-        // GESTIÓN DE METAS MÚLTIPLES CON CONFETI Y SONIDO DE CELEBRACIÓN
+        // GESTIÓN DE METAS DIVERSAS CON COBRO DE RECOMPENSAS
+        function toggleTimerInputUI(type) {
+            const minutesGroup = document.getElementById('goalMinutesGroup');
+            if (type === 'time') {
+                minutesGroup.classList.remove('hidden');
+            } else {
+                minutesGroup.classList.add('hidden');
+            }
+        }
+
         function openAddGoalModal() {
             document.getElementById('goalTitleInput').value = '';
             document.getElementById('goalPointsInput').value = '50';
+            document.getElementById('goalTypeInput').value = 'time';
+            document.getElementById('goalMinutesInput').value = '60';
+            toggleTimerInputUI('time');
             document.getElementById('addGoalModal').classList.remove('hidden');
         }
 
@@ -698,9 +725,11 @@
             e.preventDefault();
             const title = document.getElementById('goalTitleInput').value.trim();
             const target = parseInt(document.getElementById('goalPointsInput').value) || 50;
+            const type = document.getElementById('goalTypeInput').value;
+            const minutes = parseInt(document.getElementById('goalMinutesInput').value) || 0;
 
             if (title) {
-                goals.push({ id: Date.now(), title, target });
+                goals.push({ id: Date.now(), title, target, type, minutes, claimed: false });
                 localStorage.setItem('my_planner_goals', JSON.stringify(goals));
                 renderGoalsUI();
                 updatePointsAndProgress();
@@ -728,7 +757,7 @@
                 card.className = "bg-gray-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2.5 text-xs relative";
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
-                        <span class="font-bold text-gray-800 dark:text-gray-200">🎯 ${goal.title}</span>
+                        <span class="font-bold text-gray-800 dark:text-gray-200">🎯 ${goal.title} ${goal.type === 'time' ? `(${goal.minutes}m)` : ''}</span>
                         <div class="flex items-center space-x-2">
                             <span class="font-bold text-purple-600 dark:text-purple-400" id="goal-ratio-${goal.id}">0 / ${goal.target} pts</span>
                             <button onclick="deleteGoal(${goal.id})" class="text-rose-500 hover:text-rose-700 font-bold px-1.5 py-0.5 rounded text-sm" title="Eliminar meta">&times;</button>
@@ -737,7 +766,7 @@
                     <div class="w-full bg-gray-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
                         <div id="goal-bar-${goal.id}" class="bg-gradient-to-r from-purple-400 to-pink-400 h-full w-0 transition-all duration-500"></div>
                     </div>
-                    <button id="goal-btn-${goal.id}" onclick="unlockGoal('${goal.title}')" disabled class="w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner">
+                    <button id="goal-btn-${goal.id}" onclick="unlockGoal(${goal.id})" disabled class="w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner">
                         <span id="goal-icon-${goal.id}">🔒</span>
                         <span id="goal-text-${goal.id}">Faltan ${goal.target} pts</span>
                     </button>
@@ -766,12 +795,20 @@
                     const percent = Math.min((totalPoints / goal.target) * 100, 100);
                     barEl.style.width = `${percent}%`;
 
-                    if (totalPoints >= goal.target) {
+                    if (goal.claimed) {
+                        // Estado: Ya fue cobrada
+                        btnEl.disabled = true;
+                        btnEl.className = "w-full py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 cursor-default shadow-none";
+                        if (iconEl) iconEl.innerText = "✅";
+                        if (textEl) textEl.innerText = `Reclamada: ${goal.title}`;
+                    } else if (totalPoints >= goal.target) {
+                        // Estado: Lista para desbloquear (Botón activo con rebote)
                         btnEl.disabled = false;
                         btnEl.className = "w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-400 to-teal-500 hover:opacity-90 text-white shadow-md cursor-pointer animate-bounce";
                         if (iconEl) iconEl.innerText = "🎉";
                         if (textEl) textEl.innerText = `¡Desbloquear ${goal.title}!`;
                     } else {
+                        // Estado: Bloqueada por puntos
                         btnEl.disabled = true;
                         btnEl.className = "w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner";
                         if (iconEl) iconEl.innerText = "🔒";
@@ -781,15 +818,38 @@
             });
         }
 
-        function unlockGoal(goalTitle) {
-            // Activar confeti y sonido festivo
+        function unlockGoal(goalId) {
+            const goal = goals.find(g => g.id === goalId);
+            if (!goal) return;
+
+            // Marcar como cobrada
+            goal.claimed = true;
+            localStorage.setItem('my_planner_goals', JSON.stringify(goals));
+            updatePointsAndProgress();
+
+            // Confeti y música festiva
             triggerConfetti();
             playCelebrationSound();
 
-            document.getElementById('rewardModalTitle').innerText = `¡${goalTitle} Desbloqueada!`;
-            document.getElementById('rewardModalDesc').innerText = `Has alcanzado la meta para "${goalTitle}". Disfruta de tu recompensa.`;
-            rewardSecondsLeft = 3600;
-            document.getElementById('rewardTimerDisplay').innerText = "60:00";
+            document.getElementById('rewardModalTitle').innerText = `¡${goal.title} Desbloqueada!`;
+            
+            const timerSection = document.getElementById('rewardTimerSection');
+            const descEl = document.getElementById('rewardModalDesc');
+
+            if (goal.type === 'time' && goal.minutes > 0) {
+                descEl.innerText = `Has desbloqueado ${goal.minutes} minutos para "${goal.title}".`;
+                rewardSecondsLeft = goal.minutes * 60;
+                
+                const m = Math.floor(rewardSecondsLeft / 60);
+                const s = rewardSecondsLeft % 60;
+                document.getElementById('rewardTimerDisplay').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                
+                timerSection.classList.remove('hidden');
+            } else {
+                descEl.innerText = `¡Logro alcanzado! Disfruta de tu recompensa (${goal.title}).`;
+                timerSection.classList.add('hidden');
+            }
+
             document.getElementById('rewardModal').classList.remove('hidden');
         }
 
@@ -984,6 +1044,10 @@
 
             localStorage.setItem('my_planner_history', JSON.stringify(historyLogs));
             document.getElementById('streakCounter').innerText = `${streak} Días`;
+
+            // Al cerrar el día, reiniciamos el estado de reclamado de las metas para el día siguiente
+            goals.forEach(g => g.claimed = false);
+            localStorage.setItem('my_planner_goals', JSON.stringify(goals));
 
             tasks = [];
             saveAndRender();
