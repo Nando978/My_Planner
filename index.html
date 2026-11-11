@@ -199,7 +199,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                     <div>
                         <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100">Mi Día en Franjas</h2>
-                        <p class="text-xs text-gray-400 dark:text-gray-400">Organiza tu tiempo en formato de 24 horas</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-400">Organiza tu tiempo con duración y franjas protegidas</p>
                     </div>
                     <div id="categoryFiltersContainer" class="flex items-center space-x-1.5 overflow-x-auto pb-1">
                     </div>
@@ -216,19 +216,6 @@
     <footer class="w-full py-6 text-center text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-slate-800 mt-auto">
         <p>Elaborado por: Pablo Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
     </footer>
-
-    <!-- WIDGET TEMPLATE PARA PIP -->
-    <div id="floatingWidgetContent" class="hidden">
-        <div style="background-color: #1e1e2f; color: white; padding: 20px; font-family: 'Quicksand', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; text-align: center;">
-            <div id="pipTaskTitle" style="font-size: 13px; font-weight: 600; color: #dfccfd; margin-bottom: 8px;">Cronómetro de Enfoque</div>
-            <div id="pipTimerDisplay" style="font-size: 42px; font-weight: 900; font-family: monospace; letter-spacing: 2px; margin-bottom: 16px;">25:00</div>
-            <div style="display: flex; gap: 12px;">
-                <button onclick="startWidgetTimer()" style="background-color: #9333ea; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">▶</button>
-                <button onclick="pauseWidgetTimer()" style="background-color: #d97706; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">⏸</button>
-                <button onclick="completeCurrentActiveTask()" style="background-color: #059669; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" title="Completar">✓</button>
-            </div>
-        </div>
-    </div>
 
     <!-- MODAL HORA LIBRE -->
     <div id="freeHourModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
@@ -363,13 +350,13 @@
 
                 oscillator.type = 'sine';
                 oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
 
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
 
                 oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.8);
+                oscillator.stop(audioCtx.currentTime + 1.0);
             } catch (e) {
                 console.log("Audio no permitido.");
             }
@@ -468,10 +455,23 @@
             return found ? found.emoji : '📌';
         }
 
-        // VALIDACIÓN DE SOLAPAMIENTO DE FRANJAS DE TIEMPO
         function timeToMinutes(timeStr) {
             const [hours, minutes] = timeStr.split(':').map(Number);
             return hours * 60 + minutes;
+        }
+
+        function formatDuration(start, end) {
+            const startMin = timeToMinutes(start);
+            const endMin = timeToMinutes(end);
+            let diff = endMin - startMin;
+            if (diff < 0) diff += 24 * 60; // Por si cruza medianoche
+
+            const hrs = Math.floor(diff / 60);
+            const mins = diff % 60;
+
+            if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m`;
+            if (hrs > 0) return `${hrs}h`;
+            return `${mins}m`;
         }
 
         function handleAddTask(e) {
@@ -491,11 +491,9 @@
                 return;
             }
 
-            // Validar si choca con otra tarea existente
             const hasConflict = tasks.some(task => {
                 const existingStartMin = timeToMinutes(task.start);
                 const existingEndMin = timeToMinutes(task.end);
-                // Hay solapamiento si el nuevo rango se cruza con uno existente
                 return (newStartMin < existingEndMin && newEndMin > existingStartMin);
             });
 
@@ -549,6 +547,7 @@
 
             filtered.forEach(task => {
                 const catEmoji = getCategoryEmoji(task.category);
+                const durationStr = formatDuration(task.start, task.end);
                 const card = document.createElement('div');
                 card.className = `p-4 rounded-2xl border transition flex items-center justify-between gap-4 ${task.completed ? 'bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-800 opacity-75' : 'bg-white dark:bg-slate-800 border-purple-100 dark:border-slate-700 shadow-sm'}`;
                 
@@ -556,9 +555,10 @@
                     <div class="flex items-center space-x-3 flex-1 min-w-0">
                         <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleTask(${task.id})" class="w-5 h-5 rounded-md text-purple-600 accent-purple-600 cursor-pointer">
                         <div class="min-w-0">
-                            <div class="flex items-center space-x-2">
+                            <div class="flex items-center space-x-2 flex-wrap">
                                 <h4 class="font-bold text-sm text-gray-800 dark:text-gray-200 truncate ${task.completed ? 'line-through text-gray-400 dark:text-gray-500' : ''}">${task.title}</h4>
                                 <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300">${catEmoji} ${task.category}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300">⏳ ${durationStr}</span>
                                 <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300">+${task.points} pts</span>
                             </div>
                             <p class="text-xs text-gray-400 dark:text-gray-400 font-mono mt-0.5">🕒 ${task.start} - ${task.end} ${task.notes ? '• ' + task.notes : ''}</p>
@@ -603,6 +603,7 @@
             }
         }
 
+        // VENTANA FLOTANTE PICTURE-IN-PICTURE (Con eventos funcionales nativos)
         async function toggleFloatingWidget() {
             if (!('documentPictureInPicture' in window)) {
                 alert('Tu navegador no soporta la ventana flotante Picture-in-Picture.');
@@ -616,11 +617,25 @@
             }
 
             try {
-                pipWindow = await window.documentPictureInPicture.requestWindow({ width: 320, height: 200 });
-                const content = document.getElementById('floatingWidgetContent').cloneNode(true);
-                content.classList.remove('hidden');
-                pipWindow.document.body.style.margin = '0';
-                pipWindow.document.body.appendChild(content);
+                pipWindow = await window.documentPictureInPicture.requestWindow({ width: 320, height: 210 });
+                
+                // Inyectar estilos y contenido directamente para asegurar interactividad completa
+                pipWindow.document.body.innerHTML = `
+                    <div style="background-color: #1e1e2f; color: white; padding: 20px; font-family: 'Quicksand', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; text-align: center; margin: 0;">
+                        <div id="pipTaskTitle" style="font-size: 13px; font-weight: 600; color: #dfccfd; margin-bottom: 8px;">Cronómetro de Enfoque</div>
+                        <div id="pipTimerDisplay" style="font-size: 42px; font-weight: 900; font-family: monospace; letter-spacing: 2px; margin-bottom: 16px;">25:00</div>
+                        <div style="display: flex; gap: 12px;">
+                            <button id="pipStartBtn" style="background-color: #9333ea; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">▶</button>
+                            <button id="pipPauseBtn" style="background-color: #d97706; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">⏸</button>
+                            <button id="pipCompleteBtn" style="background-color: #059669; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" title="Completar">✓</button>
+                        </div>
+                    </div>
+                `;
+
+                // Asignar eventos directamente en el contexto de la ventana PiP
+                pipWindow.document.getElementById('pipStartBtn').addEventListener('click', startWidgetTimer);
+                pipWindow.document.getElementById('pipPauseBtn').addEventListener('click', pauseWidgetTimer);
+                pipWindow.document.getElementById('pipCompleteBtn').addEventListener('click', completeCurrentActiveTask);
 
                 pipWindow.addEventListener('unload', () => { pipWindow = null; });
                 updateTimerDisplay();
@@ -777,7 +792,7 @@
 
         function closeCustomThemeModal() {
             document.getElementById('customThemeModal').classList.add('hidden');
-            if (!localStorage.getItem('my_planner_theme') || (localStorage.getItem('my_planner_theme'] === 'custom' && !localStorage.getItem('my_planner_custom_bg'))) {
+            if (!localStorage.getItem('my_planner_theme') || (localStorage.getItem('my_planner_theme') === 'custom' && !localStorage.getItem('my_planner_custom_bg'))) {
                 document.getElementById('themeSelector').value = 'pastel-day';
                 changeTheme('pastel-day');
             } else {
