@@ -271,13 +271,13 @@
                     </select>
                 </div>
 
-                <!-- SELECTOR CON TODAS LAS ANIMACIONES REFINADAS -->
+                <!-- SELECTOR CON LAS ANIMACIONES REFINADAS -->
                 <div class="relative">
                     <select id="atmosphereSelector" onchange="changeAtmosphere(this.value)" class="bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-semibold px-3 py-2 rounded-xl border border-purple-200 dark:border-purple-800 outline-none cursor-pointer">
                         <option value="none">✨ Sin Animación</option>
                         <optgroup label="✨ Partículas & Diseños">
                             <option value="stardust">🌟 Polvo Estelar</option>
-                            <option value="bubbles">🔮 Burbujas Suaves</option>
+                            <option value="bubbles">🫧 Burbujas Suaves</option>
                             <option value="arcade">👾 Arcade / Píxeles</option>
                             <option value="aliens">👽 Espacio & Aliens</option>
                             <option value="halloween">🎃 Terror & Diversión</option>
@@ -287,11 +287,11 @@
                             <option value="magic">🔮 Orbes Místicos</option>
                             <option value="candy">🍭 Dulce Caramelo</option>
                             <option value="cyber">⚡ Cyberpunk Matrix</option>
-                            <option value="ocean-particles">🌊 Burbujas Oceánicas</option>
+                            <option value="ocean">🌊 Bajo el Océano</option>
                             <option value="music">🎵 Notas Musicales</option>
                             <option value="coffee">☕ Aroma de Café</option>
                         </optgroup>
-                        <optgroup label="🎬 Escenas en Vivo">
+                        <optgroup label="🎬 Animaciones Video / Creadas">
                             <option value="scene-nebula">🌌 Nebulosa de Píxeles (Realista)</option>
                             <option value="scene-fireworks">🎆 Fuegos Artificiales (Pequeños)</option>
                             <option value="scene-waves">🌊 Olas, Barco & Luna</option>
@@ -380,7 +380,7 @@
                 <form id="taskForm" onsubmit="handleAddTask(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre de la Actividad</label>
-                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Caminar..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
+                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Caminar..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
@@ -563,6 +563,18 @@
             </div>
 
             <button onclick="closeMetricsModal()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-xs transition">Cerrar Dashboard</button>
+        </div>
+    </div>
+
+    <div id="dayDetailsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-md w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[80vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
+                <h3 class="text-md font-bold text-gray-800 dark:text-gray-100" id="dayDetailsTitle">Tareas del Día</h3>
+                <button onclick="closeDayDetailsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            <div id="dayDetailsListContainer" class="space-y-2.5 overflow-y-auto flex-1 pr-1">
+            </div>
+            <button onclick="closeDayDetailsModal()" class="w-full bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs">Cerrar</button>
         </div>
     </div>
 
@@ -863,7 +875,7 @@
             else if (currentAtmosphere === 'magic') symbols = ['🔮', '✨', '📜', '💎', '💫'];
             else if (currentAtmosphere === 'candy') symbols = ['🍭', '🍬', '🍫', '🍩', '⭐'];
             else if (currentAtmosphere === 'cyber') symbols = ['⚡', '💻', '🟢', '🔷', '🛡️'];
-            else if (currentAtmosphere === 'ocean-particles') symbols = ['🌊', '🐚', '⭐', '🐬', '🫧'];
+            else if (currentAtmosphere === 'ocean') symbols = ['🌊', '🐚', '⭐', '🐬', '🫧'];
             else if (currentAtmosphere === 'music') symbols = ['🎵', '🎶', '🎷', '🎸', '✨'];
             else if (currentAtmosphere === 'coffee') symbols = ['☕', '🤎', '🥐', '✨', '🍵'];
 
@@ -1879,13 +1891,48 @@
                     </div>
                     <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 font-semibold pt-1">
                         <span>🏆 Puntos: <strong class="text-purple-600 dark:text-purple-400">${item.points} pts</strong></span>
-                        <span>Tareas: <strong class="text-emerald-600 dark:text-emerald-400">${item.completedTasks} / ${item.totalTasks}</strong></span>
+                        <div class="flex items-center space-x-1.5">
+                            <span>Tareas: <strong class="text-emerald-600 dark:text-emerald-400">${item.completedTasks} / ${item.totalTasks}</strong></span>
+                            <button onclick="openDayDetails(${index})" class="bg-emerald-600 hover:bg-emerald-500 text-white p-1 rounded-lg transition shadow-sm" title="Ver tareas de este día">✅</button>
+                        </div>
                     </div>
                     <p class="text-gray-600 dark:text-gray-300 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-100 dark:border-slate-800 italic mt-1">"${item.reflection}"</p>
                 `;
                 container.appendChild(card);
             });
         }
+
+        function openDayDetails(historyIndex) {
+            const historyItem = historyLogs[historyIndex];
+            if (!historyItem || !historyItem.tasksSnapshot) return;
+
+            document.getElementById('dayDetailsTitle').innerText = `Tareas del ${historyItem.date}`;
+            const container = document.getElementById('dayDetailsListContainer');
+            container.innerHTML = '';
+
+            historyItem.tasksSnapshot.forEach(task => {
+                const catEmoji = getCategoryEmoji(task.category);
+                const row = document.createElement('div');
+                row.className = `p-3 rounded-2xl border text-xs flex items-center justify-between gap-2 ${task.completed ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40' : 'bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700'}`;
+                row.innerHTML = `
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-gray-800 dark:text-gray-200 truncate ${task.completed ? 'line-through text-gray-400' : ''}">${task.title}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300">${catEmoji} ${task.category}</span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 font-mono mt-0.5">🕒 ${task.start} - ${task.end} • +${task.points} pts</p>
+                    </div>
+                    <div>
+                        <span class="text-sm">${task.completed ? '✅' : '❌'}</span>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            document.getElementById('dayDetailsModal').classList.remove('hidden');
+        }
+
+        function closeDayDetailsModal() { document.getElementById('dayDetailsModal').classList.add('hidden'); }
 
         function changeTheme(theme) {
             const body = document.getElementById('mainBody');
@@ -1932,7 +1979,7 @@
 
         function closeCustomThemeModal() {
             document.getElementById('customThemeModal').classList.add('hidden');
-            if (!localStorage.getItem('my_planner_theme') || (localStorage.getItem('my_planner_theme') === 'custom' && !localStorage.getItem('my_planner_custom_bg'))) {
+            if (!localStorage.getItem('my_planner_theme') || (localStorage.getItem('my_planner_theme'] === 'custom' && !localStorage.getItem('my_planner_custom_bg'))) {
                 document.getElementById('themeSelector').value = 'pastel-day';
                 changeTheme('pastel-day');
             } else {
