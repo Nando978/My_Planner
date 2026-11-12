@@ -45,11 +45,20 @@
             user-select: text;
             -webkit-user-select: text;
         }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); }
-        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
-        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.03);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.15);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.25);
+        }
         @keyframes fall {
             0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
@@ -65,20 +74,103 @@
             z-index: 99999;
             pointer-events: none;
         }
-
         @keyframes floatUfo {
             0%, 100% { transform: translateY(0px) rotate(-1deg); }
             50% { transform: translateY(-4px) rotate(1deg); }
         }
         .animate-ufo { animation: floatUfo 3s ease-in-out infinite; }
+        @keyframes beamPulse {
+            0%, 100% { opacity: 0.25; }
+            50% { opacity: 0.65; }
+        }
+        .animate-beam { animation: beamPulse 2s ease-in-out infinite; }
         
+        @keyframes cowRoutine {
+            0% { transform: translateX(90px) scaleX(1); opacity: 0; }
+            15% { opacity: 1; }
+            45% { transform: translateX(0px) scaleX(1); opacity: 1; } 
+            50% { transform: translateX(0px) scaleX(1) translateY(0); opacity: 1; }
+            75% { transform: translateX(0px) scaleX(1) translateY(-45px) scale(0.5); opacity: 0.7; filter: brightness(1.6); }
+            90% { transform: translateX(0px) scaleX(1) translateY(-80px) scale(0.1); opacity: 0; }
+            100% { transform: translateX(90px) scaleX(1); opacity: 0; }
+        }
+        .cow-routine-anim { animation: cowRoutine 12s ease-in-out infinite; }
+
         @keyframes flamePulse {
             0%, 100% { transform: scale(1) rotate(-3deg); filter: brightness(1); }
             50% { transform: scale(1.18) rotate(3deg); filter: brightness(1.25); }
         }
         .animate-flame { animation: flamePulse 1.2s ease-in-out infinite; display: inline-block; }
 
-        /* CAPA DE ANIMACIONES ATMOSFÉRICAS Y ESCENAS DE VÍDEO */
+        @keyframes snowfall {
+            0% { transform: translateY(-10px); opacity: 0.8; }
+            100% { transform: translateY(100px); opacity: 0.2; }
+        }
+        .snowflake { position: absolute; color: white; font-size: 10px; animation: snowfall 3s linear infinite; }
+        
+        @keyframes santaSlide {
+            0% { transform: translateX(-60px); opacity: 0; }
+            20% { opacity: 1; }
+            70% { transform: translateX(160px); opacity: 1; }
+            100% { transform: translateX(220px); opacity: 0; }
+        }
+        .santa-anim { animation: santaSlide 8s ease-in-out infinite; }
+
+        @keyframes leafBlow {
+            0% { transform: translate(-20px, -10px) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(190px, 75px) rotate(360deg); opacity: 0; }
+        }
+        .leaf-anim { position: absolute; font-size: 12px; animation: leafBlow 5s linear infinite; }
+        
+        @keyframes treeWind {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-4deg); }
+        }
+        .tree-swaying { transform-origin: bottom center; animation: treeWind 4s ease-in-out infinite; }
+
+        @keyframes butterflyFly {
+            0% { transform: translate(0, 0) scaleX(1); }
+            25% { transform: translate(45px, -15px) scaleX(1); }
+            50% { transform: translate(100px, 5px) scaleX(-1); }
+            75% { transform: translate(45px, -8px) scaleX(-1); }
+            100% { transform: translate(0, 0) scaleX(1); }
+        }
+        .butterfly-anim { animation: butterflyFly 8s ease-in-out infinite; }
+
+        @keyframes batFly {
+            0% { transform: translateX(-30px) translateY(0); }
+            50% { transform: translateX(120px) translateY(-10px); }
+            100% { transform: translateX(250px) translateY(0); }
+        }
+        .bat-anim { animation: batFly 6s linear infinite; }
+
+        @keyframes heartFloat {
+            0% { transform: translateY(10px) scale(0.8); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+        }
+        .heart-anim { animation: heartFloat 3s ease-in-out infinite; }
+
+        @keyframes rainDrop {
+            0% { transform: translateY(-10px); opacity: 0.8; }
+            100% { transform: translateY(90px); opacity: 0.1; }
+        }
+        .rain-anim { position: absolute; font-size: 11px; animation: rainDrop 1.2s linear infinite; }
+
+        @keyframes fireBurn {
+            0%, 100% { transform: scale(1) translateY(0); filter: brightness(1); }
+            50% { transform: scale(1.15) translateY(-3px); filter: brightness(1.3); }
+        }
+        .fire-anim { animation: fireBurn 1.2s ease-in-out infinite; }
+
+        @keyframes spaceOrbit {
+            0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+        }
+        .space-orbit-anim { animation: spaceOrbit 10s linear infinite; }
+
+        /* CAPA DE ANIMACIONES ATMOSFÉRICAS DE FONDO OPTIMIZADA */
         #atmosphericLayer {
             position: fixed;
             top: 0;
@@ -102,77 +194,74 @@
             100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
-        /* ESCENAS CINEMÁTICAS TIPO VÍDEO */
-        /* 1. Nebulosa Real en Píxeles (Flujo correcto de derecha a izquierda / diagonal) */
-        @keyframes pixelNebulaDrift {
-            0% { transform: translateX(0) translateY(0); opacity: 0.4; }
-            50% { opacity: 0.8; }
-            100% { transform: translateX(-100vw) translateY(-20vh); opacity: 0.4; }
-        }
-        .pixel-nebula-bg {
-            position: absolute;
-            top: -20vh;
-            left: 0;
-            width: 200vw;
-            height: 140vh;
-            background-image: 
-                radial-gradient(ellipse at 30% 40%, rgba(147, 51, 234, 0.25) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 60%, rgba(236, 72, 153, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
-            animation: pixelNebulaDrift 25s linear infinite;
+        /* ESTILOS PARA ANIMACIONES TIPO VÍDEO / CINEMÁTICAS COMPLETAS */
+        .video-scene-overlay {
+            position: fixed;
+            inset: 0;
             pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
         }
-        .pixel-star {
+
+        /* 1. Nebula Shooting Stars */
+        @keyframes shootingStar {
+            0% { transform: translateX(-100px) translateY(-100px) rotate(45deg); opacity: 1; }
+            100% { transform: translateX(120vw) translateY(120vh) rotate(45deg); opacity: 0; }
+        }
+        .shooting-star {
             position: absolute;
-            background: #fff;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,1), rgba(147,51,234,0));
+            animation: shootingStar 3s linear infinite;
+        }
+
+        /* 2. Fireworks */
+        @keyframes fireworkBurst {
+            0% { transform: scale(0.1); opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .firework-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            animation: starTwinkle 2s ease-in-out infinite alternate;
-        }
-        @keyframes starTwinkle {
-            0% { opacity: 0.2; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1.3); }
+            animation: fireworkBurst 2s ease-out infinite;
         }
 
-        /* 2. Olas Oceánicas Reales (Capas fluidas de espuma y agua) */
-        @keyframes oceanWaveAnim1 {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        /* 3. Ocean Waves */
+        @keyframes waveMotion {
+            0% { transform: translateX(0) translateZ(0) scaleY(1); }
+            50% { transform: translateX(-25%) translateZ(0) scaleY(1.2); }
+            100% { transform: translateX(-50%) translateZ(0) scaleY(1); }
         }
-        @keyframes oceanWaveAnim2 {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0%); }
-        }
-        .ocean-layer-1 {
+        .ocean-wave {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 200%;
-            height: 90px;
-            background: repeating-linear-gradient(45deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.15) 20px, rgba(14, 116, 144, 0.2) 20px, rgba(14, 116, 144, 0.2) 40px);
-            border-top: 2px solid rgba(56, 189, 248, 0.4);
-            animation: oceanWaveAnim1 10s linear infinite;
-        }
-        .ocean-layer-2 {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 200%;
-            height: 130px;
-            background: linear-gradient(to top, rgba(3, 105, 161, 0.25), transparent);
-            animation: oceanWaveAnim2 15s linear infinite;
+            height: 120px;
+            background: linear-gradient(to top, rgba(6,182,212,0.15), transparent);
+            animation: waveMotion 8s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
         }
 
-        /* 3. Escenas Temporadas: Halloween, Navidad, Pascua, Otoño */
-        @keyframes seasonalSceneMove {
-            0% { transform: translateY(-10px) translateX(0) rotate(0deg); opacity: 0; }
-            20% { opacity: 0.9; }
-            80% { opacity: 0.9; }
-            100% { transform: translateY(105vh) translateX(50px) rotate(360deg); opacity: 0; }
+        /* 4. Cosmic Portal */
+        @keyframes portalSpin {
+            0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+            50% { transform: rotate(180deg) scale(1.1); filter: hue-rotate(180deg); }
+            100% { transform: rotate(360deg) scale(1); filter: hue-rotate(360deg); }
         }
-        .seasonal-particle {
+        .cosmic-portal-core {
             position: absolute;
-            animation: seasonalSceneMove linear infinite;
-            will-change: transform, opacity;
+            top: 50%;
+            left: 50%;
+            width: 600px;
+            height: 600px;
+            margin: -300px 0 0 -300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(147,51,234,0.15) 0%, rgba(59,130,246,0.1) 40%, transparent 70%);
+            animation: portalSpin 15s linear infinite;
         }
     </style>
 </head>
@@ -225,13 +314,13 @@
                     </select>
                 </div>
 
-                <!-- SELECTOR CORREGIDO Y EXPANDIDO -->
+                <!-- SELECTOR EXPANDIDO DE PERFIL ATMOSFÉRICO ANIMADO -->
                 <div class="relative">
                     <select id="atmosphereSelector" onchange="changeAtmosphere(this.value)" class="bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-semibold px-3 py-2 rounded-xl border border-purple-200 dark:border-purple-800 outline-none cursor-pointer">
                         <option value="none">✨ Sin Animación</option>
                         <optgroup label="✨ Partículas & Diseños">
                             <option value="stardust">🌟 Polvo Estelar</option>
-                            <option value="bubbles">⚪ Burbujas Suaves</option>
+                            <option value="bubbles">🫧 Burbujas Suaves</option>
                             <option value="arcade">👾 Arcade / Píxeles</option>
                             <option value="aliens">👽 Espacio & Aliens</option>
                             <option value="halloween">🎃 Terror & Diversión</option>
@@ -245,17 +334,11 @@
                             <option value="music">🎵 Notas Musicales</option>
                             <option value="coffee">☕ Aroma de Café</option>
                         </optgroup>
-                        <optgroup label="🎬 Animaciones Video / Creadas">
-                            <option value="scene-nebula">🌌 Nebulosa de Píxeles (Realista)</option>
-                            <option value="scene-waves">🌊 Olas Oceánicas en Vivo</option>
+                        <optgroup label="🎬 Animaciones Video / Escenas">
+                            <option value="scene-nebula">🌌 Nebulosa & Estrellas Fugaces</option>
                             <option value="scene-fireworks">🎆 Fuegos Artificiales</option>
+                            <option value="scene-waves">🌊 Olas Oceánicas en Vivo</option>
                             <option value="scene-portal">🔮 Portal Cósmico Activo</option>
-                        </optgroup>
-                        <optgroup label="🍂 Temporadas del Año (Vídeo)">
-                            <option value="season-halloween">🎃 Halloween Cinemático</option>
-                            <option value="season-xmas">🎄 Navidad & Nevada Real</option>
-                            <option value="season-easter">🐣 Pascua & Primavera</option>
-                            <option value="season-autumn">🍁 Otoño & Hojas Doradas</option>
                         </optgroup>
                     </select>
                 </div>
@@ -273,7 +356,7 @@
         <!-- COLUMNA IZQUIERDA -->
         <div class="space-y-6">
             
-            <!-- CRONÓMETRO PRINCIPAL -->
+            <!-- CRONÓMETRO PRINCIPAL CON TODOS LOS ESTILOS -->
             <div id="mainTimerCard" class="bg-slate-900 text-white p-5 rounded-3xl border border-purple-500/30 shadow-md relative overflow-hidden text-center transition-all duration-300">
                 <div class="flex items-center justify-between mb-2">
                     <span id="mainTaskTitle" class="text-xs font-semibold text-purple-300 truncate max-w-[150px]">⚡ Tu Enfoque en Franjas</span>
@@ -520,6 +603,7 @@
             </div>
 
             <div id="metricsContentContainer" class="space-y-5 overflow-y-auto flex-1 pr-1 text-xs">
+                <!-- Se inyecta dinámicamente -->
             </div>
 
             <button onclick="closeMetricsModal()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-xs transition">Cerrar Dashboard</button>
@@ -738,94 +822,58 @@
             layer.innerHTML = '';
             if (currentAtmosphere === 'none') return;
 
-            // 1. NEBULOSA REAL EN PÍXELES
+            // CASO: ANIMACIONES COMPLETAS TIPO VÍDEO / ESCENAS
             if (currentAtmosphere === 'scene-nebula') {
-                const nebulaBg = document.createElement('div');
-                nebulaBg.className = 'pixel-nebula-bg';
-                layer.appendChild(nebulaBg);
-
-                for (let i = 0; i < 40; i++) {
+                for (let i = 0; i < 8; i++) {
                     const star = document.createElement('div');
-                    star.className = 'pixel-star';
-                    star.style.top = `${Math.random() * 100}vh`;
-                    star.style.left = `${Math.random() * 100}vw`;
-                    const size = Math.random() * 3 + 1;
-                    star.style.width = `${size}px`;
-                    star.style.height = `${size}px`;
+                    star.className = 'shooting-star';
+                    star.style.top = `${Math.random() * 80}vh`;
+                    star.style.left = `${Math.random() * 50}vw`;
                     star.style.animationDelay = `${Math.random() * 3}s`;
                     layer.appendChild(star);
                 }
                 return;
             }
 
-            // 2. OLAS OCEÁNICAS REALES
-            if (currentAtmosphere === 'scene-waves') {
-                const waveBg = document.createElement('div');
-                waveBg.className = 'ocean-layer-2';
-                const waveFg = document.createElement('div');
-                waveFg.className = 'ocean-layer-1';
-                layer.appendChild(waveBg);
-                layer.appendChild(waveFg);
-                return;
-            }
-
-            // 3. FUEGOS ARTIFICIALES
             if (currentAtmosphere === 'scene-fireworks') {
                 const colors = ['#f43f5e', '#a855f7', '#3b82f6', '#10b981', '#fbbf24'];
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < 6; i++) {
                     const fw = document.createElement('div');
-                    fw.style.position = 'absolute';
-                    fw.style.top = `${Math.random() * 50 + 15}%`;
+                    fw.className = 'firework-particle';
+                    fw.style.top = `${Math.random() * 60 + 20}%`;
                     fw.style.left = `${Math.random() * 80 + 10}%`;
-                    fw.innerHTML = `<svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="${colors[i]}" stroke-width="2"><path d="M12 2v20M2 12h20M5 5l14 14M5 19L19 5"/></svg>`;
-                    fw.style.animation = `fireworkBurst 2s ease-out infinite`;
-                    fw.style.animationDelay = `${i * 0.4}s`;
+                    fw.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    fw.style.animationDelay = `${Math.random() * 2}s`;
                     layer.appendChild(fw);
                 }
                 return;
             }
 
-            // 4. PORTAL CÓSMICO
+            if (currentAtmosphere === 'scene-waves') {
+                const wave1 = document.createElement('div');
+                wave1.className = 'ocean-wave';
+                wave1.style.animationDuration = '6s';
+                const wave2 = document.createElement('div');
+                wave2.className = 'ocean-wave';
+                wave2.style.bottom = '10px';
+                wave2.style.opacity = '0.7';
+                wave2.style.animationDuration = '10s';
+                layer.appendChild(wave1);
+                layer.appendChild(wave2);
+                return;
+            }
+
             if (currentAtmosphere === 'scene-portal') {
                 const portal = document.createElement('div');
-                portal.style.position = 'absolute';
-                portal.style.top = '50%';
-                portal.style.left = '50%';
-                portal.style.width = '500px';
-                portal.style.height = '500px';
-                portal.style.margin = '-250px 0 0 -250px';
-                portal.style.borderRadius = '50%';
-                portal.style.background = 'radial-gradient(circle, rgba(147,51,234,0.3) 0%, rgba(59,130,246,0.2) 50%, transparent 80%)';
-                portal.style.animation = 'portalSpin 12s linear infinite';
+                portal.className = 'cosmic-portal-core';
                 layer.appendChild(portal);
                 return;
             }
 
-            // 5. TEMPORADAS DEL AÑO (VÍDEO / ESCENAS)
-            let seasonSymbols = [];
-            if (currentAtmosphere === 'season-halloween') seasonSymbols = ['🎃', '👻', '🦇', '🕯️', '🕸️'];
-            else if (currentAtmosphere === 'season-xmas') seasonSymbols = ['❄️', '🎄', '🎁', '🎅', '⭐'];
-            else if (currentAtmosphere === 'season-easter') seasonSymbols = ['🐣', '🐰', '🌷', '🌸', '🥚'];
-            else if (currentAtmosphere === 'season-autumn') seasonSymbols = ['🍁', '🍂', '🌰', '☕', '🧥'];
-
-            if (seasonSymbols.length > 0) {
-                for (let i = 0; i < 18; i++) {
-                    const el = document.createElement('div');
-                    el.className = 'seasonal-particle';
-                    el.innerText = seasonSymbols[Math.floor(Math.random() * seasonSymbols.length)];
-                    el.style.left = `${Math.random() * 95}vw`;
-                    el.style.fontSize = `${Math.random() * 12 + 14}px`;
-                    el.style.animationDuration = `${Math.random() * 5 + 4}s`;
-                    el.style.animationDelay = `${Math.random() * 4}s`;
-                    layer.appendChild(el);
-                }
-                return;
-            }
-
-            // PARTÍCULAS ESTÁNDAR
+            // CASO: PARTÍCULAS FLOTANTES (14 diseños)
             let symbols = [];
             if (currentAtmosphere === 'stardust') symbols = ['✨', '⭐', '💫', '✦'];
-            else if (currentAtmosphere === 'bubbles') symbols = ['⚪', '⚪', '⚪'];
+            else if (currentAtmosphere === 'bubbles') symbols = ['🫧', '💧', '⚪'];
             else if (currentAtmosphere === 'arcade') symbols = ['👾', '🕹️', '🟦', '🟥', '⭐', '⚡'];
             else if (currentAtmosphere === 'aliens') symbols = ['👽', '🛸', '🚀', '🪐', '⭐'];
             else if (currentAtmosphere === 'halloween') symbols = ['🎃', '👻', '🦇', '🕯️', '🍬'];
@@ -1643,7 +1691,9 @@
             } else if (currentTimerStyle === 'style-cat') {
                 innerHTMLMain = `
                     <div class="flex flex-col items-center justify-center bg-gradient-to-r from-amber-900/40 to-orange-950/60 p-3 rounded-2xl border border-amber-500/30">
-                        <div class="text-[11px] text-amber-300 font-bold mb-1">🐾 🐱 🐾 Miau Focus 🐾 🐱 🐾</div>
+                        <div class="text-[11px] text-amber-300 font-bold mb-1 flex items-center space-x-1">
+                            <span>🐾 🐱 🐾 Miau Focus 🐾 🐱 🐾</span>
+                        </div>
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-amber-200 tracking-widest">${timeStr}</div>
                         <div class="text-[10px] text-amber-400/80 mt-1">¡Ronroneo productivo!</div>
                     </div>
@@ -1657,7 +1707,9 @@
             } else if (currentTimerStyle === 'style-dog') {
                 innerHTMLMain = `
                     <div class="flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950/60 to-blue-950/80 p-3 rounded-2xl border border-cyan-500/30">
-                        <div class="text-[11px] text-cyan-300 font-bold mb-1">🐶 📡 Radar Canino Activo 📡 🐶</div>
+                        <div class="text-[11px] text-cyan-300 font-bold mb-1 flex items-center space-x-1">
+                            <span>🐶 📡 Radar Canino Activo 📡 🐶</span>
+                        </div>
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-cyan-200 tracking-wider">${timeStr}</div>
                         <div class="w-full bg-cyan-950 h-2 rounded-full mt-2 overflow-hidden border border-cyan-700/50">
                             <div class="bg-gradient-to-r from-cyan-400 to-blue-500 h-full transition-all duration-300" style="width: ${percent}%;"></div>
@@ -1674,19 +1726,159 @@
                 innerHTMLMain = `
                     <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-indigo-950 via-slate-900 to-purple-950 p-4 rounded-2xl border border-indigo-500/40 overflow-hidden min-h-[110px]">
                         <div class="absolute top-2 animate-ufo text-2xl z-10">🛸</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-emerald-300 tracking-wider z-20 my-1">${timeStr}</div>
+                        <div class="absolute top-7 left-1/2 -translate-x-1/2 w-20 h-16 bg-gradient-to-b from-emerald-400/40 to-transparent clip-path-polygon animate-beam pointer-events-none" style="clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);"></div>
+                        <span class="absolute bottom-2 text-xl cow-routine-anim z-15">🐄</span>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-emerald-300 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] my-1">${timeStr}</div>
                         <div class="text-[9px] text-indigo-300/80 z-20 font-bold tracking-widest uppercase">I Want to Believe</div>
                     </div>
                 `;
                 innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(49,46,129,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(99,102,241,0.4);">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(49,46,129,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(99,102,241,0.4); position: relative; overflow: hidden;">
                         <div style="font-size: 10px; margin-bottom: 2px;">🛸 🐄</div>
-                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #34d399;">${timeStr}</div>
+                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #34d399; text-shadow: 0 0 6px rgba(52,211,153,0.6);">${timeStr}</div>
                     </div>
                 `;
-            } else {
-                innerHTMLMain = `<div id="mainTimerDisplay" class="text-4xl font-black font-mono tracking-wider text-white">${timeStr}</div>`;
-                innerHTMLPip = `<div id="pipTimerDisplay" style="font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: 2px; color: white;">${timeStr}</div>`;
+            } else if (currentTimerStyle === 'style-xmas') {
+                const santaHtml = santaState === 'delivering' 
+                    ? `<span class="absolute bottom-2 left-6 text-xl santa-anim">🛷🎅🎁</span>` 
+                    : `<span class="absolute bottom-2 left-1/2 -translate-x-1/2 text-lg">🎄</span>`;
+
+                innerHTMLMain = `
+                    <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-blue-950 via-slate-900 to-red-950 p-4 rounded-2xl border border-red-500/40 overflow-hidden min-h-[110px]">
+                        <div class="snowflake" style="top: 5px; left: 20px;">❄️</div>
+                        <div class="snowflake" style="top: 15px; left: 160px; animation-delay: 1s;">❄️</div>
+                        <div class="snowflake" style="top: 2px; left: 240px; animation-delay: 2s;">❄️</div>
+                        ${santaHtml}
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-red-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)] my-1">${timeStr}</div>
+                        <div class="text-[9px] text-red-300/80 z-20 font-bold tracking-widest uppercase">🎄 Navidad • Magia & Foco</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(30,58,138,0.9), rgba(127,29,29,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(239,68,68,0.4); position: relative; overflow: hidden;">
+                        <div style="font-size: 10px; margin-bottom: 2px;">🎅 🎄</div>
+                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #fca5a5; text-shadow: 0 0 6px rgba(239,68,68,0.6);">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-autumn') {
+                innerHTMLMain = `
+                    <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-amber-950 via-orange-950 to-stone-900 p-4 rounded-2xl border border-amber-500/40 overflow-hidden min-h-[110px]">
+                        <div class="leaf-anim" style="top: 5px; left: 10px;">🍁</div>
+                        <div class="leaf-anim" style="top: 20px; left: 80px; animation-delay: 2s;">🍂</div>
+                        <div class="leaf-anim" style="top: 10px; left: 190px; animation-delay: 3.5s;">🍁</div>
+                        <div class="absolute bottom-2 left-3 text-xl tree-swaying">🌳</div>
+                        <div class="absolute bottom-2 right-3 text-xl tree-swaying" style="animation-delay: 1s;">🍁</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-amber-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)] my-1">${timeStr}</div>
+                        <div class="text-[9px] text-amber-300/80 z-20 font-bold tracking-widest uppercase">🍂 Otoño • Viento & Hojas</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(69,26,3,0.9), rgba(120,53,15,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(245,158,11,0.4); position: relative; overflow: hidden;">
+                        <div style="font-size: 10px; margin-bottom: 2px;">🍁 🌳 🍂</div>
+                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #fde68a; text-shadow: 0 0 6px rgba(245,158,11,0.6);">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-garden') {
+                innerHTMLMain = `
+                    <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-emerald-950 via-teal-950 to-green-950 p-4 rounded-2xl border border-emerald-500/40 overflow-hidden min-h-[110px]">
+                        <div class="absolute top-3 left-4 text-lg butterfly-anim">🦋</div>
+                        <div class="absolute bottom-2 left-3 text-lg">🌷🌻</div>
+                        <div class="absolute bottom-2 right-3 text-lg">🌸🌿</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-emerald-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)] my-1">${timeStr}</div>
+                        <div class="text-[9px] text-emerald-300/80 z-20 font-bold tracking-widest uppercase">🌻 Jardín • Flores & Mariposas</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(6,78,59,0.9), rgba(4,47,46,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(16,185,129,0.4); position: relative; overflow: hidden;">
+                        <div style="font-size: 10px; margin-bottom: 2px;">🦋 🌻 🌿</div>
+                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #a7f3d0; text-shadow: 0 0 6px rgba(16,185,129,0.6);">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-halloween') {
+                innerHTMLMain = `
+                    <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-purple-950 via-slate-900 to-orange-950 p-4 rounded-2xl border border-orange-500/40 overflow-hidden min-h-[110px]">
+                        <div class="absolute top-2 left-4 text-lg bat-anim">🦇</div>
+                        <div class="absolute top-3 right-6 text-lg">👻</div>
+                        <div class="absolute bottom-2 left-4 text-xl">🎃</div>
+                        <div class="absolute bottom-2 right-4 text-xl">🕯️</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-orange-300 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(249,115,22,0.7)] my-1">${timeStr}</div>
+                        <div class="text-[9px] text-orange-300/80 z-20 font-bold tracking-widest uppercase">🎃 Halloween • Misterio & Magia</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(88,28,135,0.9), rgba(124,45,18,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(249,115,22,0.4); position: relative; overflow: hidden;">
+                        <div style="font-size: 10px; margin-bottom: 2px;">🎃 🦇 👻</div>
+                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #fed7aa; text-shadow: 0 0 6px rgba(249,115,22,0.6);">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-love') {
+                innerHTMLMain = `
+                    <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-pink-950 via-rose-950 to-purple-950 p-4 rounded-2xl border border-pink-500/40 overflow-hidden min-h-[110px]">
+                        <div class="absolute top-2 left-10 text-base heart-anim">💖</div>
+                        <div class="absolute top-4 right-10 text-base heart-anim" style="animation-delay: 1.5s;">💕</div>
+                        <div class="absolute bottom-2 left-4 text-xl">💌</div>
+                        <div class="absolute bottom-2 right-4 text-xl">🌹</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-pink-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(236,72,153,0.7)] my-1">${timeStr}</div>
+                        <div class="text-[9px] text-pink-300/80 z-20 font-bold tracking-widest uppercase">💖 Amor y Amistad • Conexión</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(131,24,67,0.9), rgba(157,23,77,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(236,72,153,0.4); position: relative; overflow: hidden;">
+                        <div style="font-size: 10px; margin-bottom: 2px;">💖 💌 🌹</div>
+                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #fbcfe8; text-shadow: 0 0 6px rgba(236,72,153,0.6);">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-rain') {
+                innerHTMLMain = `
+                    <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-slate-950 via-blue-950 to-indigo-950 p-4 rounded-2xl border border-blue-500/40 overflow-hidden min-h-[110px]">
+                        <div class="rain-anim" style="top: 2px; left: 30px;">💧</div>
+                        <div class="rain-anim" style="top: 5px; left: 120px; animation-delay: 0.4s;">🌧️</div>
+                        <div class="rain-anim" style="top: 1px; left: 220px; animation-delay: 0.8s;">💧</div>
+                        <div class="absolute bottom-2 left-4 text-xl">☔</div>
+                        <div class="absolute bottom-2 right-4 text-xl">☕</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-blue-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(59,130,246,0.7)] my-1">${timeStr}</div>
+                        <div class="text-[9px] text-blue-300/80 z-20 font-bold tracking-widest uppercase">🌧️ Lluvia Relajante • Calma</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,58,138,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(59,130,246,0.4); position: relative; overflow: hidden;">
+                        <div style="font-size: 10px; margin-bottom: 2px;">🌧️ ☕ ☔</div>
+                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #bfdbfe; text-shadow: 0 0 6px rgba(59,130,246,0.6);">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-fire') {
+                innerHTMLMain = `
+                    <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-stone-950 via-red-950 to-orange-950 p-4 rounded-2xl border border-red-500/40 overflow-hidden min-h-[110px]">
+                        <div class="absolute top-2 left-6 text-xl fire-anim">🔥</div>
+                        <div class="absolute top-2 right-6 text-xl fire-anim" style="animation-delay: 0.6s;">🔥</div>
+                        <div class="absolute bottom-2 left-4 text-lg">🔥</div>
+                        <div class="absolute bottom-2 right-4 text-lg fire-anim">🔥</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-orange-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)] my-1">${timeStr}</div>
+                        <div class="text-[9px] text-orange-300/80 z-20 font-bold tracking-widest uppercase">🔥 Fuego Intenso • Energía Pura</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(41,37,36,0.9), rgba(127,29,29,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(239,68,68,0.4); position: relative; overflow: hidden;">
+                        <div style="font-size: 10px; margin-bottom: 2px;">🔥 🔥 🔥</div>
+                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #fed7aa; text-shadow: 0 0 6px rgba(239,68,68,0.6);">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-space') {
+                innerHTMLMain = `
+                    <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-black via-indigo-950 to-slate-950 p-4 rounded-2xl border border-cyan-500/40 overflow-hidden min-h-[110px]">
+                        <div class="absolute top-2 left-6 text-xl animate-spin" style="animation-duration: 8s;">🌍</div>
+                        <div class="absolute top-2 right-6 text-xl space-orbit-anim">🛰️</div>
+                        <div class="absolute bottom-2 left-4 text-xl">🪐</div>
+                        <div class="absolute bottom-2 right-4 text-xl">⭐</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-cyan-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(6,182,212,0.7)] my-1">${timeStr}</div>
+                        <div class="text-[9px] text-cyan-300/80 z-20 font-bold tracking-widest uppercase">🚀 Espacial • Universo Infinito</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(15,23,42,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(6,182,212,0.4); position: relative; overflow: hidden;">
+                        <div style="font-size: 10px; margin-bottom: 2px;">🚀 🌍 🪐</div>
+                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #a5f3fc; text-shadow: 0 0 6px rgba(6,182,212,0.6);">${timeStr}</div>
+                    </div>
+                `;
             }
 
             const mainContainer = document.getElementById('timerContainerDisplay');
@@ -1697,6 +1889,19 @@
                 if (pipContainer) pipContainer.innerHTML = innerHTMLPip;
             }
         }
+
+        setInterval(() => {
+            if (currentTimerStyle === 'style-xmas') {
+                if (santaState === 'delivering') {
+                    santaState = 'gifts';
+                    setTimeout(() => {
+                        santaState = 'delivering';
+                        updateTimerDisplay(true);
+                    }, 4000);
+                }
+                updateTimerDisplay(true);
+            }
+        }, 14000);
 
         function completeCurrentActiveTask() {
             stopContinuousAlarm();
@@ -2005,6 +2210,41 @@
                 `;
                 container.appendChild(card);
             });
+        }
+
+        function openDayDetails(index) {
+            const log = historyLogs[index];
+            if (!log || !log.tasksSnapshot) return;
+
+            document.getElementById('dayDetailsTitle').innerText = `Tareas del ${log.date}`;
+            const container = document.getElementById('dayDetailsListContainer');
+            container.innerHTML = '';
+
+            if (log.tasksSnapshot.length === 0) {
+                container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">No hubo tareas registradas este día.</div>`;
+            } else {
+                log.tasksSnapshot.forEach(task => {
+                    const row = document.createElement('div');
+                    row.className = `p-3 rounded-xl border text-xs flex items-center justify-between gap-2 ${task.completed ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40' : 'bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 opacity-70'}`;
+                    
+                    row.innerHTML = `
+                        <div class="flex items-center space-x-2.5 min-w-0">
+                            <span class="text-sm">${task.completed ? '✅' : '⏳'}</span>
+                            <div class="min-w-0">
+                                <p class="font-bold text-gray-800 dark:text-gray-200 truncate ${task.completed ? '' : 'line-through'}">${task.title}</p>
+                                <p class="text-[10px] text-gray-400 font-mono">🕒 ${task.start} - ${task.end} • 🏷️ ${task.category} (+${task.points} pts)</p>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            }
+
+            document.getElementById('dayDetailsModal').classList.remove('hidden');
+        }
+
+        function closeDayDetailsModal() {
+            document.getElementById('dayDetailsModal').classList.add('hidden');
         }
 
         function changeTheme(theme) {
