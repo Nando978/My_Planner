@@ -36,7 +36,6 @@
         body {
             font-family: 'Quicksand', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
-            /* Deshabilitar selección de texto para mayor protección */
             user-select: none;
             -webkit-user-select: none;
         }
@@ -118,7 +117,7 @@
                     </select>
                 </div>
 
-                <button onclick="openCloseDayModal()" class="bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
+                <button id="closeDayBtn" onclick="openCloseDayModal()" class="bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
                     <span>Cierre de Día</span>
                 </button>
             </div>
@@ -214,7 +213,10 @@
                 </h2>
                 <form onsubmit="handleAddCategory(event)" class="space-y-3">
                     <div class="flex space-x-2">
-                        <input type="text" id="newCatEmoji" required placeholder="🎨" maxlength="2" class="w-16 bg-gray-50 dark:bg-slate-800 text-center text-sm py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none" title="Emoticón">
+                        <div class="relative">
+                            <input type="text" id="newCatEmoji" required placeholder="🎨" maxlength="2" class="w-16 bg-gray-50 dark:bg-slate-800 text-center text-sm py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none" title="Emoticón">
+                            <button type="button" onclick="openEmojiPickerModal()" class="absolute -top-2 -right-2 bg-purple-600 hover:bg-purple-500 text-white w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center shadow" title="Elegir de la lista de emoticonos">▼</button>
+                        </div>
                         <input type="text" id="newCatName" required placeholder="Nombre..." class="flex-1 bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                     </div>
                     <div class="flex items-center space-x-2">
@@ -253,6 +255,19 @@
     <footer class="w-full py-6 text-center text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-slate-800 mt-auto">
         <p>Elaborado por: Pablo Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
     </footer>
+
+    <!-- MODAL SELECTOR DE EMOTICONOS -->
+    <div id="emojiPickerModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-md w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
+                <h3 class="text-md font-bold text-gray-800 dark:text-gray-100">Selecciona un Emoticón 🎨</h3>
+                <button onclick="closeEmojiPickerModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            <div id="emojiCategoriesContainer" class="space-y-4 overflow-y-auto flex-1 pr-1 text-xs">
+                <!-- Se llena mediante JS -->
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL CREAR NUEVA META -->
     <div id="addGoalModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
@@ -339,6 +354,10 @@
                 <button onclick="closeCloseDayModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
             </div>
             
+            <div class="bg-purple-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-purple-100 dark:border-slate-700 text-center">
+                <p id="motivationalQuote" class="text-xs font-semibold text-purple-700 dark:text-purple-300 italic">"¡Cada paso cuenta, sigue adelante!"</p>
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-purple-50 dark:bg-slate-800 p-4 rounded-2xl text-center">
                     <span class="block text-xs text-gray-400 dark:text-gray-400 mb-1">Puntos Totales</span>
@@ -422,6 +441,26 @@
         let streak = parseInt(localStorage.getItem('my_planner_streak')) || 0;
         let lastClosedDateStr = localStorage.getItem('my_planner_last_closed_date') || '';
 
+        // Lista de emoticonos clasificados por categorías
+        const emojiCategories = [
+            { title: '💼 Trabajo & Productividad', emojis: ['💼', '📈', '📊', '💻', '📝', '📁', '⚙️', '🛠️', '📌', '💡', '🔍', '⚡'] },
+            { title: '📚 Estudio & Aprendizaje', emojis: ['📚', '📖', '✏️', '🎓', '🔬', '🧠', '🗂️', '📐', '🗣️', '💡', '🏆', '✒️'] },
+            { title: '💻 Tecnología & Infraestructura', emojis: ['💻', '🖥️', '📡', '🔌', '🖧', '🛡️', '🔒', '⚡', '⚙️', '🛠️', '🔋', '💾'] },
+            { title: '🍎 Salud, Bienestar & Estilo de vida', emojis: ['🍎', '🍏', '☕', '💧', '🏃‍♂️', '🧘‍♂️', '💪', '🛌', '🥗', '⚡', '🌿', '🎯'] },
+            { title: '🏡 Personal & Varios', emojis: ['🏡', '🎨', '🎮', '🎵', '✈️', '🌟', '🎉', '🎁', '🛒', '🔑', '💬', '❤️'] }
+        ];
+
+        const motivationalQuotes = [
+            "✨ ¡Cada pequeño esfuerzo de hoy es el cimiento de tu éxito de mañana!",
+            "🚀 Tu disciplina de hoy define el futuro que disfrutarás mañana.",
+            "🌟 No cuentes los días, haz que los días cuenten con propósito.",
+            "💡 El progreso constante supera con creces a la perfección ocasional.",
+            "🔥 Has demostrado de lo que eres capaz, ¡sigue construyendo tu mejor versión!",
+            "🎯 Un día a la vez, un paso firme a la vez hacia tus grandes metas.",
+            "☕ Respira hondo, hiciste un gran trabajo hoy. ¡Mañana vamos por más!"
+        ];
+        let lastQuoteIndex = -1;
+
         let currentFilter = 'Todas';
         let activeTaskId = localStorage.getItem('my_planner_active_task_id') ? parseInt(localStorage.getItem('my_planner_active_task_id')) : null;
         let activeTaskTitleText = localStorage.getItem('my_planner_active_task_title') || "⚡ Tu Enfoque en Franjas";
@@ -444,6 +483,7 @@
                 renderCategoriesUI();
                 renderTasks();
                 renderGoalsUI();
+                checkIfTodayIsClosed();
                 
                 if (activeTaskId) {
                     document.getElementById('mainTaskTitle').innerText = activeTaskTitleText;
@@ -479,6 +519,16 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const todayStr = new Date().toLocaleDateString('es-ES', options);
             document.getElementById('currentDateHeader').innerText = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
+        }
+
+        function checkIfTodayIsClosed() {
+            const todayISO = new Date().toISOString().split('T')[0];
+            const btn = document.getElementById('closeDayBtn');
+            if (lastClosedDateStr === todayISO) {
+                btn.disabled = true;
+                btn.className = "bg-gray-200 dark:bg-slate-800 text-gray-400 dark:text-gray-500 text-xs font-bold px-4 py-2 rounded-xl cursor-not-allowed shadow-none";
+                btn.innerHTML = `<span>Día Ya Cerrado ✅</span>`;
+            }
         }
 
         function checkStreakContinuity() {
@@ -550,18 +600,24 @@
         function playAlarmBeep() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
+                const notes = [440, 554.37, 659.25];
+                notes.forEach((freq, index) => {
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
 
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime + (index * 0.15));
+                    
+                    gainNode.gain.setValueAtTime(0.0, audioCtx.currentTime + (index * 0.15));
+                    gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + (index * 0.15) + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (index * 0.15) + 0.6);
 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
 
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.4);
+                    oscillator.start(audioCtx.currentTime + (index * 0.15));
+                    oscillator.stop(audioCtx.currentTime + (index * 0.15) + 0.6);
+                });
             } catch (e) {
                 console.log("Audio no permitido.");
             }
@@ -572,7 +628,7 @@
             playAlarmBeep();
             alarmInterval = setInterval(() => {
                 playAlarmBeep();
-            }, 1000);
+            }, 2500);
         }
 
         function stopContinuousAlarm() {
@@ -624,6 +680,42 @@
                 `;
                 managerList.appendChild(row);
             });
+        }
+
+        // Funciones para el Selector de Emoticonos
+        function openEmojiPickerModal() {
+            const container = document.getElementById('emojiCategoriesContainer');
+            container.innerHTML = '';
+
+            emojiCategories.forEach(group => {
+                const section = document.createElement('div');
+                section.className = "space-y-1.5";
+                section.innerHTML = `
+                    <h4 class="font-bold text-gray-600 dark:text-gray-300">${group.title}</h4>
+                    <div class="grid grid-cols-6 gap-2 bg-gray-50 dark:bg-slate-800 p-2.5 rounded-xl border border-gray-100 dark:border-slate-700"></div>
+                `;
+                const grid = section.querySelector('.grid');
+                group.emojis.forEach(emo => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = "text-xl p-2 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/50 transition flex items-center justify-center";
+                    btn.innerText = emo;
+                    btn.onclick = () => selectEmoji(emo);
+                    grid.appendChild(btn);
+                });
+                container.appendChild(section);
+            });
+
+            document.getElementById('emojiPickerModal').classList.remove('hidden');
+        }
+
+        function closeEmojiPickerModal() {
+            document.getElementById('emojiPickerModal').classList.add('hidden');
+        }
+
+        function selectEmoji(emo) {
+            document.getElementById('newCatEmoji').value = emo;
+            closeEmojiPickerModal();
         }
 
         function onCategoryChange(catName) {
@@ -1141,7 +1233,24 @@
             }
         }
 
-        function openCloseDayModal() { document.getElementById('closeDayModal').classList.remove('hidden'); }
+        function openCloseDayModal() {
+            const todayISO = new Date().toISOString().split('T')[0];
+            if (lastClosedDateStr === todayISO) {
+                alert('⚠️ Ya realizaste el Cierre de Día el día de hoy. Solo se permite un cierre diario.');
+                return;
+            }
+
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
+            } while (randomIndex === lastQuoteIndex && motivationalQuotes.length > 1);
+            
+            lastQuoteIndex = randomIndex;
+            document.getElementById('motivationalQuote').innerText = motivationalQuotes[randomIndex];
+
+            document.getElementById('closeDayModal').classList.remove('hidden');
+        }
+
         function closeCloseDayModal() { document.getElementById('closeDayModal').classList.add('hidden'); }
 
         function setMood(mood) {
@@ -1153,13 +1262,19 @@
         }
 
         function saveAndResetDay() {
+            const todayISO = new Date().toISOString().split('T')[0];
+            if (lastClosedDateStr === todayISO) {
+                alert('⚠️ Ya se ha cerrado este día previamente.');
+                closeCloseDayModal();
+                return;
+            }
+
             const reflection = document.getElementById('dailyReflection').value.trim();
             const totalPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
             const completedCount = tasks.filter(t => t.completed).length;
 
             const todayObj = new Date();
             const dateStr = todayObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-            const todayISO = todayObj.toISOString().split('T')[0];
 
             if (lastClosedDateStr) {
                 const lastClosed = new Date(lastClosedDateStr);
@@ -1183,7 +1298,6 @@
             localStorage.setItem('my_planner_streak', streak);
             localStorage.setItem('my_planner_last_closed_date', lastClosedDateStr);
 
-            // Guardamos el registro incluyendo una copia exacta de las tareas de hoy
             historyLogs.unshift({
                 id: Date.now(),
                 date: dateStr,
@@ -1192,7 +1306,7 @@
                 totalTasks: tasks.length,
                 mood: currentMood,
                 reflection: reflection || 'Sin reflexiones escritas.',
-                tasksSnapshot: JSON.parse(JSON.stringify(tasks)) // Guardamos las tareas del día
+                tasksSnapshot: JSON.parse(JSON.stringify(tasks))
             });
 
             localStorage.setItem('my_planner_history', JSON.stringify(historyLogs));
@@ -1203,6 +1317,7 @@
 
             tasks = [];
             saveAndRender();
+            checkIfTodayIsClosed();
 
             alert(`✨ ¡Cierre de Día guardado exitosamente!\nRacha actual: ${streak} día(s).`);
             closeCloseDayModal();
@@ -1323,6 +1438,7 @@
             if (saved === 'custom' && customBg) {
                 document.getElementById('themeSelector').value = 'custom';
                 document.getElementById('mainBody').className = "text-gray-700 min-h-screen flex flex-col";
+                document.getElementById('mainBody').style.backgroundColor = '';
                 document.getElementById('mainBody').style.backgroundColor = customBg;
             } else {
                 document.getElementById('themeSelector').value = saved;
