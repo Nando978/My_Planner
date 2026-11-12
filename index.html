@@ -696,9 +696,24 @@
         }
 
         function checkIfTodayIsClosed() {
-            const todayISO = new Date().toISOString().split('T')[0];
+            // Corrección: Usar la fecha local de Colombia/equipo en lugar de toISOString() (UTC)
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const todayLocalISO = `${year}-${month}-${day}`;
+
             const btn = document.getElementById('closeDayBtn');
-            if (lastClosedDateStr === todayISO) {
+
+            // Si la fecha guardada es de un día anterior, habilitamos el botón automáticamente
+            if (lastClosedDateStr && lastClosedDateStr !== todayLocalISO) {
+                btn.disabled = false;
+                btn.className = "bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm cursor-pointer";
+                btn.innerHTML = `<span>Cierre de Día</span>`;
+                return;
+            }
+
+            if (lastClosedDateStr === todayLocalISO) {
                 btn.disabled = true;
                 btn.className = "bg-gray-200 dark:bg-slate-800 text-gray-400 dark:text-gray-500 text-xs font-bold px-4 py-2 rounded-xl cursor-not-allowed shadow-none";
                 btn.innerHTML = `<span>Día Ya Cerrado ✅</span>`;
@@ -1007,10 +1022,9 @@
         function toggleTask(id) {
             const task = tasks.find(t => t.id === id);
             if (task) {
-                // REGLA ESTRICTA: Una vez marcada como terminada (completed = true), 
-                // no se permite desmarcarla para evitar el fraude de puntos.
+                // REGLA ESTRICTA: Una vez marcada como terminada, no se permite desmarcarla
                 if (task.completed) {
-                    return; // Ignorar el clic si ya estaba terminada
+                    return;
                 }
 
                 task.completed = true;
@@ -1690,8 +1704,10 @@
         }
 
         function openCloseDayModal() {
-            const todayISO = new Date().toISOString().split('T')[0];
-            if (lastClosedDateStr === todayISO) {
+            const now = new Date();
+            const todayLocalISO = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            
+            if (lastClosedDateStr === todayLocalISO) {
                 alert('⚠️ Ya realizaste el Cierre de Día el día de hoy. Solo se permite un cierre diario.');
                 return;
             }
@@ -1718,8 +1734,10 @@
         }
 
         function saveAndResetDay() {
-            const todayISO = new Date().toISOString().split('T')[0];
-            if (lastClosedDateStr === todayISO) {
+            const now = new Date();
+            const todayLocalISO = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            
+            if (lastClosedDateStr === todayLocalISO) {
                 alert('⚠️ Ya se ha cerrado este día previamente.');
                 closeCloseDayModal();
                 return;
@@ -1730,14 +1748,13 @@
             const totalPoints = Math.max(0, earnedPoints - spentPointsToday);
             const completedCount = tasks.filter(t => t.completed).length;
 
-            const todayObj = new Date();
-            const dateStr = todayObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+            const dateStr = now.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
             if (lastClosedDateStr) {
                 const lastClosed = new Date(lastClosedDateStr);
                 lastClosed.setHours(0, 0, 0, 0);
 
-                const currentToday = new Date(todayISO);
+                const currentToday = new Date(todayLocalISO);
                 currentToday.setHours(0, 0, 0, 0);
 
                 const diffDays = Math.round((currentToday - lastClosed) / (1000 * 60 * 60 * 24));
@@ -1751,7 +1768,7 @@
                 streak = 1;
             }
 
-            lastClosedDateStr = todayISO;
+            lastClosedDateStr = todayLocalISO;
             spentPointsToday = 0;
             localStorage.setItem('my_planner_streak', streak);
             localStorage.setItem('my_planner_last_closed_date', lastClosedDateStr);
@@ -2056,7 +2073,7 @@
 
         function applyCustomColors() {
             const bg = document.getElementById('customBg').value;
-            const primary = document.getElementById('customPrimary').value;
+            const primary = document.getElementById('customPrimary.value') || document.getElementById('customPrimary').value;
             const body = document.getElementById('mainBody');
             
             body.className = "text-gray-700 min-h-screen flex flex-col";
