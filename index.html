@@ -78,16 +78,12 @@
             0%, 100% { transform: translateY(0px) rotate(-1deg); }
             50% { transform: translateY(-4px) rotate(1deg); }
         }
-        .animate-ufo {
-            animation: floatUfo 3s ease-in-out infinite;
-        }
+        .animate-ufo { animation: floatUfo 3s ease-in-out infinite; }
         @keyframes beamPulse {
             0%, 100% { opacity: 0.25; }
             50% { opacity: 0.65; }
         }
-        .animate-beam {
-            animation: beamPulse 2s ease-in-out infinite;
-        }
+        .animate-beam { animation: beamPulse 2s ease-in-out infinite; }
         
         @keyframes cowRoutine {
             0% { transform: translateX(90px) scaleX(1); opacity: 0; }
@@ -98,57 +94,40 @@
             90% { transform: translateX(0px) scaleX(1) translateY(-80px) scale(0.1); opacity: 0; }
             100% { transform: translateX(90px) scaleX(1); opacity: 0; }
         }
-        .cow-routine-anim {
-            animation: cowRoutine 12s ease-in-out infinite;
-        }
+        .cow-routine-anim { animation: cowRoutine 12s ease-in-out infinite; }
 
         @keyframes flamePulse {
             0%, 100% { transform: scale(1) rotate(-3deg); filter: brightness(1); }
             50% { transform: scale(1.18) rotate(3deg); filter: brightness(1.25); }
         }
-        .animate-flame {
-            animation: flamePulse 1.2s ease-in-out infinite;
-            display: inline-block;
-        }
+        .animate-flame { animation: flamePulse 1.2s ease-in-out infinite; display: inline-block; }
 
         @keyframes snowfall {
             0% { transform: translateY(-10px); opacity: 0.8; }
             100% { transform: translateY(100px); opacity: 0.2; }
         }
-        .snowflake {
-            position: absolute;
-            color: white;
-            font-size: 10px;
-            animation: snowfall 3s linear infinite;
-        }
+        .snowflake { position: absolute; color: white; font-size: 10px; animation: snowfall 3s linear infinite; }
+        
         @keyframes santaSlide {
             0% { transform: translateX(-60px); opacity: 0; }
             20% { opacity: 1; }
             70% { transform: translateX(160px); opacity: 1; }
             100% { transform: translateX(220px); opacity: 0; }
         }
-        .santa-anim {
-            animation: santaSlide 8s ease-in-out infinite;
-        }
+        .santa-anim { animation: santaSlide 8s ease-in-out infinite; }
 
         @keyframes leafBlow {
             0% { transform: translate(-20px, -10px) rotate(0deg); opacity: 0; }
             20% { opacity: 1; }
             100% { transform: translate(190px, 75px) rotate(360deg); opacity: 0; }
         }
-        .leaf-anim {
-            position: absolute;
-            font-size: 12px;
-            animation: leafBlow 5s linear infinite;
-        }
+        .leaf-anim { position: absolute; font-size: 12px; animation: leafBlow 5s linear infinite; }
+        
         @keyframes treeWind {
             0%, 100% { transform: rotate(0deg); }
             50% { transform: rotate(-4deg); }
         }
-        .tree-swaying {
-            transform-origin: bottom center;
-            animation: treeWind 4s ease-in-out infinite;
-        }
+        .tree-swaying { transform-origin: bottom center; animation: treeWind 4s ease-in-out infinite; }
 
         @keyframes butterflyFly {
             0% { transform: translate(0, 0) scaleX(1); }
@@ -157,9 +136,7 @@
             75% { transform: translate(45px, -8px) scaleX(-1); }
             100% { transform: translate(0, 0) scaleX(1); }
         }
-        .butterfly-anim {
-            animation: butterflyFly 8s ease-in-out infinite;
-        }
+        .butterfly-anim { animation: butterflyFly 8s ease-in-out infinite; }
 
         @keyframes batFly {
             0% { transform: translateX(-30px) translateY(0); }
@@ -216,11 +193,81 @@
             80% { opacity: 0.7; }
             100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
+
+        /* ESTILOS PARA ANIMACIONES TIPO VÍDEO / CINEMÁTICAS COMPLETAS */
+        .video-scene-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* 1. Nebula Shooting Stars */
+        @keyframes shootingStar {
+            0% { transform: translateX(-100px) translateY(-100px) rotate(45deg); opacity: 1; }
+            100% { transform: translateX(120vw) translateY(120vh) rotate(45deg); opacity: 0; }
+        }
+        .shooting-star {
+            position: absolute;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,1), rgba(147,51,234,0));
+            animation: shootingStar 3s linear infinite;
+        }
+
+        /* 2. Fireworks */
+        @keyframes fireworkBurst {
+            0% { transform: scale(0.1); opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .firework-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: fireworkBurst 2s ease-out infinite;
+        }
+
+        /* 3. Ocean Waves */
+        @keyframes waveMotion {
+            0% { transform: translateX(0) translateZ(0) scaleY(1); }
+            50% { transform: translateX(-25%) translateZ(0) scaleY(1.2); }
+            100% { transform: translateX(-50%) translateZ(0) scaleY(1); }
+        }
+        .ocean-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 120px;
+            background: linear-gradient(to top, rgba(6,182,212,0.15), transparent);
+            animation: waveMotion 8s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+        }
+
+        /* 4. Cosmic Portal */
+        @keyframes portalSpin {
+            0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+            50% { transform: rotate(180deg) scale(1.1); filter: hue-rotate(180deg); }
+            100% { transform: rotate(360deg) scale(1); filter: hue-rotate(360deg); }
+        }
+        .cosmic-portal-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 600px;
+            height: 600px;
+            margin: -300px 0 0 -300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(147,51,234,0.15) 0%, rgba(59,130,246,0.1) 40%, transparent 70%);
+            animation: portalSpin 15s linear infinite;
+        }
     </style>
 </head>
 <body class="bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col selection:bg-purple-200 relative z-10" id="mainBody">
 
-    <!-- CAPA FLOTANTE DE ANIMACIONES ATMOSFÉRICAS -->
+    <!-- CAPA FLOTANTE DE ANIMACIONES ATMOSFÉRICAS Y VÍDEOS -->
     <div id="atmosphericLayer"></div>
 
     <!-- HEADER -->
@@ -267,17 +314,32 @@
                     </select>
                 </div>
 
-                <!-- SELECTOR DE PERFIL ATMOSFÉRICO ANIMADO -->
+                <!-- SELECTOR EXPANDIDO DE PERFIL ATMOSFÉRICO ANIMADO -->
                 <div class="relative">
                     <select id="atmosphereSelector" onchange="changeAtmosphere(this.value)" class="bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-semibold px-3 py-2 rounded-xl border border-purple-200 dark:border-purple-800 outline-none cursor-pointer">
                         <option value="none">✨ Sin Animación</option>
-                        <option value="stardust">🌟 Polvo Estelar</option>
-                        <option value="bubbles">🫧 Burbujas Suaves</option>
-                        <option value="arcade">👾 Arcade / Píxeles</option>
-                        <option value="aliens">👽 Espacio & Aliens</option>
-                        <option value="halloween">🎃 Terror & Diversión</option>
-                        <option value="garden">🌻 Jardín Botánico</option>
-                        <option value="animals">🐾 Huellas & Mascotas</option>
+                        <optgroup label="✨ Partículas & Diseños">
+                            <option value="stardust">🌟 Polvo Estelar</option>
+                            <option value="bubbles">🫧 Burbujas Suaves</option>
+                            <option value="arcade">👾 Arcade / Píxeles</option>
+                            <option value="aliens">👽 Espacio & Aliens</option>
+                            <option value="halloween">🎃 Terror & Diversión</option>
+                            <option value="garden">🌻 Jardín Botánico</option>
+                            <option value="animals">🐾 Huellas & Mascotas</option>
+                            <option value="sakura">🌸 Cerezos en Flor</option>
+                            <option value="magic">🔮 Orbes Místicos</option>
+                            <option value="candy">🍭 Dulce Caramelo</option>
+                            <option value="cyber">⚡ Cyberpunk Matrix</option>
+                            <option value="ocean">🌊 Bajo el Océano</option>
+                            <option value="music">🎵 Notas Musicales</option>
+                            <option value="coffee">☕ Aroma de Café</option>
+                        </optgroup>
+                        <optgroup label="🎬 Animaciones Video / Escenas">
+                            <option value="scene-nebula">🌌 Nebulosa & Estrellas Fugaces</option>
+                            <option value="scene-fireworks">🎆 Fuegos Artificiales</option>
+                            <option value="scene-waves">🌊 Olas Oceánicas en Vivo</option>
+                            <option value="scene-portal">🔮 Portal Cósmico Activo</option>
+                        </optgroup>
                     </select>
                 </div>
 
@@ -440,7 +502,7 @@
 
     <!-- FOOTER -->
     <footer class="w-full py-6 text-center text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-slate-800 mt-auto relative z-20">
-        <p>Elaborado por: Pablo Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
+        <p>Elaborado por: Pablo Antonio Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
     </footer>
 
     <!-- MODAL SELECTOR DE EMOTICONOS -->
@@ -742,7 +804,7 @@
             document.getElementById('currentDateHeader').innerText = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
         }
 
-        // MÓDULO DE PERFILES ATMOSFÉRICOS ANIMADOS
+        // MÓDULO DE PERFILES ATMOSFÉRICOS Y ESCENAS DE VÍDEO
         function changeAtmosphere(atmosType) {
             currentAtmosphere = atmosType;
             localStorage.setItem('my_planner_atmosphere', atmosType);
@@ -760,6 +822,55 @@
             layer.innerHTML = '';
             if (currentAtmosphere === 'none') return;
 
+            // CASO: ANIMACIONES COMPLETAS TIPO VÍDEO / ESCENAS
+            if (currentAtmosphere === 'scene-nebula') {
+                for (let i = 0; i < 8; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'shooting-star';
+                    star.style.top = `${Math.random() * 80}vh`;
+                    star.style.left = `${Math.random() * 50}vw`;
+                    star.style.animationDelay = `${Math.random() * 3}s`;
+                    layer.appendChild(star);
+                }
+                return;
+            }
+
+            if (currentAtmosphere === 'scene-fireworks') {
+                const colors = ['#f43f5e', '#a855f7', '#3b82f6', '#10b981', '#fbbf24'];
+                for (let i = 0; i < 6; i++) {
+                    const fw = document.createElement('div');
+                    fw.className = 'firework-particle';
+                    fw.style.top = `${Math.random() * 60 + 20}%`;
+                    fw.style.left = `${Math.random() * 80 + 10}%`;
+                    fw.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    fw.style.animationDelay = `${Math.random() * 2}s`;
+                    layer.appendChild(fw);
+                }
+                return;
+            }
+
+            if (currentAtmosphere === 'scene-waves') {
+                const wave1 = document.createElement('div');
+                wave1.className = 'ocean-wave';
+                wave1.style.animationDuration = '6s';
+                const wave2 = document.createElement('div');
+                wave2.className = 'ocean-wave';
+                wave2.style.bottom = '10px';
+                wave2.style.opacity = '0.7';
+                wave2.style.animationDuration = '10s';
+                layer.appendChild(wave1);
+                layer.appendChild(wave2);
+                return;
+            }
+
+            if (currentAtmosphere === 'scene-portal') {
+                const portal = document.createElement('div');
+                portal.className = 'cosmic-portal-core';
+                layer.appendChild(portal);
+                return;
+            }
+
+            // CASO: PARTÍCULAS FLOTANTES (14 diseños)
             let symbols = [];
             if (currentAtmosphere === 'stardust') symbols = ['✨', '⭐', '💫', '✦'];
             else if (currentAtmosphere === 'bubbles') symbols = ['🫧', '💧', '⚪'];
@@ -768,6 +879,13 @@
             else if (currentAtmosphere === 'halloween') symbols = ['🎃', '👻', '🦇', '🕯️', '🍬'];
             else if (currentAtmosphere === 'garden') symbols = ['🌻', '🌷', '🌸', '🌿', '🦋'];
             else if (currentAtmosphere === 'animals') symbols = ['🐾', '🐶', '🐱', '🐼', '🦊', '⭐'];
+            else if (currentAtmosphere === 'sakura') symbols = ['🌸', '💮', '🌸', '✨'];
+            else if (currentAtmosphere === 'magic') symbols = ['🔮', '✨', '📜', '💎', '💫'];
+            else if (currentAtmosphere === 'candy') symbols = ['🍭', '🍬', '🍫', '🍩', '⭐'];
+            else if (currentAtmosphere === 'cyber') symbols = ['⚡', '💻', '🟢', '🔷', '🛡️'];
+            else if (currentAtmosphere === 'ocean') symbols = ['🌊', '🐚', '⭐', '🐬', '🫧'];
+            else if (currentAtmosphere === 'music') symbols = ['🎵', '🎶', '🎷', '🎸', '✨'];
+            else if (currentAtmosphere === 'coffee') symbols = ['☕', '🤎', '🥐', '✨', '🍵'];
 
             const count = 16;
             for (let i = 0; i < count; i++) {
@@ -1333,7 +1451,6 @@
             spentPointsToday += goal.target;
             localStorage.setItem('my_planner_spent_points', spentPointsToday);
 
-            // Registrar en el historial de recompensas
             const now = new Date();
             const dateStr = now.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
             claimedRewardsLogs.unshift({
@@ -1345,7 +1462,6 @@
             localStorage.setItem('my_planner_claimed_rewards', JSON.stringify(claimedRewardsLogs));
 
             updatePointsAndProgress();
-
             triggerNativeConfetti();
             playCelebrationSound();
 
@@ -2014,7 +2130,6 @@
                 `;
             });
 
-            // BLOQUE DE HISTORIAL DE RECOMPENSAS EN MÉTRICAS
             let rewardsHTML = '';
             if (filteredRewards.length === 0) {
                 rewardsHTML = `<p class="text-gray-400 italic text-center py-2">No se han reclamado recompensas en este periodo.</p>`;
@@ -2045,7 +2160,6 @@
                     </div>
                 </div>
 
-                <!-- BLOQUE DEDICADO AL HISTORIAL DE RECOMPENSAS -->
                 <div class="bg-gray-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2">
                     <h4 class="font-bold text-gray-800 dark:text-gray-200 flex items-center space-x-1.5">
                         <span>🎁 Recompensas y Descansos Reclamados</span>
