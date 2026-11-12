@@ -87,18 +87,28 @@
             animation: beamPulse 2s ease-in-out infinite;
         }
         
-        /* Animación correcta de la vaca (mirando hacia la izquierda al avanzar y abducida en el centro) */
+        /* Animación de la vaca saliendo desde la esquina derecha y siendo abducida en el centro */
         @keyframes cowRoutine {
-            0% { transform: translateX(70px) scaleX(1); opacity: 0; }
-            10% { opacity: 1; }
+            0% { transform: translateX(90px) scaleX(1); opacity: 0; }
+            15% { opacity: 1; }
             45% { transform: translateX(0px) scaleX(1); opacity: 1; } 
             50% { transform: translateX(0px) scaleX(1) translateY(0); opacity: 1; }
             75% { transform: translateX(0px) scaleX(1) translateY(-45px) scale(0.5); opacity: 0.7; filter: brightness(1.6); }
             90% { transform: translateX(0px) scaleX(1) translateY(-80px) scale(0.1); opacity: 0; }
-            100% { transform: translateX(70px) scaleX(1); opacity: 0; }
+            100% { transform: translateX(90px) scaleX(1); opacity: 0; }
         }
         .cow-routine-anim {
             animation: cowRoutine 12s ease-in-out infinite;
+        }
+
+        /* Animación de fuego para racha */
+        @keyframes flamePulse {
+            0%, 100% { transform: scale(1) rotate(-3deg); filter: brightness(1); }
+            50% { transform: scale(1.18) rotate(3deg); filter: brightness(1.25); }
+        }
+        .animate-flame {
+            animation: flamePulse 1.2s ease-in-out infinite;
+            display: inline-block;
         }
 
         /* Animaciones Navidad */
@@ -207,7 +217,7 @@
 
             <div class="flex items-center space-x-2 flex-wrap">
                 <div class="flex items-center space-x-1.5 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/50 px-3 py-1.5 rounded-full shadow-sm">
-                    <span class="text-lg">🔥</span>
+                    <span class="text-lg animate-flame">🔥</span>
                     <span class="text-sm font-bold text-orange-600 dark:text-orange-400" id="streakCounter">0 Días</span>
                 </div>
                 <div class="flex items-center space-x-1.5 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/50 px-3 py-1.5 rounded-full shadow-sm">
@@ -215,7 +225,10 @@
                     <span class="text-sm font-bold text-purple-600 dark:text-purple-300" id="headerPoints">0 Pts Hoy</span>
                 </div>
                 <button onclick="openHistoryModal()" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900/50 text-xs font-bold px-3 py-1.5 rounded-full transition flex items-center space-x-1 shadow-sm">
-                    <span>📜 Historial / Logros</span>
+                    <span>📜 Historial</span>
+                </button>
+                <button onclick="openMetricsModal()" class="bg-violet-50 hover:bg-violet-100 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-900/50 text-xs font-bold px-3 py-1.5 rounded-full transition flex items-center space-x-1 shadow-sm">
+                    <span>📈 Métricas</span>
                 </button>
             </div>
 
@@ -254,7 +267,7 @@
                             <option value="style-minimal">☕ Minimalista</option>
                             <option value="style-cat">🐱 Gato</option>
                             <option value="style-dog">🐶 Perro</option>
-                            <option value="style-ufo">🛸 OVNI & Vaca</option>
+                            <option value="style-ufo">🛸 OVNI</option>
                             <option value="style-xmas">🎄 Navidad</option>
                             <option value="style-autumn">🍂 Otoño</option>
                             <option value="style-garden">🌻 Jardín</option>
@@ -465,6 +478,24 @@
             </div>
             <div id="historyListContainer" class="space-y-3 overflow-y-auto flex-1 pr-1">
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL MÉTRICAS & DASHBOARD ANALÍTICO -->
+    <div id="metricsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-2xl w-full space-y-5 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
+                <h3 class="text-md font-bold text-gray-800 dark:text-gray-100 flex items-center space-x-2">
+                    <span>📈 Dashboard Analítico & Métricas</span>
+                </h3>
+                <button onclick="closeMetricsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            
+            <div id="metricsContentContainer" class="space-y-5 overflow-y-auto flex-1 pr-1 text-xs">
+                <!-- Se inyecta dinámicamente -->
+            </div>
+
+            <button onclick="closeMetricsModal()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-xs transition">Cerrar Dashboard</button>
         </div>
     </div>
 
@@ -1442,22 +1473,21 @@
             } else if (currentTimerStyle === 'style-xmas') {
                 const santaHtml = santaState === 'delivering' 
                     ? `<span class="absolute bottom-2 left-6 text-xl santa-anim">🛷🎅🎁</span>` 
-                    : `<span class="absolute bottom-2 left-1/2 -translate-x-1/2 text-lg">🎁🎄</span>`;
+                    : `<span class="absolute bottom-2 left-1/2 -translate-x-1/2 text-lg">🎄</span>`;
 
                 innerHTMLMain = `
                     <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-blue-950 via-slate-900 to-red-950 p-4 rounded-2xl border border-red-500/40 overflow-hidden min-h-[110px]">
                         <div class="snowflake" style="top: 5px; left: 20px;">❄️</div>
                         <div class="snowflake" style="top: 15px; left: 160px; animation-delay: 1s;">❄️</div>
                         <div class="snowflake" style="top: 2px; left: 240px; animation-delay: 2s;">❄️</div>
-                        <div class="absolute bottom-2 right-4 text-xl">🏠🌲</div>
                         ${santaHtml}
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-red-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)] my-1">${timeStr}</div>
-                        <div class="text-[9px] text-red-300/80 z-20 font-bold tracking-widest uppercase">🎄 Navidad • Cabaña & Regalos</div>
+                        <div class="text-[9px] text-red-300/80 z-20 font-bold tracking-widest uppercase">🎄 Navidad • Magia & Foco</div>
                     </div>
                 `;
                 innerHTMLPip = `
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(30,58,138,0.9), rgba(127,29,29,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(239,68,68,0.4); position: relative; overflow: hidden;">
-                        <div style="font-size: 10px; margin-bottom: 2px;">🎅 🏠 🎁</div>
+                        <div style="font-size: 10px; margin-bottom: 2px;">🎅 🎄</div>
                         <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #fca5a5; text-shadow: 0 0 6px rgba(239,68,68,0.6);">${timeStr}</div>
                     </div>
                 `;
@@ -1553,7 +1583,7 @@
                         <div class="absolute top-2 left-6 text-xl fire-anim">🔥</div>
                         <div class="absolute top-2 right-6 text-xl fire-anim" style="animation-delay: 0.6s;">🔥</div>
                         <div class="absolute bottom-2 left-4 text-lg">🪵</div>
-                        <div class="absolute bottom-2 right-4 text-lg">🔥</div>
+                        <div class="absolute bottom-2 right-4 text-lg fire-anim">🔥</div>
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-orange-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)] my-1">${timeStr}</div>
                         <div class="text-[9px] text-orange-300/80 z-20 font-bold tracking-widest uppercase">🔥 Fuego Intenso • Energía Pura</div>
                     </div>
@@ -1721,6 +1751,100 @@
 
         function closeHistoryModal() {
             document.getElementById('historyModal').classList.add('hidden');
+        }
+
+        function openMetricsModal() {
+            renderMetricsUI();
+            document.getElementById('metricsModal').classList.remove('hidden');
+        }
+
+        function closeMetricsModal() {
+            document.getElementById('metricsModal').classList.add('hidden');
+        }
+
+        function renderMetricsUI() {
+            const container = document.getElementById('metricsContentContainer');
+            
+            // Calcular estadísticas
+            let totalHistoricalPoints = historyLogs.reduce((sum, h) => sum + h.points, 0);
+            const currentTodayPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+            totalHistoricalPoints += currentTodayPoints;
+
+            let totalHistoricalTasks = historyLogs.reduce((sum, h) => sum + h.totalTasks, 0) + tasks.length;
+            let totalHistoricalCompleted = historyLogs.reduce((sum, h) => sum + h.completedTasks, 0) + tasks.filter(t => t.completed).length;
+            let overallSuccessRate = totalHistoricalTasks > 0 ? Math.round((totalHistoricalCompleted / totalHistoricalTasks) * 100) : 0;
+
+            // Puntos por categoría
+            let categoryPointsMap = {};
+            categories.forEach(c => categoryPointsMap[c.name] = 0);
+
+            // Sumar tareas actuales
+            tasks.forEach(t => {
+                if (t.completed) {
+                    categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
+                }
+            });
+
+            // Sumar tareas del historial
+            historyLogs.forEach(h => {
+                if (h.tasksSnapshot) {
+                    h.tasksSnapshot.forEach(t => {
+                        if (t.completed) {
+                            categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
+                        }
+                    });
+                }
+            });
+
+            let maxCategoryPoints = Math.max(...Object.values(categoryPointsMap), 1);
+
+            let catBarsHTML = '';
+            categories.forEach(cat => {
+                const pts = categoryPointsMap[cat.name] || 0;
+                const percentage = Math.min(100, Math.round((pts / maxCategoryPoints) * 100));
+                catBarsHTML += `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-gray-700 dark:text-gray-300 font-semibold">
+                            <span>${cat.emoji} ${cat.name}</span>
+                            <span class="text-purple-600 dark:text-purple-400 font-bold">${pts} pts</span>
+                        </div>
+                        <div class="w-full bg-gray-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="bg-purple-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-purple-100 dark:border-slate-700">
+                        <span class="block text-[11px] text-gray-400 mb-0.5">Puntos Totales</span>
+                        <span class="text-lg font-black text-purple-600 dark:text-purple-300">${totalHistoricalPoints} pts</span>
+                    </div>
+                    <div class="bg-orange-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-orange-100 dark:border-slate-700">
+                        <span class="block text-[11px] text-gray-400 mb-0.5">Racha Actual</span>
+                        <span class="text-lg font-black text-orange-600 dark:text-orange-400">${streak} Días 🔥</span>
+                    </div>
+                    <div class="bg-emerald-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-emerald-100 dark:border-slate-700">
+                        <span class="block text-[11px] text-gray-400 mb-0.5">Efectividad</span>
+                        <span class="text-lg font-black text-emerald-600 dark:text-emerald-300">${overallSuccessRate}%</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-3">
+                    <h4 class="font-bold text-gray-800 dark:text-gray-200">📊 Distribución de Puntos por Categoría</h4>
+                    <div class="space-y-3 pt-1">
+                        ${catBarsHTML}
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2">
+                    <h4 class="font-bold text-gray-800 dark:text-gray-200">📌 Resumen de Actividad Global</h4>
+                    <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
+                        Has completado un total de <strong>${totalHistoricalCompleted}</strong> tareas de <strong>${totalHistoricalTasks}</strong> planificadas a lo largo de <strong>${historyLogs.length}</strong> días registrados en tu historial. ¡Sigue manteniendo tu ritmo de alta productividad!
+                    </p>
+                </div>
+            `;
         }
 
         function renderHistoryUI() {
