@@ -36,6 +36,13 @@
         body {
             font-family: 'Quicksand', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
+            /* Deshabilitar selección de texto para mayor protección */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        input, textarea, select {
+            user-select: text;
+            -webkit-user-select: text;
         }
         ::-webkit-scrollbar {
             width: 8px;
@@ -311,6 +318,19 @@
         </div>
     </div>
 
+    <!-- MODAL DETALLE DE TAREAS DEL DÍA (HISTORIAL) -->
+    <div id="dayDetailsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-md w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[80vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
+                <h3 class="text-md font-bold text-gray-800 dark:text-gray-100" id="dayDetailsTitle">Tareas del Día</h3>
+                <button onclick="closeDayDetailsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            <div id="dayDetailsListContainer" class="space-y-2.5 overflow-y-auto flex-1 pr-1">
+            </div>
+            <button onclick="closeDayDetailsModal()" class="w-full bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs">Cerrar</button>
+        </div>
+    </div>
+
     <!-- MODAL CIERRE DE DÍA -->
     <div id="closeDayModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl max-w-lg w-full space-y-6 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
@@ -376,6 +396,15 @@
 
     <!-- SCRIPT -->
     <script>
+        // Bloqueo de clic derecho y atajos de inspección de código
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         let tasks = JSON.parse(localStorage.getItem('my_planner_tasks')) || [];
         let categories = JSON.parse(localStorage.getItem('my_planner_categories')) || [
             { name: 'Trabajo', emoji: '💼', defaultPoints: 50 },
@@ -416,7 +445,6 @@
                 renderTasks();
                 renderGoalsUI();
                 
-                // Restaurar estado sin arrancar automáticamente
                 if (activeTaskId) {
                     document.getElementById('mainTaskTitle').innerText = activeTaskTitleText;
                     
@@ -427,13 +455,13 @@
                         secondsLeft = Math.max(0, Math.ceil(diffMs / 1000));
                         
                         if (secondsLeft > 0) {
-                            startWidgetTimer(true); // Continúa corriendo si estaba activo
+                            startWidgetTimer(true);
                         } else {
                             secondsLeft = 0;
                             startContinuousAlarm();
                         }
                     } else {
-                        updateTimerDisplay(); // Solo carga los segundos guardados en pausa sin arrancar
+                        updateTimerDisplay();
                     }
                 } else {
                     updateTimerDisplay();
@@ -1021,7 +1049,6 @@
                 stopWidgetTimer();
                 stopContinuousAlarm();
                 
-                // Guardamos la tarea seleccionada pero en estado PAUSADO (isRunning = false)
                 localStorage.setItem('my_planner_active_task_id', activeTaskId);
                 localStorage.setItem('my_planner_active_task_title', activeTaskTitleText);
                 localStorage.setItem('my_planner_seconds_left', secondsLeft);
@@ -1156,6 +1183,7 @@
             localStorage.setItem('my_planner_streak', streak);
             localStorage.setItem('my_planner_last_closed_date', lastClosedDateStr);
 
+            // Guardamos el registro incluyendo una copia exacta de las tareas de hoy
             historyLogs.unshift({
                 id: Date.now(),
                 date: dateStr,
@@ -1163,7 +1191,8 @@
                 completedTasks: completedCount,
                 totalTasks: tasks.length,
                 mood: currentMood,
-                reflection: reflection || 'Sin reflexiones escritas.'
+                reflection: reflection || 'Sin reflexiones escritas.',
+                tasksSnapshot: JSON.parse(JSON.stringify(tasks)) // Guardamos las tareas del día
             });
 
             localStorage.setItem('my_planner_history', JSON.stringify(historyLogs));
@@ -1197,7 +1226,7 @@
                 return;
             }
 
-            historyLogs.forEach(item => {
+            historyLogs.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = "bg-gray-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2 text-xs";
                 card.innerHTML = `
@@ -1207,7 +1236,12 @@
                     </div>
                     <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 font-semibold pt-1">
                         <span>🏆 Puntos: <strong class="text-purple-600 dark:text-purple-400">${item.points} pts</strong></span>
-                        <span>✅ Tareas: <strong class="text-emerald-600 dark:text-emerald-400">${item.completedTasks} / ${item.totalTasks}</strong></span>
+                        <div class="flex items-center space-x-1.5">
+                            <span>Tareas: <strong class="text-emerald-600 dark:text-emerald-400">${item.completedTasks} / ${item.totalTasks}</strong></span>
+                            <button onclick="openDayDetails(${index})" class="bg-emerald-600 hover:bg-emerald-500 text-white p-1 rounded-lg transition shadow-sm" title="Ver tareas de este día">
+                                ✅
+                            </button>
+                        </div>
                     </div>
                     <p class="text-gray-600 dark:text-gray-300 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-100 dark:border-slate-800 italic mt-1">
                         "${item.reflection}"
@@ -1215,6 +1249,41 @@
                 `;
                 container.appendChild(card);
             });
+        }
+
+        function openDayDetails(index) {
+            const log = historyLogs[index];
+            if (!log || !log.tasksSnapshot) return;
+
+            document.getElementById('dayDetailsTitle').innerText = `Tareas del ${log.date}`;
+            const container = document.getElementById('dayDetailsListContainer');
+            container.innerHTML = '';
+
+            if (log.tasksSnapshot.length === 0) {
+                container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">No hubo tareas registradas este día.</div>`;
+            } else {
+                log.tasksSnapshot.forEach(task => {
+                    const row = document.createElement('div');
+                    row.className = `p-3 rounded-xl border text-xs flex items-center justify-between gap-2 ${task.completed ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40' : 'bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 opacity-70'}`;
+                    
+                    row.innerHTML = `
+                        <div class="flex items-center space-x-2.5 min-w-0">
+                            <span class="text-sm">${task.completed ? '✅' : '⏳'}</span>
+                            <div class="min-w-0">
+                                <p class="font-bold text-gray-800 dark:text-gray-200 truncate ${task.completed ? '' : 'line-through'}">${task.title}</p>
+                                <p class="text-[10px] text-gray-400 font-mono">🕒 ${task.start} - ${task.end} • 🏷️ ${task.category} (+${task.points} pts)</p>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            }
+
+            document.getElementById('dayDetailsModal').classList.remove('hidden');
+        }
+
+        function closeDayDetailsModal() {
+            document.getElementById('dayDetailsModal').classList.add('hidden');
         }
 
         function changeTheme(theme) {
