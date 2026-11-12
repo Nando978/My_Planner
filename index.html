@@ -821,7 +821,7 @@
             currentTimerStyle = style;
             localStorage.setItem('my_planner_timer_style', style);
             document.getElementById('timerStyleSelector').value = style;
-            updateTimerDisplay();
+            updateTimerDisplay(true); // Forzar recreación de estructura al cambiar de estilo
         }
 
         function loadTimerStyleUI() {
@@ -1311,7 +1311,7 @@
                 pipWindow.document.getElementById('pipCompleteBtn').addEventListener('click', completeCurrentActiveTask);
 
                 pipWindow.addEventListener('unload', () => { pipWindow = null; });
-                updateTimerDisplay();
+                updateTimerDisplay(true);
             } catch (err) {
                 console.log("Error PiP:", err);
             }
@@ -1347,7 +1347,7 @@
                 localStorage.setItem('my_planner_is_running', 'false');
                 localStorage.removeItem('my_planner_timer_end');
 
-                updateTimerDisplay();
+                updateTimerDisplay(true);
             }
         }
 
@@ -1368,7 +1368,7 @@
                 secondsLeft = Math.max(0, Math.ceil(diffMs / 1000));
                 localStorage.setItem('my_planner_seconds_left', secondsLeft);
 
-                updateTimerDisplay();
+                updateTimerDisplay(false); // Solo actualiza los números sin reiniciar el HTML completo
 
                 if (secondsLeft <= 0) {
                     stopWidgetTimer();
@@ -1400,11 +1400,22 @@
             localStorage.removeItem('my_planner_timer_end');
         }
 
-        function updateTimerDisplay() {
+        function updateTimerDisplay(forceRebuild = false) {
             const m = Math.floor(secondsLeft / 60);
             const s = secondsLeft % 60;
             const timeStr = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             
+            // Si ya existe el contenedor y no se fuerza la reconstrucción, solo actualizamos los textos de los números para no romper las animaciones CSS
+            const existingMainDisplay = document.getElementById('mainTimerDisplay');
+            if (!forceRebuild && existingMainDisplay) {
+                existingMainDisplay.innerText = timeStr;
+                const existingPipDisplay = pipWindow && !pipWindow.closed ? pipWindow.document.getElementById('pipTimerDisplay') : null;
+                if (existingPipDisplay) {
+                    existingPipDisplay.innerText = timeStr;
+                }
+                return;
+            }
+
             let innerHTMLMain = '';
             let innerHTMLPip = '';
             const percent = Math.min(100, (secondsLeft / totalSecondsForTask) * 100);
@@ -1640,10 +1651,10 @@
                     santaState = 'gifts';
                     setTimeout(() => {
                         santaState = 'delivering';
-                        updateTimerDisplay();
+                        updateTimerDisplay(true);
                     }, 4000);
                 }
-                updateTimerDisplay();
+                updateTimerDisplay(true);
             }
         }, 14000);
 
