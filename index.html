@@ -318,7 +318,7 @@
                 <form id="taskForm" onsubmit="handleAddTask(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre de la Actividad</label>
-                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Frontend..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 dark:focus:ring-purple-600">
+                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Caminar..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 dark:focus:ring-purple-600">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
@@ -491,6 +491,17 @@
                 <button onclick="closeMetricsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
             </div>
             
+            <!-- SELECTOR DE RANGO DE TIEMPO -->
+            <div class="flex items-center justify-between bg-gray-50 dark:bg-slate-800/60 p-2 rounded-2xl border border-gray-100 dark:border-slate-700/60">
+                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 pl-2">Periodo:</span>
+                <div class="flex items-center space-x-1" id="metricsRangeSelector">
+                    <button onclick="setMetricsRange('today')" class="range-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-sm" data-range="today">Hoy</button>
+                    <button onclick="setMetricsRange('week')" class="range-btn px-3 py-1.5 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700" data-range="week">Semana</button>
+                    <button onclick="setMetricsRange('month')" class="range-btn px-3 py-1.5 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700" data-range="month">Mes</button>
+                    <button onclick="setMetricsRange('3months')" class="range-btn px-3 py-1.5 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700" data-range="3months">3 Meses</button>
+                </div>
+            </div>
+
             <div id="metricsContentContainer" class="space-y-5 overflow-y-auto flex-1 pr-1 text-xs">
                 <!-- Se inyecta dinámicamente -->
             </div>
@@ -606,6 +617,7 @@
         let streak = parseInt(localStorage.getItem('my_planner_streak')) || 0;
         let lastClosedDateStr = localStorage.getItem('my_planner_last_closed_date') || '';
         let currentTimerStyle = localStorage.getItem('my_planner_timer_style') || 'style-digital';
+        let currentMetricsRange = 'today';
 
         const emojiCategories = [
             { title: '💼 Trabajo & Productividad', emojis: ['💼', '📈', '📊', '💻', '📝', '📁', '⚙️', '🛠️', '📌', '💡', '🔍', '⚡'] },
@@ -1461,7 +1473,7 @@
                         <div class="absolute top-7 left-1/2 -translate-x-1/2 w-20 h-16 bg-gradient-to-b from-emerald-400/40 to-transparent clip-path-polygon animate-beam pointer-events-none" style="clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);"></div>
                         <span class="absolute bottom-2 text-xl cow-routine-anim z-15">🐄</span>
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-emerald-300 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] my-1">${timeStr}</div>
-                        <div class="text-[9px] text-indigo-300/80 z-20 font-bold tracking-widest uppercase">Área 51 • Abducción Activa</div>
+                        <div class="text-[9px] text-indigo-300/80 z-20 font-bold tracking-widest uppercase">I Want to Believe</div>
                     </div>
                 `;
                 innerHTMLPip = `
@@ -1754,6 +1766,8 @@
         }
 
         function openMetricsModal() {
+            currentMetricsRange = 'today';
+            updateMetricsRangeButtonsUI();
             renderMetricsUI();
             document.getElementById('metricsModal').classList.remove('hidden');
         }
@@ -1762,40 +1776,82 @@
             document.getElementById('metricsModal').classList.add('hidden');
         }
 
+        function setMetricsRange(range) {
+            currentMetricsRange = range;
+            updateMetricsRangeButtonsUI();
+            renderMetricsUI();
+        }
+
+        function updateMetricsRangeButtonsUI() {
+            document.querySelectorAll('.range-btn').forEach(btn => {
+                const r = btn.getAttribute('data-range');
+                if (r === currentMetricsRange) {
+                    btn.className = "range-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-sm";
+                } else {
+                    btn.className = "range-btn px-3 py-1.5 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700";
+                }
+            });
+        }
+
         function renderMetricsUI() {
             const container = document.getElementById('metricsContentContainer');
             
-            // Calcular estadísticas
-            let totalHistoricalPoints = historyLogs.reduce((sum, h) => sum + h.points, 0);
-            const currentTodayPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
-            totalHistoricalPoints += currentTodayPoints;
+            let filteredLogs = [];
+            const now = Date.now();
+            const dayMs = 24 * 60 * 60 * 1000;
 
-            let totalHistoricalTasks = historyLogs.reduce((sum, h) => sum + h.totalTasks, 0) + tasks.length;
-            let totalHistoricalCompleted = historyLogs.reduce((sum, h) => sum + h.completedTasks, 0) + tasks.filter(t => t.completed).length;
-            let overallSuccessRate = totalHistoricalTasks > 0 ? Math.round((totalHistoricalCompleted / totalHistoricalTasks) * 100) : 0;
+            if (currentMetricsRange === 'week') {
+                filteredLogs = historyLogs.filter(h => (now - h.id) <= 7 * dayMs);
+            } else if (currentMetricsRange === 'month') {
+                filteredLogs = historyLogs.filter(h => (now - h.id) <= 30 * dayMs);
+            } else if (currentMetricsRange === '3months') {
+                filteredLogs = historyLogs.filter(h => (now - h.id) <= 90 * dayMs);
+            }
 
-            // Puntos por categoría
+            // Calcular puntos, tareas y categorías según el rango
+            let rangePoints = 0;
+            let rangeTotalTasks = 0;
+            let rangeCompletedTasks = 0;
             let categoryPointsMap = {};
             categories.forEach(c => categoryPointsMap[c.name] = 0);
 
-            // Sumar tareas actuales
-            tasks.forEach(t => {
-                if (t.completed) {
-                    categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
-                }
-            });
+            if (currentMetricsRange === 'today') {
+                rangePoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+                rangeTotalTasks = tasks.length;
+                rangeCompletedTasks = tasks.filter(t => t.completed).length;
 
-            // Sumar tareas del historial
-            historyLogs.forEach(h => {
-                if (h.tasksSnapshot) {
-                    h.tasksSnapshot.forEach(t => {
-                        if (t.completed) {
-                            categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
-                        }
-                    });
-                }
-            });
+                tasks.forEach(t => {
+                    if (t.completed) {
+                        categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
+                    }
+                });
+            } else {
+                // Incluir historial filtrado
+                filteredLogs.forEach(h => {
+                    rangePoints += h.points;
+                    rangeTotalTasks += h.totalTasks;
+                    rangeCompletedTasks += h.completedTasks;
+                    if (h.tasksSnapshot) {
+                        h.tasksSnapshot.forEach(t => {
+                            if (t.completed) {
+                                categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
+                            }
+                        });
+                    }
+                });
 
+                // También incluir el día actual si entra en el rango
+                rangePoints += tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+                rangeTotalTasks += tasks.length;
+                rangeCompletedTasks += tasks.filter(t => t.completed).length;
+                tasks.forEach(t => {
+                    if (t.completed) {
+                        categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
+                    }
+                });
+            }
+
+            let overallSuccessRate = rangeTotalTasks > 0 ? Math.round((rangeCompletedTasks / rangeTotalTasks) * 100) : 0;
             let maxCategoryPoints = Math.max(...Object.values(categoryPointsMap), 1);
 
             let catBarsHTML = '';
@@ -1815,11 +1871,16 @@
                 `;
             });
 
+            let rangeTitleText = 'hoy';
+            if (currentMetricsRange === 'week') rangeTitleText = 'los últimos 7 días';
+            if (currentMetricsRange === 'month') rangeTitleText = 'los últimos 30 días';
+            if (currentMetricsRange === '3months') rangeTitleText = 'los últimos 3 meses';
+
             container.innerHTML = `
                 <div class="grid grid-cols-3 gap-3 text-center">
                     <div class="bg-purple-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-purple-100 dark:border-slate-700">
-                        <span class="block text-[11px] text-gray-400 mb-0.5">Puntos Totales</span>
-                        <span class="text-lg font-black text-purple-600 dark:text-purple-300">${totalHistoricalPoints} pts</span>
+                        <span class="block text-[11px] text-gray-400 mb-0.5">Puntos del Periodo</span>
+                        <span class="text-lg font-black text-purple-600 dark:text-purple-300">${rangePoints} pts</span>
                     </div>
                     <div class="bg-orange-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-orange-100 dark:border-slate-700">
                         <span class="block text-[11px] text-gray-400 mb-0.5">Racha Actual</span>
@@ -1841,7 +1902,7 @@
                 <div class="bg-gray-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2">
                     <h4 class="font-bold text-gray-800 dark:text-gray-200">📌 Resumen de Actividad Global</h4>
                     <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
-                        Has completado un total de <strong>${totalHistoricalCompleted}</strong> tareas de <strong>${totalHistoricalTasks}</strong> planificadas a lo largo de <strong>${historyLogs.length}</strong> días registrados en tu historial. ¡Sigue manteniendo tu ritmo de alta productividad!
+                        Durante <strong>${rangeTitleText}</strong> has completado un total de <strong>${rangeCompletedTasks}</strong> tareas de <strong>${rangeTotalTasks}</strong> planificadas. ¡Sigue manteniendo tu ritmo de alta productividad!
                     </p>
                 </div>
             `;
