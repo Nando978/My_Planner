@@ -73,40 +73,38 @@
             pointer-events: none;
         }
         @keyframes floatUfo {
-            0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50% { transform: translateY(-5px) rotate(2deg); }
+            0%, 100% { transform: translateY(0px) rotate(-1deg); }
+            50% { transform: translateY(-4px) rotate(1deg); }
         }
         .animate-ufo {
             animation: floatUfo 3s ease-in-out infinite;
         }
         @keyframes beamPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
+            0%, 100% { opacity: 0.25; }
+            50% { opacity: 0.65; }
         }
         .animate-beam {
             animation: beamPulse 2s ease-in-out infinite;
         }
-        @keyframes cowWalk {
-            0% { transform: translateX(-40px); opacity: 0; }
-            20% { opacity: 1; }
-            80% { transform: translateX(20px); opacity: 1; }
-            100% { transform: translateX(40px); opacity: 0; }
+        
+        /* Animación correcta de la vaca: entra caminando hacia el centro, se detiene y es abducida */
+        @keyframes cowRoutine {
+            0% { transform: translateX(70px) scaleX(-1); opacity: 0; }
+            10% { opacity: 1; }
+            45% { transform: translateX(0px) scaleX(-1); opacity: 1; } /* Llega justo al centro bajo el OVNI */
+            50% { transform: translateX(0px) scaleX(-1) translateY(0); opacity: 1; } /* Pausa bajo el rayo */
+            75% { transform: translateX(0px) scaleX(-1) translateY(-45px) scale(0.5); opacity: 0.7; filter: brightness(1.6); } /* Abducción */
+            90% { transform: translateX(0px) scaleX(-1) translateY(-80px) scale(0.1); opacity: 0; }
+            100% { transform: translateX(70px) scaleX(-1); opacity: 0; }
         }
-        @keyframes cowAbduct {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            50% { transform: translateY(-35px) scale(0.6); opacity: 0.8; filter: brightness(1.5); }
-            100% { transform: translateY(-60px) scale(0.1); opacity: 0; }
+        .cow-routine-anim {
+            animation: cowRoutine 12s ease-in-out infinite;
         }
-        .cow-walking {
-            animation: cowWalk 8s linear infinite;
-        }
-        .cow-abducting {
-            animation: cowAbduct 4s ease-in-out forwards;
-        }
+
         /* Animaciones Navidad */
         @keyframes snowfall {
             0% { transform: translateY(-10px); opacity: 0.8; }
-            100% { transform: translateY(90px); opacity: 0.2; }
+            100% { transform: translateY(100px); opacity: 0.2; }
         }
         .snowflake {
             position: absolute;
@@ -115,19 +113,20 @@
             animation: snowfall 3s linear infinite;
         }
         @keyframes santaSlide {
-            0% { transform: translateX(-50px); opacity: 0; }
+            0% { transform: translateX(-60px); opacity: 0; }
             20% { opacity: 1; }
-            80% { transform: translateX(180px); opacity: 1; }
+            70% { transform: translateX(160px); opacity: 1; }
             100% { transform: translateX(220px); opacity: 0; }
         }
         .santa-anim {
-            animation: santaSlide 7s ease-in-out infinite;
+            animation: santaSlide 8s ease-in-out infinite;
         }
+
         /* Animaciones Otoño */
         @keyframes leafBlow {
             0% { transform: translate(-20px, -10px) rotate(0deg); opacity: 0; }
             20% { opacity: 1; }
-            100% { transform: translate(180px, 70px) rotate(360deg); opacity: 0; }
+            100% { transform: translate(190px, 75px) rotate(360deg); opacity: 0; }
         }
         .leaf-anim {
             position: absolute;
@@ -136,18 +135,19 @@
         }
         @keyframes treeWind {
             0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(-5deg); }
+            50% { transform: rotate(-4deg); }
         }
         .tree-swaying {
             transform-origin: bottom center;
             animation: treeWind 4s ease-in-out infinite;
         }
+
         /* Animaciones Jardín */
         @keyframes butterflyFly {
             0% { transform: translate(0, 0) scaleX(1); }
-            25% { transform: translate(40px, -15px) scaleX(1); }
-            50% { transform: translate(90px, 5px) scaleX(-1); }
-            75% { transform: translate(40px, -10px) scaleX(-1); }
+            25% { transform: translate(45px, -15px) scaleX(1); }
+            50% { transform: translate(100px, 5px) scaleX(-1); }
+            75% { transform: translate(45px, -8px) scaleX(-1); }
             100% { transform: translate(0, 0) scaleX(1); }
         }
         .butterfly-anim {
@@ -211,7 +211,7 @@
         <!-- COLUMNA IZQUIERDA -->
         <div class="space-y-6">
             
-            <!-- CRONÓMETRO PRINCIPAL CON 8 ESTILOS -->
+            <!-- CRONÓMETRO PRINCIPAL CON ESTILOS PROFESIONALES -->
             <div id="mainTimerCard" class="bg-slate-900 text-white p-5 rounded-3xl border border-purple-500/30 shadow-md relative overflow-hidden text-center transition-all duration-300">
                 <div class="flex items-center justify-between mb-2">
                     <span id="mainTaskTitle" class="text-xs font-semibold text-purple-300 truncate max-w-[150px]">⚡ Tu Enfoque en Franjas</span>
@@ -220,12 +220,12 @@
                             <option value="style-digital">💻 Digital</option>
                             <option value="style-neon">⚡ Neón</option>
                             <option value="style-minimal">☕ Minimalista</option>
-                            <option value="style-cat">🐱 Estilo Gato</option>
-                            <option value="style-dog">🐶 Estilo Perro</option>
-                            <option value="style-ufo">🛸 Estilo OVNI & Vaca</option>
-                            <option value="style-xmas">🎄 Estilo Navidad (Cabaña)</option>
-                            <option value="style-autumn">🍂 Estilo Otoño (Hojas)</option>
-                            <option value="style-garden">🌻 Estilo Jardín (Naturaleza)</option>
+                            <option value="style-cat">🐱 Gato</option>
+                            <option value="style-dog">🐶 Perro</option>
+                            <option value="style-ufo">🛸 OVNI & Vaca</option>
+                            <option value="style-xmas">🎄 Navidad</option>
+                            <option value="style-autumn">🍂 Otoño</option>
+                            <option value="style-garden">🌻 Jardín</option>
                         </select>
                         <button onclick="toggleFloatingWidget()" class="bg-purple-600/50 hover:bg-purple-600 text-purple-200 w-8 h-8 rounded-lg transition flex items-center justify-center text-sm shadow" title="Ventana Flotante PiP">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><rect x="12" y="9" width="8" height="6" rx="1"/></svg>
@@ -513,7 +513,6 @@
 
     <!-- SCRIPT -->
     <script>
-        // Protección robusta contra clic derecho y atajos de inspección en toda la página
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
@@ -572,8 +571,7 @@
         let currentMood = '🌟 Excelente';
         let pipWindow = null;
         let alarmInterval = null;
-        let cowState = 'walking'; // 'walking' o 'abducting'
-        let santaState = 'delivering'; // para navidad
+        let santaState = 'delivering';
 
         document.addEventListener('DOMContentLoaded', () => {
             try {
@@ -1389,16 +1387,13 @@
                     </div>
                 `;
             } else if (currentTimerStyle === 'style-ufo') {
-                const cowHtml = cowState === 'walking' 
-                    ? `<span class="absolute bottom-2 left-4 text-xl cow-walking">🐄</span>` 
-                    : `<span class="absolute bottom-6 left-1/2 -translate-x-1/2 text-lg cow-abducting">🐄</span>`;
-
+                // Vaca caminando correctamente hacia el centro, deteniéndose bajo el haz de luz y siendo abducida
                 innerHTMLMain = `
                     <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-indigo-950 via-slate-900 to-purple-950 p-4 rounded-2xl border border-indigo-500/40 overflow-hidden min-h-[110px]">
                         <div class="absolute top-2 animate-ufo text-2xl z-10">🛸</div>
                         <div class="absolute top-7 left-1/2 -translate-x-1/2 w-20 h-16 bg-gradient-to-b from-emerald-400/40 to-transparent clip-path-polygon animate-beam pointer-events-none" style="clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);"></div>
                         <div class="absolute bottom-2 right-4 text-xl">🌲</div>
-                        ${cowHtml}
+                        <span class="absolute bottom-2 text-xl cow-routine-anim z-15">🐄</span>
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-emerald-300 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] my-1">${timeStr}</div>
                         <div class="text-[9px] text-indigo-300/80 z-20 font-bold tracking-widest uppercase">Área 51 • Abducción Activa</div>
                     </div>
@@ -1410,23 +1405,19 @@
                     </div>
                 `;
             } else if (currentTimerStyle === 'style-xmas') {
-                // ESTILO NAVIDAD: Cabaña, nieve cayendo y Papá Noel con regalos
                 const santaHtml = santaState === 'delivering' 
                     ? `<span class="absolute bottom-2 left-6 text-xl santa-anim">🛷🎅🎁</span>` 
                     : `<span class="absolute bottom-2 left-1/2 -translate-x-1/2 text-lg animate-bounce">🎁🎄</span>`;
 
                 innerHTMLMain = `
                     <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-blue-950 via-slate-900 to-red-950 p-4 rounded-2xl border border-red-500/40 overflow-hidden min-h-[110px]">
-                        <!-- Nieve cayendo -->
                         <div class="snowflake" style="top: 5px; left: 20px;">❄️</div>
                         <div class="snowflake" style="top: 15px; left: 160px; animation-delay: 1s;">❄️</div>
                         <div class="snowflake" style="top: 2px; left: 240px; animation-delay: 2s;">❄️</div>
                         
-                        <!-- Cabaña y Arbolito -->
                         <div class="absolute bottom-2 right-4 text-xl">🏠🌲</div>
                         ${santaHtml}
 
-                        <!-- Reloj -->
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-red-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)] my-1">${timeStr}</div>
                         <div class="text-[9px] text-red-300/80 z-20 font-bold tracking-widest uppercase">🎄 Villa Navideña • ¡Magia & Foco!</div>
                     </div>
@@ -1438,19 +1429,15 @@
                     </div>
                 `;
             } else if (currentTimerStyle === 'style-autumn') {
-                // ESTILO OTOÑO: Árboles con viento y hojas cayendo
                 innerHTMLMain = `
                     <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-amber-950 via-orange-950 to-stone-900 p-4 rounded-2xl border border-amber-500/40 overflow-hidden min-h-[110px]">
-                        <!-- Hojas volando por el viento -->
                         <div class="leaf-anim" style="top: 5px; left: 10px;">🍁</div>
                         <div class="leaf-anim" style="top: 20px; left: 80px; animation-delay: 2s;">🍂</div>
                         <div class="leaf-anim" style="top: 10px; left: 190px; animation-delay: 3.5s;">🍁</div>
 
-                        <!-- Árboles meciéndose con el viento -->
                         <div class="absolute bottom-2 left-3 text-xl tree-swaying">🌳</div>
                         <div class="absolute bottom-2 right-3 text-xl tree-swaying" style="animation-delay: 1s;">🍁</div>
 
-                        <!-- Reloj -->
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-amber-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)] my-1">${timeStr}</div>
                         <div class="text-[9px] text-amber-300/80 z-20 font-bold tracking-widest uppercase">🍂 Brisa de Otoño • Enfoque Cálido</div>
                     </div>
@@ -1462,16 +1449,12 @@
                     </div>
                 `;
             } else if (currentTimerStyle === 'style-garden') {
-                // ESTILO JARDÍN: Naturaleza, flores y mariposas
                 innerHTMLMain = `
                     <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-emerald-950 via-teal-950 to-green-950 p-4 rounded-2xl border border-emerald-500/40 overflow-hidden min-h-[110px]">
-                        <!-- Mariposa volando -->
                         <div class="absolute top-3 left-4 text-lg butterfly-anim">🦋</div>
-                        <!-- Flores en el jardín -->
                         <div class="absolute bottom-2 left-3 text-lg">🌷🌻</div>
                         <div class="absolute bottom-2 right-3 text-lg">🌸🌿</div>
 
-                        <!-- Reloj -->
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-emerald-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)] my-1">${timeStr}</div>
                         <div class="text-[9px] text-emerald-300/80 z-20 font-bold tracking-widest uppercase">🌻 Jardín Zen • Paz & Crecimiento</div>
                     </div>
@@ -1493,18 +1476,8 @@
             }
         }
 
-        // Intervalos de animación cíclica para OVNI y Navidad
         setInterval(() => {
-            if (currentTimerStyle === 'style-ufo') {
-                if (cowState === 'walking') {
-                    cowState = 'abducting';
-                    setTimeout(() => {
-                        cowState = 'walking';
-                        updateTimerDisplay();
-                    }, 4000);
-                }
-                updateTimerDisplay();
-            } else if (currentTimerStyle === 'style-xmas') {
+            if (currentTimerStyle === 'style-xmas') {
                 if (santaState === 'delivering') {
                     santaState = 'gifts';
                     setTimeout(() => {
