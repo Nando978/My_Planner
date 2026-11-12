@@ -103,6 +103,7 @@
         }
 
         /* ESCENAS CINEMÁTICAS TIPO VÍDEO */
+        /* 1. Nebulosa Real en Píxeles (Flujo correcto de derecha a izquierda / diagonal) */
         @keyframes pixelNebulaDrift {
             0% { transform: translateX(0) translateY(0); opacity: 0.4; }
             50% { opacity: 0.8; }
@@ -132,6 +133,7 @@
             100% { opacity: 1; transform: scale(1.3); }
         }
 
+        /* 2. Olas Oceánicas Reales (Capas fluidas de espuma y agua) */
         @keyframes oceanWaveAnim1 {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
@@ -160,6 +162,7 @@
             animation: oceanWaveAnim2 15s linear infinite;
         }
 
+        /* 3. Escenas Temporadas: Halloween, Navidad, Pascua, Otoño */
         @keyframes seasonalSceneMove {
             0% { transform: translateY(-10px) translateX(0) rotate(0deg); opacity: 0; }
             20% { opacity: 0.9; }
@@ -222,6 +225,7 @@
                     </select>
                 </div>
 
+                <!-- SELECTOR CORREGIDO Y EXPANDIDO -->
                 <div class="relative">
                     <select id="atmosphereSelector" onchange="changeAtmosphere(this.value)" class="bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-semibold px-3 py-2 rounded-xl border border-purple-200 dark:border-purple-800 outline-none cursor-pointer">
                         <option value="none">✨ Sin Animación</option>
@@ -504,6 +508,7 @@
                 <button onclick="closeMetricsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
             </div>
             
+            <!-- SELECTOR DE RANGO DE TIEMPO -->
             <div class="flex items-center justify-between bg-gray-50 dark:bg-slate-800/60 p-2 rounded-2xl border border-gray-100 dark:border-slate-700/60">
                 <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 pl-2">Periodo:</span>
                 <div class="flex items-center space-x-1" id="metricsRangeSelector">
@@ -1677,118 +1682,6 @@
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(49,46,129,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(99,102,241,0.4);">
                         <div style="font-size: 10px; margin-bottom: 2px;">🛸 🐄</div>
                         <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #34d399;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-xmas') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-red-950/60 to-emerald-950/60 p-3 rounded-2xl border border-red-500/30">
-                        <div class="text-[11px] text-red-300 font-bold mb-1">🎄 🎅 Navidad en Marcha 🎅 🎄</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-red-200 tracking-widest">${timeStr}</div>
-                        <div class="text-[10px] text-emerald-300/80 mt-1">✨ ¡Magia y alegría! ✨</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(127,29,29,0.7), rgba(6,78,59,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(239,68,68,0.4);">
-                        <div style="font-size: 9px; color: #fca5a5; font-weight: bold; margin-bottom: 2px;">🎄 Navidad</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #fee2e2;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-autumn') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-amber-950/60 to-orange-900/50 p-3 rounded-2xl border border-orange-500/30">
-                        <div class="text-[11px] text-orange-300 font-bold mb-1">🍁 🍂 Otoño Acogedor 🍂 🍁</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-orange-200 tracking-widest">${timeStr}</div>
-                        <div class="text-[10px] text-amber-300/80 mt-1">☕ Hojas y café cálido</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(120,53,15,0.7), rgba(154,52,18,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(249,115,22,0.4);">
-                        <div style="font-size: 9px; color: #fdba74; font-weight: bold; margin-bottom: 2px;">🍁 Otoño</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #ffedd5;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-garden') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-emerald-950/60 to-green-900/50 p-3 rounded-2xl border border-emerald-500/30">
-                        <div class="text-[11px] text-emerald-300 font-bold mb-1">🌻 🌿 Jardín Botánico 🌿 🌻</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-emerald-200 tracking-widest">${timeStr}</div>
-                        <div class="text-[10px] text-green-300/80 mt-1">🌸 Creciendo paso a paso</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(6,78,59,0.7), rgba(20,83,45,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(16,185,129,0.4);">
-                        <div style="font-size: 9px; color: #6ee7b7; font-weight: bold; margin-bottom: 2px;">🌻 Jardín</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #d1fae5;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-halloween') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-purple-950/70 to-zinc-950/80 p-3 rounded-2xl border border-purple-500/40">
-                        <div class="text-[11px] text-purple-300 font-bold mb-1">🎃 👻 Halloween Misterio 👻 🎃</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-purple-200 tracking-widest">${timeStr}</div>
-                        <div class="text-[10px] text-purple-400/80 mt-1">🦇 Dulce o truco activo</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(88,28,135,0.7), rgba(9,9,11,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(168,85,247,0.4);">
-                        <div style="font-size: 9px; color: #d8b4fe; font-weight: bold; margin-bottom: 2px;">🎃 Halloween</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #f3e8ff;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-love') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-pink-950/60 to-rose-950/60 p-3 rounded-2xl border border-pink-500/30">
-                        <div class="text-[11px] text-pink-300 font-bold mb-1">💖 🌸 Amor y Amistad 🌸 💖</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-pink-200 tracking-widest">${timeStr}</div>
-                        <div class="text-[10px] text-rose-300/80 mt-1">✨ Conexión y afecto</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(131,24,67,0.7), rgba(159,18,57,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(244,63,94,0.4);">
-                        <div style="font-size: 9px; color: #fecdd3; font-weight: bold; margin-bottom: 2px;">💖 Amor</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #ffe4e6;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-rain') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-blue-950/70 to-slate-950/80 p-3 rounded-2xl border border-blue-500/30">
-                        <div class="text-[11px] text-blue-300 font-bold mb-1">🌧️ 💧 Lluvia Relajante 💧 🌧️</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-blue-200 tracking-widest">${timeStr}</div>
-                        <div class="text-[10px] text-blue-400/80 mt-1">☕ Sonido de gotas</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(30,58,138,0.7), rgba(15,23,42,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(59,130,246,0.4);">
-                        <div style="font-size: 9px; color: #93c5fd; font-weight: bold; margin-bottom: 2px;">🌧️ Lluvia</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #eff6ff;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-fire') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-red-950/75 to-orange-950/75 p-3 rounded-2xl border border-orange-500/40">
-                        <div class="text-[11px] text-orange-300 font-bold mb-1">🔥 🪵 Fuego Interno 🪵 🔥</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-orange-200 tracking-widest">${timeStr}</div>
-                        <div class="text-[10px] text-amber-400/80 mt-1">✨ Chispa de enfoque</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(127,29,29,0.8), rgba(124,45,18,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(249,115,22,0.4);">
-                        <div style="font-size: 9px; color: #fed7aa; font-weight: bold; margin-bottom: 2px;">🔥 Fuego</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #fff7ed;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-space') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-violet-950/80 to-indigo-950/80 p-3 rounded-2xl border border-violet-500/40">
-                        <div class="text-[11px] text-violet-300 font-bold mb-1">🚀 🌌 Espacio Profundo 🌌 🚀</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-violet-200 tracking-widest">${timeStr}</div>
-                        <div class="text-[10px] text-indigo-300/80 mt-1">✨ Más allá de las estrellas</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(76,29,149,0.8), rgba(49,46,129,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(139,92,246,0.4);">
-                        <div style="font-size: 9px; color: #ddd6fe; font-weight: bold; margin-bottom: 2px;">🚀 Espacio</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #f5f3ff;">${timeStr}</div>
                     </div>
                 `;
             } else {
