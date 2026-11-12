@@ -87,7 +87,6 @@
             animation: beamPulse 2s ease-in-out infinite;
         }
         
-        /* Animación de la vaca saliendo desde la esquina derecha y siendo abducida en el centro */
         @keyframes cowRoutine {
             0% { transform: translateX(90px) scaleX(1); opacity: 0; }
             15% { opacity: 1; }
@@ -101,7 +100,6 @@
             animation: cowRoutine 12s ease-in-out infinite;
         }
 
-        /* Animación de fuego para racha */
         @keyframes flamePulse {
             0%, 100% { transform: scale(1) rotate(-3deg); filter: brightness(1); }
             50% { transform: scale(1.18) rotate(3deg); filter: brightness(1.25); }
@@ -111,7 +109,6 @@
             display: inline-block;
         }
 
-        /* Animaciones Navidad */
         @keyframes snowfall {
             0% { transform: translateY(-10px); opacity: 0.8; }
             100% { transform: translateY(100px); opacity: 0.2; }
@@ -132,7 +129,6 @@
             animation: santaSlide 8s ease-in-out infinite;
         }
 
-        /* Animaciones Otoño */
         @keyframes leafBlow {
             0% { transform: translate(-20px, -10px) rotate(0deg); opacity: 0; }
             20% { opacity: 1; }
@@ -152,7 +148,6 @@
             animation: treeWind 4s ease-in-out infinite;
         }
 
-        /* Animaciones Jardín */
         @keyframes butterflyFly {
             0% { transform: translate(0, 0) scaleX(1); }
             25% { transform: translate(45px, -15px) scaleX(1); }
@@ -318,7 +313,7 @@
                 <form id="taskForm" onsubmit="handleAddTask(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre de la Actividad</label>
-                        <input type="text" id="taskTitle" required placeholder="Ej. Estdiar inglés, Caminar..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 dark:focus:ring-purple-600">
+                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Caminar..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 dark:focus:ring-purple-600">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
@@ -609,8 +604,8 @@
         ];
         
         let goals = JSON.parse(localStorage.getItem('my_planner_goals')) || [
-            { id: 1, title: 'Hora Libre', target: 100, type: 'time', minutes: 60, claimed: false },
-            { id: 2, title: 'Café o Snack', target: 40, type: 'direct', minutes: 0, claimed: false }
+            { id: 1, title: 'Hora Libre', target: 100, type: 'time', minutes: 60 },
+            { id: 2, title: 'Café o Snack', target: 40, type: 'direct', minutes: 0 }
         ];
 
         let historyLogs = JSON.parse(localStorage.getItem('my_planner_history')) || [];
@@ -618,6 +613,7 @@
         let lastClosedDateStr = localStorage.getItem('my_planner_last_closed_date') || '';
         let currentTimerStyle = localStorage.getItem('my_planner_timer_style') || 'style-digital';
         let currentMetricsRange = 'today';
+        let spentPointsToday = parseInt(localStorage.getItem('my_planner_spent_points')) || 0;
 
         const emojiCategories = [
             { title: '💼 Trabajo & Productividad', emojis: ['💼', '📈', '📊', '💻', '📝', '📁', '⚙️', '🛠️', '📌', '💡', '🔍', '⚡'] },
@@ -1011,8 +1007,14 @@
         function toggleTask(id) {
             const task = tasks.find(t => t.id === id);
             if (task) {
-                task.completed = !task.completed;
-                if (task.completed && activeTaskId === id) {
+                // REGLA ESTRICTA: Una vez marcada como terminada (completed = true), 
+                // no se permite desmarcarla para evitar el fraude de puntos.
+                if (task.completed) {
+                    return; // Ignorar el clic si ya estaba terminada
+                }
+
+                task.completed = true;
+                if (activeTaskId === id) {
                     stopWidgetTimer();
                     stopContinuousAlarm();
                     clearActiveTaskStorage();
@@ -1022,6 +1024,11 @@
         }
 
         function deleteTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task && task.completed) {
+                alert('⚠️ No se puede eliminar una tarea que ya ha sido marcada como terminada.');
+                return;
+            }
             tasks = tasks.filter(t => t.id !== id);
             if (activeTaskId === id) {
                 stopWidgetTimer();
@@ -1071,7 +1078,7 @@
                 
                 card.innerHTML = `
                     <div class="flex items-center space-x-3 flex-1 min-w-0">
-                        <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="toggleTask(${task.id})" class="w-5 h-5 rounded-md text-purple-600 accent-purple-600 cursor-pointer">
+                        <input type="checkbox" ${task.completed ? 'checked disabled' : ''} onclick="toggleTask(${task.id})" class="w-5 h-5 rounded-md text-purple-600 accent-purple-600 ${task.completed ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'}">
                         <div class="min-w-0">
                             <div class="flex items-center space-x-2 flex-wrap">
                                 <h4 class="font-bold text-sm text-gray-800 dark:text-gray-200 truncate ${task.completed ? 'line-through text-gray-400 dark:text-gray-500' : ''}">${task.title}</h4>
@@ -1084,7 +1091,7 @@
                     </div>
                     <div class="flex items-center space-x-1">
                         <button onclick="loadTaskToWidget(${task.id})" class="p-2 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 hover:bg-purple-100 text-xs font-bold transition" title="Abrir en Widget">⏱️</button>
-                        <button onclick="deleteTask(${task.id})" class="p-2 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-500 hover:bg-rose-100 text-xs font-bold transition" title="Eliminar">&times;</button>
+                        ${!task.completed ? `<button onclick="deleteTask(${task.id})" class="p-2 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-500 hover:bg-rose-100 text-xs font-bold transition" title="Eliminar">&times;</button>` : ''}
                     </div>
                 `;
                 container.appendChild(card);
@@ -1121,7 +1128,7 @@
             const minutes = parseInt(document.getElementById('goalMinutesInput').value) || 0;
 
             if (title) {
-                goals.push({ id: Date.now(), title, target, type, minutes, claimed: false });
+                goals.push({ id: Date.now(), title, target, type, minutes });
                 localStorage.setItem('my_planner_goals', JSON.stringify(goals));
                 renderGoalsUI();
                 updatePointsAndProgress();
@@ -1143,6 +1150,9 @@
         function renderGoalsUI() {
             const container = document.getElementById('goalsListContainer');
             container.innerHTML = '';
+
+            const earnedPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+            const currentPoints = Math.max(0, earnedPoints - spentPointsToday);
 
             goals.forEach(goal => {
                 const card = document.createElement('div');
@@ -1168,11 +1178,12 @@
         }
 
         function updatePointsAndProgress() {
-            const totalPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+            const earnedPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+            const currentPoints = Math.max(0, earnedPoints - spentPointsToday);
             const completedCount = tasks.filter(t => t.completed).length;
 
-            document.getElementById('headerPoints').innerText = `${totalPoints} Pts Hoy`;
-            document.getElementById('summaryTotalPoints').innerText = `${totalPoints} pts`;
+            document.getElementById('headerPoints').innerText = `${currentPoints} Pts Hoy`;
+            document.getElementById('summaryTotalPoints').innerText = `${currentPoints} pts`;
             document.getElementById('summaryCompletedTasks').innerText = `${completedCount} / ${tasks.length}`;
 
             goals.forEach(goal => {
@@ -1183,25 +1194,20 @@
                 const textEl = document.getElementById(`goal-text-${goal.id}`);
 
                 if (ratioEl && barEl && btnEl) {
-                    ratioEl.innerText = `${totalPoints} / ${goal.target} pts`;
-                    const percent = Math.min((totalPoints / goal.target) * 100, 100);
+                    ratioEl.innerText = `${currentPoints} / ${goal.target} pts`;
+                    const percent = Math.min((currentPoints / goal.target) * 100, 100);
                     barEl.style.width = `${percent}%`;
 
-                    if (goal.claimed) {
-                        btnEl.disabled = true;
-                        btnEl.className = "w-full py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 cursor-default shadow-none";
-                        if (iconEl) iconEl.innerText = "✅";
-                        if (textEl) textEl.innerText = `Reclamada: ${goal.title}`;
-                    } else if (totalPoints >= goal.target) {
+                    if (currentPoints >= goal.target) {
                         btnEl.disabled = false;
                         btnEl.className = "w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-400 to-teal-500 hover:opacity-90 text-white shadow-md cursor-pointer animate-bounce";
                         if (iconEl) iconEl.innerText = "🎉";
-                        if (textEl) textEl.innerText = `¡Desbloquear ${goal.title}!`;
+                        if (textEl) textEl.innerText = `¡Desbloquear ${goal.title}! (-${goal.target} pts)`;
                     } else {
                         btnEl.disabled = true;
                         btnEl.className = "w-full py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center space-x-2 bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed shadow-inner";
                         if (iconEl) iconEl.innerText = "🔒";
-                        if (textEl) textEl.innerText = `Faltan ${goal.target - totalPoints} pts`;
+                        if (textEl) textEl.innerText = `Faltan ${goal.target - currentPoints} pts`;
                     }
                 }
             });
@@ -1211,8 +1217,16 @@
             const goal = goals.find(g => g.id === goalId);
             if (!goal) return;
 
-            goal.claimed = true;
-            localStorage.setItem('my_planner_goals', JSON.stringify(goals));
+            const earnedPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+            const currentPoints = Math.max(0, earnedPoints - spentPointsToday);
+
+            if (currentPoints < goal.target) {
+                alert('⚠️ No tienes suficientes puntos disponibles para reclamar esta meta.');
+                return;
+            }
+
+            spentPointsToday += goal.target;
+            localStorage.setItem('my_planner_spent_points', spentPointsToday);
             updatePointsAndProgress();
 
             triggerNativeConfetti();
@@ -1224,7 +1238,7 @@
             const descEl = document.getElementById('rewardModalDesc');
 
             if (goal.type === 'time' && goal.minutes > 0) {
-                descEl.innerText = `Has desbloqueado ${goal.minutes} minutos para "${goal.title}".`;
+                descEl.innerText = `Has gastado ${goal.target} pts y obtenido ${goal.minutes} minutos para "${goal.title}".`;
                 rewardSecondsLeft = goal.minutes * 60;
                 
                 const m = Math.floor(rewardSecondsLeft / 60);
@@ -1233,7 +1247,7 @@
                 
                 timerSection.classList.remove('hidden');
             } else {
-                descEl.innerText = `¡Logro alcanzado! Disfruta de tu recompensa (${goal.title}).`;
+                descEl.innerText = `¡Has gastado ${goal.target} pts! Disfruta de tu recompensa (${goal.title}).`;
                 timerSection.classList.add('hidden');
             }
 
@@ -1603,7 +1617,7 @@
                     <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-stone-950 via-red-950 to-orange-950 p-4 rounded-2xl border border-red-500/40 overflow-hidden min-h-[110px]">
                         <div class="absolute top-2 left-6 text-xl fire-anim">🔥</div>
                         <div class="absolute top-2 right-6 text-xl fire-anim" style="animation-delay: 0.6s;">🔥</div>
-                        <div class="absolute bottom-2 left-4 text-lg">🪵</div>
+                        <div class="absolute bottom-2 left-4 text-lg">🔥</div>
                         <div class="absolute bottom-2 right-4 text-lg fire-anim">🔥</div>
                         <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-orange-200 tracking-wider z-20 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)] my-1">${timeStr}</div>
                         <div class="text-[9px] text-orange-300/80 z-20 font-bold tracking-widest uppercase">🔥 Fuego Intenso • Energía Pura</div>
@@ -1611,7 +1625,7 @@
                 `;
                 innerHTMLPip = `
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(41,37,36,0.9), rgba(127,29,29,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(239,68,68,0.4); position: relative; overflow: hidden;">
-                        <div style="font-size: 10px; margin-bottom: 2px;">🔥 🪵 🔥</div>
+                        <div style="font-size: 10px; margin-bottom: 2px;">🔥 🔥 🔥</div>
                         <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #fed7aa; text-shadow: 0 0 6px rgba(239,68,68,0.6);">${timeStr}</div>
                     </div>
                 `;
@@ -1712,7 +1726,8 @@
             }
 
             const reflection = document.getElementById('dailyReflection').value.trim();
-            const totalPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+            const earnedPoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+            const totalPoints = Math.max(0, earnedPoints - spentPointsToday);
             const completedCount = tasks.filter(t => t.completed).length;
 
             const todayObj = new Date();
@@ -1737,8 +1752,10 @@
             }
 
             lastClosedDateStr = todayISO;
+            spentPointsToday = 0;
             localStorage.setItem('my_planner_streak', streak);
             localStorage.setItem('my_planner_last_closed_date', lastClosedDateStr);
+            localStorage.setItem('my_planner_spent_points', spentPointsToday);
 
             historyLogs.unshift({
                 id: Date.now(),
@@ -1753,9 +1770,6 @@
 
             localStorage.setItem('my_planner_history', JSON.stringify(historyLogs));
             document.getElementById('streakCounter').innerText = `${streak} Días`;
-
-            goals.forEach(g => g.claimed = false);
-            localStorage.setItem('my_planner_goals', JSON.stringify(goals));
 
             tasks = [];
             saveAndRender();
@@ -1824,7 +1838,8 @@
             categories.forEach(c => categoryPointsMap[c.name] = 0);
 
             if (currentMetricsRange === 'today') {
-                rangePoints = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+                const earned = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+                rangePoints = Math.max(0, earned - spentPointsToday);
                 rangeTotalTasks = tasks.length;
                 rangeCompletedTasks = tasks.filter(t => t.completed).length;
 
@@ -1847,7 +1862,8 @@
                     }
                 });
 
-                rangePoints += tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+                const earnedToday = tasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+                rangePoints += Math.max(0, earnedToday - spentPointsToday);
                 rangeTotalTasks += tasks.length;
                 rangeCompletedTasks += tasks.filter(t => t.completed).length;
                 tasks.forEach(t => {
