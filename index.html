@@ -78,7 +78,7 @@
         }
         .animate-flame { animation: flamePulse 1.2s ease-in-out infinite; display: inline-block; }
 
-        /* CAPA DE ANIMACIONES ATMOSFÉRICAS Y ESCENAS DE VÍDEO */
+        /* CAPA DE ANIMACIONES ATMOSFÉRICAS */
         #atmosphericLayer {
             position: fixed;
             top: 0;
@@ -102,8 +102,7 @@
             100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
-        /* ESCENAS CINEMÁTICAS TIPO VÍDEO */
-        /* 1. Nebulosa Real en Píxeles (Flujo correcto de derecha a izquierda / diagonal) */
+        /* 1. NEBULOSA REAL EN PÍXELES */
         @keyframes pixelNebulaDrift {
             0% { transform: translateX(0) translateY(0); opacity: 0.4; }
             50% { opacity: 0.8; }
@@ -133,36 +132,83 @@
             100% { opacity: 1; transform: scale(1.3); }
         }
 
-        /* 2. Olas Oceánicas Reales (Capas fluidas de espuma y agua) */
-        @keyframes oceanWaveAnim1 {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        /* 2. FUEGOS ARTIFICIALES PEQUEÑOS Y FINOS */
+        @keyframes smallFirework {
+            0% { transform: scale(0.2); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
         }
-        @keyframes oceanWaveAnim2 {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0%); }
-        }
-        .ocean-layer-1 {
+        .small-firework-burst {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 200%;
-            height: 90px;
-            background: repeating-linear-gradient(45deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.15) 20px, rgba(14, 116, 144, 0.2) 20px, rgba(14, 116, 144, 0.2) 40px);
-            border-top: 2px solid rgba(56, 189, 248, 0.4);
-            animation: oceanWaveAnim1 10s linear infinite;
-        }
-        .ocean-layer-2 {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 200%;
-            height: 130px;
-            background: linear-gradient(to top, rgba(3, 105, 161, 0.25), transparent);
-            animation: oceanWaveAnim2 15s linear infinite;
+            border-radius: 50%;
+            animation: smallFirework 1.8s ease-out infinite;
         }
 
-        /* 3. Escenas Temporadas: Halloween, Navidad, Pascua, Otoño */
+        /* 3. OLAS OCEÁNICAS CON MAR, BARCO Y LUNA */
+        @keyframes shipCrossing {
+            0% { transform: translateX(-150px); }
+            100% { transform: translateX(calc(100vw + 150px)); }
+        }
+        .ocean-scene-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 120px;
+            background: linear-gradient(to top, rgba(3, 105, 161, 0.4), rgba(14, 116, 144, 0.15));
+            border-top: 2px solid rgba(56, 189, 248, 0.4);
+            overflow: hidden;
+        }
+        .ocean-ship {
+            position: absolute;
+            bottom: 25px;
+            animation: shipCrossing 22s linear infinite;
+            font-size: 28px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .ocean-moon {
+            position: absolute;
+            top: 40px;
+            right: 80px;
+            font-size: 42px;
+            opacity: 0.85;
+            filter: drop-shadow(0 0 10px rgba(254, 240, 138, 0.6));
+        }
+
+        /* 4. PORTAL CÓSMICO CON RAYITOS Y LUCES */
+        @keyframes portalSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.08); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        @keyframes rayPulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.95); }
+            50% { opacity: 0.9; transform: scale(1.05); }
+        }
+        .cosmic-portal-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 380px;
+            height: 380px;
+            margin: -190px 0 0 -190px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(147, 51, 234, 0.35) 0%, rgba(59, 130, 246, 0.25) 50%, transparent 80%);
+            border: 2px dashed rgba(216, 180, 254, 0.6);
+            animation: portalSpin 10s linear infinite;
+        }
+        .cosmic-ray {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 480px;
+            height: 480px;
+            margin: -240px 0 0 -240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 40%, rgba(244, 63, 94, 0.2) 60%, transparent 80%);
+            animation: rayPulse 3s ease-in-out infinite;
+        }
+
+        /* TEMPORADAS */
         @keyframes seasonalSceneMove {
             0% { transform: translateY(-10px) translateX(0) rotate(0deg); opacity: 0; }
             20% { opacity: 0.9; }
@@ -178,7 +224,7 @@
 </head>
 <body class="bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col selection:bg-purple-200 relative z-10" id="mainBody">
 
-    <!-- CAPA FLOTANTE DE ANIMACIONES ATMOSFÉRICAS Y VÍDEOS -->
+    <!-- CAPA FLOTANTE -->
     <div id="atmosphericLayer"></div>
 
     <!-- HEADER -->
@@ -225,13 +271,13 @@
                     </select>
                 </div>
 
-                <!-- SELECTOR CORREGIDO Y EXPANDIDO -->
+                <!-- SELECTOR CON TODAS LAS ANIMACIONES REFINADAS -->
                 <div class="relative">
                     <select id="atmosphereSelector" onchange="changeAtmosphere(this.value)" class="bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-semibold px-3 py-2 rounded-xl border border-purple-200 dark:border-purple-800 outline-none cursor-pointer">
                         <option value="none">✨ Sin Animación</option>
                         <optgroup label="✨ Partículas & Diseños">
                             <option value="stardust">🌟 Polvo Estelar</option>
-                            <option value="bubbles">🫧 Burbujas Suaves</option>
+                            <option value="bubbles">🔮 Burbujas Suaves</option>
                             <option value="arcade">👾 Arcade / Píxeles</option>
                             <option value="aliens">👽 Espacio & Aliens</option>
                             <option value="halloween">🎃 Terror & Diversión</option>
@@ -241,15 +287,15 @@
                             <option value="magic">🔮 Orbes Místicos</option>
                             <option value="candy">🍭 Dulce Caramelo</option>
                             <option value="cyber">⚡ Cyberpunk Matrix</option>
-                            <option value="ocean">🌊 Bajo el Océano</option>
+                            <option value="ocean-particles">🌊 Burbujas Oceánicas</option>
                             <option value="music">🎵 Notas Musicales</option>
                             <option value="coffee">☕ Aroma de Café</option>
                         </optgroup>
-                        <optgroup label="🎬 Animaciones Video / Creadas">
+                        <optgroup label="🎬 Escenas en Vivo">
                             <option value="scene-nebula">🌌 Nebulosa de Píxeles (Realista)</option>
-                            <option value="scene-waves">🌊 Olas Oceánicas en Vivo</option>
-                            <option value="scene-fireworks">🎆 Fuegos Artificiales</option>
-                            <option value="scene-portal">🔮 Portal Cósmico Activo</option>
+                            <option value="scene-fireworks">🎆 Fuegos Artificiales (Pequeños)</option>
+                            <option value="scene-waves">🌊 Olas, Barco & Luna</option>
+                            <option value="scene-portal">🔮 Portal Cósmico & Rayos</option>
                         </optgroup>
                         <optgroup label="🍂 Temporadas del Año (Vídeo)">
                             <option value="season-halloween">🎃 Halloween Cinemático</option>
@@ -300,7 +346,6 @@
                     </div>
                 </div>
 
-                <!-- CONTENEDOR DEL RELOJ -->
                 <div id="timerContainerDisplay" class="my-3">
                     <div id="mainTimerDisplay" class="text-4xl font-black font-mono tracking-wider text-white">25:00</div>
                 </div>
@@ -312,7 +357,7 @@
                 </div>
             </div>
 
-            <!-- METAS DIARIAS MÚLTIPLES -->
+            <!-- METAS DIARIAS -->
             <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-purple-100 dark:border-slate-800 shadow-sm space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center space-x-1.5">
@@ -335,17 +380,17 @@
                 <form id="taskForm" onsubmit="handleAddTask(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre de la Actividad</label>
-                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Caminar..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 dark:focus:ring-purple-600">
+                        <input type="text" id="taskTitle" required placeholder="Ej. Estudiar inglés, Caminar..." class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Hora Inicio (24h)</label>
-                            <input type="time" id="taskStart" required class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                            <input type="time" id="taskStart" required class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Hora Fin (24h)</label>
-                            <input type="time" id="taskEnd" required class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                            <input type="time" id="taskEnd" required class="w-full bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                         </div>
                     </div>
 
@@ -381,7 +426,7 @@
                     <div class="flex space-x-2">
                         <div class="relative">
                             <input type="text" id="newCatEmoji" required placeholder="🎨" maxlength="2" class="w-16 bg-gray-50 dark:bg-slate-800 text-center text-sm py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none" title="Emoticón">
-                            <button type="button" onclick="openEmojiPickerModal()" class="absolute -top-2 -right-2 bg-purple-600 hover:bg-purple-500 text-white w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center shadow" title="Elegir de la lista de emoticonos">▼</button>
+                            <button type="button" onclick="openEmojiPickerModal()" class="absolute -top-2 -right-2 bg-purple-600 hover:bg-purple-500 text-white w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center shadow" title="Elegir emoticono">▼</button>
                         </div>
                         <input type="text" id="newCatName" required placeholder="Nombre..." class="flex-1 bg-gray-50 dark:bg-slate-800 text-sm px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 focus:outline-none">
                     </div>
@@ -422,7 +467,7 @@
         <p>Elaborado por: Pablo Antonio Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
     </footer>
 
-    <!-- MODAL SELECTOR DE EMOTICONOS -->
+    <!-- MODALES -->
     <div id="emojiPickerModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-md w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[85vh] flex flex-col">
             <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
@@ -434,7 +479,6 @@
         </div>
     </div>
 
-    <!-- MODAL CREAR NUEVA META -->
     <div id="addGoalModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-sm w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
             <h3 class="text-md font-bold text-gray-800 dark:text-gray-100">Nueva Meta & Recompensa 🎯</h3>
@@ -466,7 +510,6 @@
         </div>
     </div>
 
-    <!-- MODAL CELEBRACIÓN Y RECOMPENSA -->
     <div id="rewardModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl max-w-md w-full text-center space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
             <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center mx-auto text-2xl">🎉</div>
@@ -484,7 +527,6 @@
         </div>
     </div>
 
-    <!-- MODAL HISTORIAL Y LOGROS -->
     <div id="historyModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-xl w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[85vh] flex flex-col">
             <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
@@ -498,7 +540,6 @@
         </div>
     </div>
 
-    <!-- MODAL MÉTRICAS & DASHBOARD ANALÍTICO -->
     <div id="metricsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-2xl w-full space-y-5 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[85vh] flex flex-col">
             <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
@@ -508,7 +549,6 @@
                 <button onclick="closeMetricsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
             </div>
             
-            <!-- SELECTOR DE RANGO DE TIEMPO -->
             <div class="flex items-center justify-between bg-gray-50 dark:bg-slate-800/60 p-2 rounded-2xl border border-gray-100 dark:border-slate-700/60">
                 <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 pl-2">Periodo:</span>
                 <div class="flex items-center space-x-1" id="metricsRangeSelector">
@@ -526,20 +566,6 @@
         </div>
     </div>
 
-    <!-- MODAL DETALLE DE TAREAS DEL DÍA (HISTORIAL) -->
-    <div id="dayDetailsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-md w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[80vh] flex flex-col">
-            <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
-                <h3 class="text-md font-bold text-gray-800 dark:text-gray-100" id="dayDetailsTitle">Tareas del Día</h3>
-                <button onclick="closeDayDetailsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
-            </div>
-            <div id="dayDetailsListContainer" class="space-y-2.5 overflow-y-auto flex-1 pr-1">
-            </div>
-            <button onclick="closeDayDetailsModal()" class="w-full bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs">Cerrar</button>
-        </div>
-    </div>
-
-    <!-- MODAL CIERRE DE DÍA -->
     <div id="closeDayModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl max-w-lg w-full space-y-6 shadow-2xl border border-purple-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between">
@@ -585,7 +611,6 @@
         </div>
     </div>
 
-    <!-- MODAL PERSONALIZAR COLORES -->
     <div id="customThemeModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl max-w-sm w-full space-y-4 shadow-2xl border border-purple-200 dark:border-slate-800">
             <h3 class="text-md font-bold text-gray-800 dark:text-gray-100">Personalizar Colores 🎨</h3>
@@ -634,7 +659,7 @@
         let streak = parseInt(localStorage.getItem('my_planner_streak')) || 0;
         let lastClosedDateStr = localStorage.getItem('my_planner_last_closed_date') || '';
         let currentTimerStyle = localStorage.getItem('my_planner_timer_style') || 'style-digital';
-        let currentAtmosphere = localStorage.getItem('my_planner_atmosphere') || 'stardust';
+        let currentAtmosphere = localStorage.getItem('my_planner_atmosphere') || 'scene-nebula';
         let currentMetricsRange = 'today';
         let spentPointsToday = parseInt(localStorage.getItem('my_planner_spent_points')) || 0;
 
@@ -670,7 +695,6 @@
         let currentMood = '🌟 Excelente';
         let pipWindow = null;
         let alarmInterval = null;
-        let santaState = 'delivering';
 
         document.addEventListener('DOMContentLoaded', () => {
             try {
@@ -720,7 +744,6 @@
             document.getElementById('currentDateHeader').innerText = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
         }
 
-        // MÓDULO DE PERFILES ATMOSFÉRICOS Y ESCENAS DE VÍDEO
         function changeAtmosphere(atmosType) {
             currentAtmosphere = atmosType;
             localStorage.setItem('my_planner_atmosphere', atmosType);
@@ -758,50 +781,55 @@
                 return;
             }
 
-            // 2. OLAS OCEÁNICAS REALES
-            if (currentAtmosphere === 'scene-waves') {
-                const waveBg = document.createElement('div');
-                waveBg.className = 'ocean-layer-2';
-                const waveFg = document.createElement('div');
-                waveFg.className = 'ocean-layer-1';
-                layer.appendChild(waveBg);
-                layer.appendChild(waveFg);
-                return;
-            }
-
-            // 3. FUEGOS ARTIFICIALES
+            // 2. FUEGOS ARTIFICIALES PEQUEÑOS Y FINOS
             if (currentAtmosphere === 'scene-fireworks') {
-                const colors = ['#f43f5e', '#a855f7', '#3b82f6', '#10b981', '#fbbf24'];
-                for (let i = 0; i < 5; i++) {
+                const colors = ['#f43f5e', '#a855f7', '#3b82f6', '#10b981', '#fbbf24', '#ec4899'];
+                for (let i = 0; i < 6; i++) {
                     const fw = document.createElement('div');
-                    fw.style.position = 'absolute';
-                    fw.style.top = `${Math.random() * 50 + 15}%`;
+                    fw.className = 'small-firework-burst';
+                    fw.style.top = `${Math.random() * 60 + 10}%`;
                     fw.style.left = `${Math.random() * 80 + 10}%`;
-                    fw.innerHTML = `<svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="${colors[i]}" stroke-width="2"><path d="M12 2v20M2 12h20M5 5l14 14M5 19L19 5"/></svg>`;
-                    fw.style.animation = `fireworkBurst 2s ease-out infinite`;
-                    fw.style.animationDelay = `${i * 0.4}s`;
+                    fw.style.width = `${Math.random() * 40 + 30}px`;
+                    fw.style.height = fw.style.width;
+                    fw.style.background = `radial-gradient(circle, ${colors[i]} 0%, transparent 70%)`;
+                    fw.style.animationDelay = `${i * 0.3}s`;
                     layer.appendChild(fw);
                 }
                 return;
             }
 
-            // 4. PORTAL CÓSMICO
-            if (currentAtmosphere === 'scene-portal') {
-                const portal = document.createElement('div');
-                portal.style.position = 'absolute';
-                portal.style.top = '50%';
-                portal.style.left = '50%';
-                portal.style.width = '500px';
-                portal.style.height = '500px';
-                portal.style.margin = '-250px 0 0 -250px';
-                portal.style.borderRadius = '50%';
-                portal.style.background = 'radial-gradient(circle, rgba(147,51,234,0.3) 0%, rgba(59,130,246,0.2) 50%, transparent 80%)';
-                portal.style.animation = 'portalSpin 12s linear infinite';
-                layer.appendChild(portal);
+            // 3. OLAS OCEÁNICAS CON MAR, BARCO Y LUNA
+            if (currentAtmosphere === 'scene-waves') {
+                const container = document.createElement('div');
+                container.className = 'ocean-scene-container';
+                
+                const moon = document.createElement('div');
+                moon.className = 'ocean-moon';
+                moon.innerText = '🌕';
+                container.appendChild(moon);
+
+                const ship = document.createElement('div');
+                ship.className = 'ocean-ship';
+                ship.innerText = '🚢';
+                container.appendChild(ship);
+
+                layer.appendChild(container);
                 return;
             }
 
-            // 5. TEMPORADAS DEL AÑO (VÍDEO / ESCENAS)
+            // 4. PORTAL CÓSMICO CON RAYITOS Y LUCES
+            if (currentAtmosphere === 'scene-portal') {
+                const portal = document.createElement('div');
+                portal.className = 'cosmic-portal-ring';
+                layer.appendChild(portal);
+
+                const ray = document.createElement('div');
+                ray.className = 'cosmic-ray';
+                layer.appendChild(ray);
+                return;
+            }
+
+            // 5. TEMPORADAS DEL AÑO
             let seasonSymbols = [];
             if (currentAtmosphere === 'season-halloween') seasonSymbols = ['🎃', '👻', '🦇', '🕯️', '🕸️'];
             else if (currentAtmosphere === 'season-xmas') seasonSymbols = ['❄️', '🎄', '🎁', '🎅', '⭐'];
@@ -835,7 +863,7 @@
             else if (currentAtmosphere === 'magic') symbols = ['🔮', '✨', '📜', '💎', '💫'];
             else if (currentAtmosphere === 'candy') symbols = ['🍭', '🍬', '🍫', '🍩', '⭐'];
             else if (currentAtmosphere === 'cyber') symbols = ['⚡', '💻', '🟢', '🔷', '🛡️'];
-            else if (currentAtmosphere === 'ocean') symbols = ['🌊', '🐚', '⭐', '🐬', '🫧'];
+            else if (currentAtmosphere === 'ocean-particles') symbols = ['🌊', '🐚', '⭐', '🐬', '🫧'];
             else if (currentAtmosphere === 'music') symbols = ['🎵', '🎶', '🎷', '🎸', '✨'];
             else if (currentAtmosphere === 'coffee') symbols = ['☕', '🤎', '🥐', '✨', '🍵'];
 
@@ -924,9 +952,7 @@
                     oscillator.start(audioCtx.currentTime + (index * 0.1));
                     oscillator.stop(audioCtx.currentTime + (index * 0.1) + 0.4);
                 });
-            } catch (e) {
-                console.log("Audio no permitido.");
-            }
+            } catch (e) {}
         }
 
         function triggerNativeConfetti() {
@@ -969,17 +995,13 @@
                     oscillator.start(audioCtx.currentTime + (index * 0.15));
                     oscillator.stop(audioCtx.currentTime + (index * 0.15) + 0.6);
                 });
-            } catch (e) {
-                console.log("Audio no permitido.");
-            }
+            } catch (e) {}
         }
 
         function startContinuousAlarm() {
             if (alarmInterval) return;
             playAlarmBeep();
-            alarmInterval = setInterval(() => {
-                playAlarmBeep();
-            }, 2500);
+            alarmInterval = setInterval(() => { playAlarmBeep(); }, 2500);
         }
 
         function stopContinuousAlarm() {
@@ -1070,15 +1092,8 @@
             document.getElementById('emojiPickerModal').classList.remove('hidden');
         }
 
-        function closeEmojiPickerModal() {
-            document.getElementById('emojiPickerModal').classList.add('hidden');
-        }
-
-        function selectEmoji(emo) {
-            document.getElementById('newCatEmoji').value = emo;
-            closeEmojiPickerModal();
-        }
-
+        function closeEmojiPickerModal() { document.getElementById('emojiPickerModal').classList.add('hidden'); }
+        function selectEmoji(emo) { document.getElementById('newCatEmoji').value = emo; closeEmojiPickerModal(); }
         function onCategoryChange(catName) {
             const found = categories.find(c => c.name === catName);
             if (found) document.getElementById('taskPoints').value = found.defaultPoints;
@@ -1171,7 +1186,7 @@
             });
 
             if (hasConflict) {
-                alert('⚠️ Ya existe una actividad registrada en esa franja horaria. Elige otro horario.');
+                alert('⚠️ Ya existe una actividad registrada en esa franja horaria.');
                 return;
             }
 
@@ -1184,10 +1199,7 @@
         function toggleTask(id) {
             const task = tasks.find(t => t.id === id);
             if (task) {
-                if (task.completed) {
-                    return;
-                }
-
+                if (task.completed) return;
                 task.completed = true;
                 if (activeTaskId === id) {
                     stopWidgetTimer();
@@ -1201,7 +1213,7 @@
         function deleteTask(id) {
             const task = tasks.find(t => t.id === id);
             if (task && task.completed) {
-                alert('⚠️ No se puede eliminar una tarea que ya ha sido marcada como terminada.');
+                alert('⚠️ No se puede eliminar una tarea terminada.');
                 return;
             }
             tasks = tasks.filter(t => t.id !== id);
@@ -1275,11 +1287,8 @@
 
         function toggleTimerInputUI(type) {
             const minutesGroup = document.getElementById('goalMinutesGroup');
-            if (type === 'time') {
-                minutesGroup.classList.remove('hidden');
-            } else {
-                minutesGroup.classList.add('hidden');
-            }
+            if (type === 'time') minutesGroup.classList.remove('hidden');
+            else minutesGroup.classList.add('hidden');
         }
 
         function openAddGoalModal() {
@@ -1291,9 +1300,7 @@
             document.getElementById('addGoalModal').classList.remove('hidden');
         }
 
-        function closeAddGoalModal() {
-            document.getElementById('addGoalModal').classList.add('hidden');
-        }
+        function closeAddGoalModal() { document.getElementById('addGoalModal').classList.add('hidden'); }
 
         function handleSaveNewGoal(e) {
             e.preventDefault();
@@ -1337,7 +1344,7 @@
                         <span class="font-bold text-gray-800 dark:text-gray-200">🎯 ${goal.title} ${goal.type === 'time' ? `(${goal.minutes}m)` : ''}</span>
                         <div class="flex items-center space-x-2">
                             <span class="font-bold text-purple-600 dark:text-purple-400" id="goal-ratio-${goal.id}">0 / ${goal.target} pts</span>
-                            <button onclick="deleteGoal(${goal.id})" class="text-rose-500 hover:text-rose-700 font-bold px-1.5 py-0.5 rounded text-sm" title="Eliminar meta">&times;</button>
+                            <button onclick="deleteGoal(${goal.id})" class="text-rose-500 hover:text-rose-700 font-bold px-1.5 py-0.5 rounded text-sm">&times;</button>
                         </div>
                     </div>
                     <div class="w-full bg-gray-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
@@ -1396,7 +1403,7 @@
             const currentPoints = Math.max(0, earnedPoints - spentPointsToday);
 
             if (currentPoints < goal.target) {
-                alert('⚠️ No tienes suficientes puntos disponibles para reclamar esta meta.');
+                alert('⚠️ No tienes suficientes puntos disponibles.');
                 return;
             }
 
@@ -1405,12 +1412,7 @@
 
             const now = new Date();
             const dateStr = now.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-            claimedRewardsLogs.unshift({
-                id: Date.now(),
-                title: goal.title,
-                pointsSpent: goal.target,
-                dateStr: dateStr
-            });
+            claimedRewardsLogs.unshift({ id: Date.now(), title: goal.title, pointsSpent: goal.target, dateStr: dateStr });
             localStorage.setItem('my_planner_claimed_rewards', JSON.stringify(claimedRewardsLogs));
 
             updatePointsAndProgress();
@@ -1418,21 +1420,18 @@
             playCelebrationSound();
 
             document.getElementById('rewardModalTitle').innerText = `¡${goal.title} Desbloqueada!`;
-            
             const timerSection = document.getElementById('rewardTimerSection');
             const descEl = document.getElementById('rewardModalDesc');
 
             if (goal.type === 'time' && goal.minutes > 0) {
-                descEl.innerText = `Has gastado ${goal.target} pts y obtenido ${goal.minutes} minutos para "${goal.title}".`;
+                descEl.innerText = `Has gastado ${goal.target} pts y obtenido ${goal.minutes} minutos.`;
                 rewardSecondsLeft = goal.minutes * 60;
-                
                 const m = Math.floor(rewardSecondsLeft / 60);
                 const s = rewardSecondsLeft % 60;
                 document.getElementById('rewardTimerDisplay').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                
                 timerSection.classList.remove('hidden');
             } else {
-                descEl.innerText = `¡Has gastado ${goal.target} pts! Disfruta de tu recompensa (${goal.title}).`;
+                descEl.innerText = `¡Has gastado ${goal.target} pts! Disfruta de tu recompensa.`;
                 timerSection.classList.add('hidden');
             }
 
@@ -1464,7 +1463,7 @@
 
         async function toggleFloatingWidget() {
             if (!('documentPictureInPicture' in window)) {
-                alert('Tu navegador no soporta la ventana flotante Picture-in-Picture.');
+                alert('Tu navegador no soporta la ventana flotante.');
                 return;
             }
 
@@ -1476,19 +1475,10 @@
 
             try {
                 pipWindow = await window.documentPictureInPicture.requestWindow({ width: 300, height: 180 });
-                
                 pipWindow.document.body.style.margin = '0';
                 pipWindow.document.body.style.overflow = 'hidden';
                 pipWindow.document.body.style.backgroundColor = '#1e1e2f';
                 pipWindow.document.body.style.userSelect = 'none';
-
-                pipWindow.addEventListener('contextmenu', e => e.preventDefault());
-                pipWindow.addEventListener('keydown', e => {
-                    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
-                        e.preventDefault();
-                        return false;
-                    }
-                });
 
                 pipWindow.document.body.innerHTML = `
                     <div style="background-color: #1e1e2f; color: white; padding: 14px; font-family: 'Quicksand', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; text-align: center; margin: 0; overflow: hidden;">
@@ -1497,9 +1487,9 @@
                             <div id="pipTimerDisplay" style="font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: 2px;">25:00</div>
                         </div>
                         <div style="display: flex; gap: 10px;">
-                            <button id="pipStartBtn" style="background-color: #9333ea; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">▶</button>
-                            <button id="pipPauseBtn" style="background-color: #d97706; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">⏸</button>
-                            <button id="pipCompleteBtn" style="background-color: #059669; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" title="Completar">✓</button>
+                            <button id="pipStartBtn" style="background-color: #9333ea; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 14px;">▶</button>
+                            <button id="pipPauseBtn" style="background-color: #d97706; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 14px;">⏸</button>
+                            <button id="pipCompleteBtn" style="background-color: #059669; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 14px;">✓</button>
                         </div>
                     </div>
                 `;
@@ -1507,12 +1497,9 @@
                 pipWindow.document.getElementById('pipStartBtn').addEventListener('click', startWidgetTimer);
                 pipWindow.document.getElementById('pipPauseBtn').addEventListener('click', pauseWidgetTimer);
                 pipWindow.document.getElementById('pipCompleteBtn').addEventListener('click', completeCurrentActiveTask);
-
                 pipWindow.addEventListener('unload', () => { pipWindow = null; });
                 updateTimerDisplay(true);
-            } catch (err) {
-                console.log("Error PiP:", err);
-            }
+            } catch (err) {}
         }
 
         function loadTaskToWidget(id) {
@@ -1520,7 +1507,6 @@
             if (task) {
                 activeTaskId = task.id;
                 activeTaskTitleText = `${task.category}: ${task.title}`;
-                
                 document.getElementById('mainTaskTitle').innerText = activeTaskTitleText;
 
                 if (pipWindow && !pipWindow.closed) {
@@ -1551,7 +1537,6 @@
 
         function startWidgetTimer(isAutoResume = false) {
             if (timerInterval) return;
-            
             if (!isAutoResume || !timerEndTime) {
                 timerEndTime = Date.now() + (secondsLeft * 1000);
             }
@@ -1607,87 +1592,12 @@
             if (!forceRebuild && existingMainDisplay) {
                 existingMainDisplay.innerText = timeStr;
                 const existingPipDisplay = pipWindow && !pipWindow.closed ? pipWindow.document.getElementById('pipTimerDisplay') : null;
-                if (existingPipDisplay) {
-                    existingPipDisplay.innerText = timeStr;
-                }
+                if (existingPipDisplay) existingPipDisplay.innerText = timeStr;
                 return;
             }
 
-            let innerHTMLMain = '';
-            let innerHTMLPip = '';
-            const percent = Math.min(100, (secondsLeft / totalSecondsForTask) * 100);
-
-            if (currentTimerStyle === 'style-digital') {
-                innerHTMLMain = `<div id="mainTimerDisplay" class="text-4xl font-black font-mono tracking-wider text-white">${timeStr}</div>`;
-                innerHTMLPip = `<div id="pipTimerDisplay" style="font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: 2px; color: white;">${timeStr}</div>`;
-            } else if (currentTimerStyle === 'style-neon') {
-                innerHTMLMain = `<div id="mainTimerDisplay" class="text-4xl font-black font-mono tracking-wider" style="color: #4ade80; text-shadow: 0 0 12px rgba(74, 222, 128, 0.7);">${timeStr}</div>`;
-                innerHTMLPip = `<div id="pipTimerDisplay" style="font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: 2px; color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.7);">${timeStr}</div>`;
-            } else if (currentTimerStyle === 'style-minimal') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center">
-                        <div id="mainTimerDisplay" class="text-3xl font-bold font-sans tracking-tight text-purple-200">${timeStr}</div>
-                        <div class="w-24 bg-purple-950/40 h-1.5 rounded-full mt-2 overflow-hidden">
-                            <div class="bg-purple-400 h-full transition-all duration-300" style="width: ${percent}%;"></div>
-                        </div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 700; font-family: sans-serif; color: #dfccfd;">${timeStr}</div>
-                        <div style="width: 100px; background-color: rgba(255,255,255,0.1); height: 4px; border-radius: 9999px; margin-top: 4px; overflow: hidden;">
-                            <div style="background-color: #dfccfd; height: 100%; width: ${percent}%;"></div>
-                        </div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-cat') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-amber-900/40 to-orange-950/60 p-3 rounded-2xl border border-amber-500/30">
-                        <div class="text-[11px] text-amber-300 font-bold mb-1">🐾 🐱 🐾 Miau Focus 🐾 🐱 🐾</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-amber-200 tracking-widest">${timeStr}</div>
-                        <div class="text-[10px] text-amber-400/80 mt-1">¡Ronroneo productivo!</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(120,53,15,0.6), rgba(67,20,7,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(245,158,11,0.4);">
-                        <div style="font-size: 9px; color: #fcd34d; font-weight: bold; margin-bottom: 2px;">🐱 Miau Focus</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #fde68a;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-dog') {
-                innerHTMLMain = `
-                    <div class="flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950/60 to-blue-950/80 p-3 rounded-2xl border border-cyan-500/30">
-                        <div class="text-[11px] text-cyan-300 font-bold mb-1">🐶 📡 Radar Canino Activo 📡 🐶</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-cyan-200 tracking-wider">${timeStr}</div>
-                        <div class="w-full bg-cyan-950 h-2 rounded-full mt-2 overflow-hidden border border-cyan-700/50">
-                            <div class="bg-gradient-to-r from-cyan-400 to-blue-500 h-full transition-all duration-300" style="width: ${percent}%;"></div>
-                        </div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(8,51,68,0.7), rgba(23,37,84,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(6,182,212,0.4);">
-                        <div style="font-size: 9px; color: #67e8f9; font-weight: bold; margin-bottom: 2px;">🐶 Radar Canino</div>
-                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #a5f3fc;">${timeStr}</div>
-                    </div>
-                `;
-            } else if (currentTimerStyle === 'style-ufo') {
-                innerHTMLMain = `
-                    <div class="relative flex flex-col items-center justify-center bg-gradient-to-b from-indigo-950 via-slate-900 to-purple-950 p-4 rounded-2xl border border-indigo-500/40 overflow-hidden min-h-[110px]">
-                        <div class="absolute top-2 animate-ufo text-2xl z-10">🛸</div>
-                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-emerald-300 tracking-wider z-20 my-1">${timeStr}</div>
-                        <div class="text-[9px] text-indigo-300/80 z-20 font-bold tracking-widest uppercase">I Want to Believe</div>
-                    </div>
-                `;
-                innerHTMLPip = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(49,46,129,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(99,102,241,0.4);">
-                        <div style="font-size: 10px; margin-bottom: 2px;">🛸 🐄</div>
-                        <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #34d399;">${timeStr}</div>
-                    </div>
-                `;
-            } else {
-                innerHTMLMain = `<div id="mainTimerDisplay" class="text-4xl font-black font-mono tracking-wider text-white">${timeStr}</div>`;
-                innerHTMLPip = `<div id="pipTimerDisplay" style="font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: 2px; color: white;">${timeStr}</div>`;
-            }
+            let innerHTMLMain = `<div id="mainTimerDisplay" class="text-4xl font-black font-mono tracking-wider text-white">${timeStr}</div>`;
+            let innerHTMLPip = `<div id="pipTimerDisplay" style="font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: 2px; color: white;">${timeStr}</div>`;
 
             const mainContainer = document.getElementById('timerContainerDisplay');
             if (mainContainer) mainContainer.innerHTML = innerHTMLMain;
@@ -1722,7 +1632,7 @@
             const todayLocalISO = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             
             if (lastClosedDateStr === todayLocalISO) {
-                alert('⚠️ Ya realizaste el Cierre de Día el día de hoy. Solo se permite un cierre diario.');
+                alert('⚠️ Ya realizaste el Cierre de Día el día de hoy.');
                 return;
             }
 
@@ -1733,12 +1643,10 @@
             
             lastQuoteIndex = randomIndex;
             document.getElementById('motivationalQuote').innerText = motivationalQuotes[randomIndex];
-
             document.getElementById('closeDayModal').classList.remove('hidden');
         }
 
         function closeCloseDayModal() { document.getElementById('closeDayModal').classList.add('hidden'); }
-
         function setMood(mood) {
             currentMood = mood;
             document.querySelectorAll('.mood-btn').forEach(btn => {
@@ -1767,17 +1675,12 @@
             if (lastClosedDateStr) {
                 const lastClosed = new Date(lastClosedDateStr);
                 lastClosed.setHours(0, 0, 0, 0);
-
                 const currentToday = new Date(todayLocalISO);
                 currentToday.setHours(0, 0, 0, 0);
-
                 const diffDays = Math.round((currentToday - lastClosed) / (1000 * 60 * 60 * 24));
 
-                if (diffDays === 1) {
-                    streak++;
-                } else if (diffDays > 1) {
-                    streak = 1;
-                }
+                if (diffDays === 1) streak++;
+                else if (diffDays > 1) streak = 1;
             } else {
                 streak = 1;
             }
@@ -1815,9 +1718,7 @@
             document.getElementById('historyModal').classList.remove('hidden');
         }
 
-        function closeHistoryModal() {
-            document.getElementById('historyModal').classList.add('hidden');
-        }
+        function closeHistoryModal() { document.getElementById('historyModal').classList.add('hidden'); }
 
         function openMetricsModal() {
             currentMetricsRange = 'today';
@@ -1826,10 +1727,7 @@
             document.getElementById('metricsModal').classList.remove('hidden');
         }
 
-        function closeMetricsModal() {
-            document.getElementById('metricsModal').classList.add('hidden');
-        }
-
+        function closeMetricsModal() { document.getElementById('metricsModal').classList.add('hidden'); }
         function setMetricsRange(range) {
             currentMetricsRange = range;
             updateMetricsRangeButtonsUI();
@@ -1849,7 +1747,6 @@
 
         function renderMetricsUI() {
             const container = document.getElementById('metricsContentContainer');
-            
             let filteredLogs = [];
             let filteredRewards = [];
             const now = Date.now();
@@ -1876,9 +1773,7 @@
                 rangeCompletedTasks = tasks.filter(t => t.completed).length;
 
                 tasks.forEach(t => {
-                    if (t.completed) {
-                        categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
-                    }
+                    if (t.completed) categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
                 });
             } else {
                 filteredLogs.forEach(h => {
@@ -1887,9 +1782,7 @@
                     rangeCompletedTasks += h.completedTasks;
                     if (h.tasksSnapshot) {
                         h.tasksSnapshot.forEach(t => {
-                            if (t.completed) {
-                                categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
-                            }
+                            if (t.completed) categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
                         });
                     }
                 });
@@ -1899,9 +1792,7 @@
                 rangeTotalTasks += tasks.length;
                 rangeCompletedTasks += tasks.filter(t => t.completed).length;
                 tasks.forEach(t => {
-                    if (t.completed) {
-                        categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
-                    }
+                    if (t.completed) categoryPointsMap[t.category] = (categoryPointsMap[t.category] || 0) + t.points;
                 });
             }
 
@@ -1959,16 +1850,12 @@
                     <h4 class="font-bold text-gray-800 dark:text-gray-200 flex items-center space-x-1.5">
                         <span>🎁 Recompensas y Descansos Reclamados</span>
                     </h4>
-                    <div class="space-y-2 max-h-36 overflow-y-auto pr-1 pt-1">
-                        ${rewardsHTML}
-                    </div>
+                    <div class="space-y-2 max-h-36 overflow-y-auto pr-1 pt-1">${rewardsHTML}</div>
                 </div>
 
                 <div class="bg-gray-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-3">
                     <h4 class="font-bold text-gray-800 dark:text-gray-200">📊 Distribución de Puntos por Categoría</h4>
-                    <div class="space-y-3 pt-1">
-                        ${catBarsHTML}
-                    </div>
+                    <div class="space-y-3 pt-1">${catBarsHTML}</div>
                 </div>
             `;
         }
@@ -1978,7 +1865,7 @@
             container.innerHTML = '';
 
             if (historyLogs.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">No hay registros de cierres anteriores. ¡Completa tu primer Cierre de Día!</div>`;
+                container.innerHTML = `<div class="text-center py-10 text-gray-400 dark:text-gray-500 text-sm">No hay registros de cierres anteriores.</div>`;
                 return;
             }
 
@@ -1992,16 +1879,9 @@
                     </div>
                     <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 font-semibold pt-1">
                         <span>🏆 Puntos: <strong class="text-purple-600 dark:text-purple-400">${item.points} pts</strong></span>
-                        <div class="flex items-center space-x-1.5">
-                            <span>Tareas: <strong class="text-emerald-600 dark:text-emerald-400">${item.completedTasks} / ${item.totalTasks}</strong></span>
-                            <button onclick="openDayDetails(${index})" class="bg-emerald-600 hover:bg-emerald-500 text-white p-1 rounded-lg transition shadow-sm" title="Ver tareas de este día">
-                                ✅
-                            </button>
-                        </div>
+                        <span>Tareas: <strong class="text-emerald-600 dark:text-emerald-400">${item.completedTasks} / ${item.totalTasks}</strong></span>
                     </div>
-                    <p class="text-gray-600 dark:text-gray-300 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-100 dark:border-slate-800 italic mt-1">
-                        "${item.reflection}"
-                    </p>
+                    <p class="text-gray-600 dark:text-gray-300 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-gray-100 dark:border-slate-800 italic mt-1">"${item.reflection}"</p>
                 `;
                 container.appendChild(card);
             });
@@ -2040,7 +1920,6 @@
         function loadTheme() {
             const saved = localStorage.getItem('my_planner_theme') || 'pastel-day';
             const customBg = localStorage.getItem('my_planner_custom_bg');
-            
             if (saved === 'custom' && customBg) {
                 document.getElementById('themeSelector').value = 'custom';
                 document.getElementById('mainBody').className = "text-gray-700 min-h-screen flex flex-col relative z-10";
@@ -2065,10 +1944,8 @@
             const bg = document.getElementById('customBg').value;
             const primary = document.getElementById('customPrimary').value;
             const body = document.getElementById('mainBody');
-            
             body.className = "text-gray-700 min-h-screen flex flex-col relative z-10";
             body.style.backgroundColor = bg;
-            
             localStorage.setItem('my_planner_theme', 'custom');
             localStorage.setItem('my_planner_custom_bg', bg);
             localStorage.setItem('my_planner_custom_primary', primary);
