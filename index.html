@@ -130,7 +130,7 @@
         <!-- COLUMNA IZQUIERDA -->
         <div class="space-y-6">
             
-            <!-- CRONÓMETRO PRINCIPAL CON ESTILOS -->
+            <!-- CRONÓMETRO PRINCIPAL CON 5 ESTILOS COMBINABLES -->
             <div id="mainTimerCard" class="bg-slate-900 text-white p-5 rounded-3xl border border-purple-500/30 shadow-md relative overflow-hidden text-center transition-all duration-300">
                 <div class="flex items-center justify-between mb-2">
                     <span id="mainTaskTitle" class="text-xs font-semibold text-purple-300 truncate max-w-[150px]">⚡ Tu Enfoque en Franjas</span>
@@ -139,6 +139,8 @@
                             <option value="style-digital">💻 Digital</option>
                             <option value="style-neon">⚡ Neón</option>
                             <option value="style-minimal">☕ Minimalista</option>
+                            <option value="style-cat">🐱 Estilo Gato</option>
+                            <option value="style-dog">🐶 Estilo Perro (Radar)</option>
                         </select>
                         <button onclick="toggleFloatingWidget()" class="bg-purple-600/50 hover:bg-purple-600 text-purple-200 text-[11px] font-bold px-2.5 py-1 rounded-lg transition flex items-center space-x-1" title="Sacar a ventana flotante">
                             <span>🪟 Flotante</span>
@@ -146,7 +148,7 @@
                     </div>
                 </div>
 
-                <!-- CONTENEDOR DEL RELOJ SEGÚN ESTILO -->
+                <!-- CONTENEDOR DEL RELOJ -->
                 <div id="timerContainerDisplay" class="my-3">
                     <div id="mainTimerDisplay" class="text-4xl font-black font-mono tracking-wider text-white">25:00</div>
                 </div>
@@ -655,11 +657,6 @@
             localStorage.setItem('my_planner_timer_style', style);
             document.getElementById('timerStyleSelector').value = style;
             updateTimerDisplay();
-
-            if (pipWindow && !pipWindow.closed) {
-                const sel = pipWindow.document.getElementById('pipTimerStyleSelector');
-                if (sel) sel.value = style;
-            }
         }
 
         function loadTimerStyleUI() {
@@ -1115,14 +1112,13 @@
             }
 
             try {
-                pipWindow = await window.documentPictureInPicture.requestWindow({ width: 320, height: 190 });
+                pipWindow = await window.documentPictureInPicture.requestWindow({ width: 300, height: 180 });
                 
                 pipWindow.document.body.style.margin = '0';
                 pipWindow.document.body.style.overflow = 'hidden';
                 pipWindow.document.body.style.backgroundColor = '#1e1e2f';
                 pipWindow.document.body.style.userSelect = 'none';
 
-                // Protección antirrobo de código también dentro de la ventana flotante PiP
                 pipWindow.addEventListener('contextmenu', e => e.preventDefault());
                 pipWindow.addEventListener('keydown', e => {
                     if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
@@ -1133,14 +1129,7 @@
 
                 pipWindow.document.body.innerHTML = `
                     <div style="background-color: #1e1e2f; color: white; padding: 14px; font-family: 'Quicksand', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; text-align: center; margin: 0; overflow: hidden;">
-                        <div style="display: flex; width: 100%; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <div id="pipTaskTitle" style="font-size: 11px; font-weight: 600; color: #dfccfd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px; text-align: left;">${activeTaskTitleText}</div>
-                            <select id="pipTimerStyleSelector" style="background-color: #2a2a40; color: #dfccfd; font-size: 10px; font-weight: bold; padding: 2px 4px; border-radius: 6px; border: 1px solid #4a4a6a; outline: none; cursor: pointer;">
-                                <option value="style-digital">💻 Digital</option>
-                                <option value="style-neon">⚡ Neón</option>
-                                <option value="style-minimal">☕ Minimalista</option>
-                            </select>
-                        </div>
+                        <div id="pipTaskTitle" style="font-size: 11px; font-weight: 600; color: #dfccfd; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;">${activeTaskTitleText}</div>
                         <div id="pipTimerContainerDisplay" style="margin: 6px 0;">
                             <div id="pipTimerDisplay" style="font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: 2px;">25:00</div>
                         </div>
@@ -1151,11 +1140,6 @@
                         </div>
                     </div>
                 `;
-
-                pipWindow.document.getElementById('pipTimerStyleSelector').value = currentTimerStyle;
-                pipWindow.document.getElementById('pipTimerStyleSelector').addEventListener('change', (e) => {
-                    changeTimerStyle(e.target.value);
-                });
 
                 pipWindow.document.getElementById('pipStartBtn').addEventListener('click', startWidgetTimer);
                 pipWindow.document.getElementById('pipPauseBtn').addEventListener('click', pauseWidgetTimer);
@@ -1256,11 +1240,9 @@
             const s = secondsLeft % 60;
             const timeStr = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             
-            // Generar HTML según el estilo seleccionado (Digital, Neón o Minimalista)
             let innerHTMLMain = '';
             let innerHTMLPip = '';
-
-            const customPrimary = localStorage.getItem('my_planner_custom_primary') || '#9333ea';
+            const percent = Math.min(100, (secondsLeft / totalSecondsForTask) * 100);
 
             if (currentTimerStyle === 'style-digital') {
                 innerHTMLMain = `<div id="mainTimerDisplay" class="text-4xl font-black font-mono tracking-wider text-white">${timeStr}</div>`;
@@ -1273,7 +1255,7 @@
                     <div class="flex flex-col items-center justify-center">
                         <div id="mainTimerDisplay" class="text-3xl font-bold font-sans tracking-tight text-purple-200">${timeStr}</div>
                         <div class="w-24 bg-purple-950/40 h-1.5 rounded-full mt-2 overflow-hidden">
-                            <div class="bg-purple-400 h-full transition-all duration-300" style="width: ${Math.min(100, (secondsLeft / totalSecondsForTask) * 100)}%;"></div>
+                            <div class="bg-purple-400 h-full transition-all duration-300" style="width: ${percent}%;"></div>
                         </div>
                     </div>
                 `;
@@ -1281,8 +1263,42 @@
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
                         <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 700; font-family: sans-serif; color: #dfccfd;">${timeStr}</div>
                         <div style="width: 100px; background-color: rgba(255,255,255,0.1); height: 4px; border-radius: 9999px; margin-top: 4px; overflow: hidden;">
-                            <div style="background-color: #dfccfd; height: 100%; width: ${Math.min(100, (secondsLeft / totalSecondsForTask) * 100)}%;"></div>
+                            <div style="background-color: #dfccfd; height: 100%; width: ${percent}%;"></div>
                         </div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-cat') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-amber-900/40 to-orange-950/60 p-3 rounded-2xl border border-amber-500/30">
+                        <div class="text-[11px] text-amber-300 font-bold mb-1 flex items-center space-x-1">
+                            <span>🐾 🐱 🐾 Miau Focus 🐾 🐱 🐾</span>
+                        </div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-amber-200 tracking-widest">${timeStr}</div>
+                        <div class="text-[10px] text-amber-400/80 mt-1">¡Ronroneo productivo!</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(120,53,15,0.6), rgba(67,20,7,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(245,158,11,0.4);">
+                        <div style="font-size: 9px; color: #fcd34d; font-weight: bold; margin-bottom: 2px;">🐱 Miau Focus</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #fde68a;">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-dog') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-br from-cyan-950/60 to-blue-950/80 p-3 rounded-2xl border border-cyan-500/30">
+                        <div class="text-[11px] text-cyan-300 font-bold mb-1 flex items-center space-x-1">
+                            <span>🐶 📡 Radar Canino Activo 📡 🐶</span>
+                        </div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-cyan-200 tracking-wider">${timeStr}</div>
+                        <div class="w-full bg-cyan-950 h-2 rounded-full mt-2 overflow-hidden border border-cyan-700/50">
+                            <div class="bg-gradient-to-r from-cyan-400 to-blue-500 h-full transition-all duration-300" style="width: ${percent}%;"></div>
+                        </div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(8,51,68,0.7), rgba(23,37,84,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(6,182,212,0.4);">
+                        <div style="font-size: 9px; color: #67e8f9; font-weight: bold; margin-bottom: 2px;">🐶 Radar Canino</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #a5f3fc;">${timeStr}</div>
                     </div>
                 `;
             }
@@ -1499,7 +1515,7 @@
                 localStorage.removeItem('my_planner_custom_bg');
                 localStorage.removeItem('my_planner_custom_primary');
             } else if (theme === 'matcha') {
-                body.className = "bg-[#f4f7f4] target:gray-700 min-h-screen flex flex-col";
+                body.className = "bg-[#f4f7f4] text-gray-700 min-h-screen flex flex-col";
                 localStorage.setItem('my_planner_theme', 'matcha');
                 localStorage.removeItem('my_planner_custom_bg');
                 localStorage.removeItem('my_planner_custom_primary');
