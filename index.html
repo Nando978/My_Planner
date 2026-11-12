@@ -38,6 +38,8 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             user-select: none;
             -webkit-user-select: none;
+            position: relative;
+            overflow-x: hidden;
         }
         input, textarea, select {
             user-select: text;
@@ -190,9 +192,36 @@
             100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
         }
         .space-orbit-anim { animation: spaceOrbit 10s linear infinite; }
+
+        /* CAPA DE ANIMACIONES ATMOSFÉRICAS DE FONDO OPTIMIZADA */
+        #atmosphericLayer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .atmos-item {
+            position: absolute;
+            animation: floatUpAtmosphere linear infinite;
+            opacity: 0.6;
+            will-change: transform, opacity;
+        }
+        @keyframes floatUpAtmosphere {
+            0% { transform: translateY(105vh) rotate(0deg) scale(0.8); opacity: 0; }
+            20% { opacity: 0.7; }
+            80% { opacity: 0.7; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
     </style>
 </head>
-<body class="bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col selection:bg-purple-200" id="mainBody">
+<body class="bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col selection:bg-purple-200 relative z-10" id="mainBody">
+
+    <!-- CAPA FLOTANTE DE ANIMACIONES ATMOSFÉRICAS -->
+    <div id="atmosphericLayer"></div>
 
     <!-- HEADER -->
     <header class="w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 sticky top-0 z-40 px-4 py-3">
@@ -238,6 +267,20 @@
                     </select>
                 </div>
 
+                <!-- SELECTOR DE PERFIL ATMOSFÉRICO ANIMADO -->
+                <div class="relative">
+                    <select id="atmosphereSelector" onchange="changeAtmosphere(this.value)" class="bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-semibold px-3 py-2 rounded-xl border border-purple-200 dark:border-purple-800 outline-none cursor-pointer">
+                        <option value="none">✨ Sin Animación</option>
+                        <option value="stardust">🌟 Polvo Estelar</option>
+                        <option value="bubbles">🫧 Burbujas Suaves</option>
+                        <option value="arcade">👾 Arcade / Píxeles</option>
+                        <option value="aliens">👽 Espacio & Aliens</option>
+                        <option value="halloween">🎃 Terror & Diversión</option>
+                        <option value="garden">🌻 Jardín Botánico</option>
+                        <option value="animals">🐾 Huellas & Mascotas</option>
+                    </select>
+                </div>
+
                 <button id="closeDayBtn" onclick="openCloseDayModal()" class="bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
                     <span>Cierre de Día</span>
                 </button>
@@ -246,7 +289,7 @@
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-20">
 
         <!-- COLUMNA IZQUIERDA -->
         <div class="space-y-6">
@@ -396,7 +439,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="w-full py-6 text-center text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-slate-800 mt-auto">
+    <footer class="w-full py-6 text-center text-xs text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-slate-800 mt-auto relative z-20">
         <p>Elaborado por: Pablo Bautista Rojas • Todos los derechos reservados © 2026-2027</p>
     </footer>
 
@@ -609,9 +652,11 @@
         ];
 
         let historyLogs = JSON.parse(localStorage.getItem('my_planner_history')) || [];
+        let claimedRewardsLogs = JSON.parse(localStorage.getItem('my_planner_claimed_rewards')) || [];
         let streak = parseInt(localStorage.getItem('my_planner_streak')) || 0;
         let lastClosedDateStr = localStorage.getItem('my_planner_last_closed_date') || '';
         let currentTimerStyle = localStorage.getItem('my_planner_timer_style') || 'style-digital';
+        let currentAtmosphere = localStorage.getItem('my_planner_atmosphere') || 'stardust';
         let currentMetricsRange = 'today';
         let spentPointsToday = parseInt(localStorage.getItem('my_planner_spent_points')) || 0;
 
@@ -654,6 +699,8 @@
                 checkStreakContinuity();
                 updateDateHeader();
                 loadTheme();
+                loadAtmosphereUI();
+                initAtmosphere();
                 loadTimerStyleUI();
                 renderCategoriesUI();
                 renderTasks();
@@ -695,8 +742,54 @@
             document.getElementById('currentDateHeader').innerText = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
         }
 
+        // MÓDULO DE PERFILES ATMOSFÉRICOS ANIMADOS
+        function changeAtmosphere(atmosType) {
+            currentAtmosphere = atmosType;
+            localStorage.setItem('my_planner_atmosphere', atmosType);
+            initAtmosphere();
+        }
+
+        function loadAtmosphereUI() {
+            const select = document.getElementById('atmosphereSelector');
+            if (select) select.value = currentAtmosphere;
+        }
+
+        function initAtmosphere() {
+            const layer = document.getElementById('atmosphericLayer');
+            if (!layer) return;
+            layer.innerHTML = '';
+            if (currentAtmosphere === 'none') return;
+
+            let symbols = [];
+            if (currentAtmosphere === 'stardust') symbols = ['✨', '⭐', '💫', '✦'];
+            else if (currentAtmosphere === 'bubbles') symbols = ['🫧', '💧', '⚪'];
+            else if (currentAtmosphere === 'arcade') symbols = ['👾', '🕹️', '🟦', '🟥', '⭐', '⚡'];
+            else if (currentAtmosphere === 'aliens') symbols = ['👽', '🛸', '🚀', '🪐', '⭐'];
+            else if (currentAtmosphere === 'halloween') symbols = ['🎃', '👻', '🦇', '🕯️', '🍬'];
+            else if (currentAtmosphere === 'garden') symbols = ['🌻', '🌷', '🌸', '🌿', '🦋'];
+            else if (currentAtmosphere === 'animals') symbols = ['🐾', '🐶', '🐱', '🐼', '🦊', '⭐'];
+
+            const count = 16;
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('div');
+                el.className = 'atmos-item';
+                el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                const leftPos = Math.random() * 96;
+                const animDuration = Math.random() * 7 + 5;
+                const animDelay = Math.random() * 5;
+                const fontSize = Math.random() * 10 + 12;
+
+                el.style.left = `${leftPos}vw`;
+                el.style.fontSize = `${fontSize}px`;
+                el.style.animationDuration = `${animDuration}s`;
+                el.style.animationDelay = `${animDelay}s`;
+
+                layer.appendChild(el);
+            }
+        }
+
         function checkIfTodayIsClosed() {
-            // Corrección: Usar la fecha local de Colombia/equipo en lugar de toISOString() (UTC)
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -705,7 +798,6 @@
 
             const btn = document.getElementById('closeDayBtn');
 
-            // Si la fecha guardada es de un día anterior, habilitamos el botón automáticamente
             if (lastClosedDateStr && lastClosedDateStr !== todayLocalISO) {
                 btn.disabled = false;
                 btn.className = "bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm cursor-pointer";
@@ -1022,7 +1114,6 @@
         function toggleTask(id) {
             const task = tasks.find(t => t.id === id);
             if (task) {
-                // REGLA ESTRICTA: Una vez marcada como terminada, no se permite desmarcarla
                 if (task.completed) {
                     return;
                 }
@@ -1241,6 +1332,18 @@
 
             spentPointsToday += goal.target;
             localStorage.setItem('my_planner_spent_points', spentPointsToday);
+
+            // Registrar en el historial de recompensas
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+            claimedRewardsLogs.unshift({
+                id: Date.now(),
+                title: goal.title,
+                pointsSpent: goal.target,
+                dateStr: dateStr
+            });
+            localStorage.setItem('my_planner_claimed_rewards', JSON.stringify(claimedRewardsLogs));
+
             updatePointsAndProgress();
 
             triggerNativeConfetti();
@@ -1837,16 +1940,17 @@
             const container = document.getElementById('metricsContentContainer');
             
             let filteredLogs = [];
+            let filteredRewards = [];
             const now = Date.now();
             const dayMs = 24 * 60 * 60 * 1000;
 
-            if (currentMetricsRange === 'week') {
-                filteredLogs = historyLogs.filter(h => (now - h.id) <= 7 * dayMs);
-            } else if (currentMetricsRange === 'month') {
-                filteredLogs = historyLogs.filter(h => (now - h.id) <= 30 * dayMs);
-            } else if (currentMetricsRange === '3months') {
-                filteredLogs = historyLogs.filter(h => (now - h.id) <= 90 * dayMs);
-            }
+            let daysFilterCount = 1;
+            if (currentMetricsRange === 'week') daysFilterCount = 7;
+            else if (currentMetricsRange === 'month') daysFilterCount = 30;
+            else if (currentMetricsRange === '3months') daysFilterCount = 90;
+
+            filteredLogs = historyLogs.filter(h => (now - h.id) <= daysFilterCount * dayMs);
+            filteredRewards = claimedRewardsLogs.filter(r => (now - r.id) <= daysFilterCount * dayMs);
 
             let rangePoints = 0;
             let rangeTotalTasks = 0;
@@ -1910,15 +2014,25 @@
                 `;
             });
 
-            let rangeTitleText = 'hoy';
-            if (currentMetricsRange === 'week') rangeTitleText = 'los últimos 7 días';
-            if (currentMetricsRange === 'month') rangeTitleText = 'los últimos 30 días';
-            if (currentMetricsRange === '3months') rangeTitleText = 'los últimos 3 meses';
+            // BLOQUE DE HISTORIAL DE RECOMPENSAS EN MÉTRICAS
+            let rewardsHTML = '';
+            if (filteredRewards.length === 0) {
+                rewardsHTML = `<p class="text-gray-400 italic text-center py-2">No se han reclamado recompensas en este periodo.</p>`;
+            } else {
+                filteredRewards.forEach(rew => {
+                    rewardsHTML += `
+                        <div class="flex items-center justify-between bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-gray-100 dark:border-slate-800">
+                            <span class="font-bold text-gray-800 dark:text-gray-200">🎁 ${rew.title}</span>
+                            <span class="text-rose-500 font-bold">-${rew.pointsSpent} pts <span class="text-[10px] text-gray-400 font-normal">(${rew.dateStr})</span></span>
+                        </div>
+                    `;
+                });
+            }
 
             container.innerHTML = `
                 <div class="grid grid-cols-3 gap-3 text-center">
                     <div class="bg-purple-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-purple-100 dark:border-slate-700">
-                        <span class="block text-[11px] text-gray-400 mb-0.5">Puntos del Periodo</span>
+                        <span class="block text-[11px] text-gray-400 mb-0.5">Puntos Netos</span>
                         <span class="text-lg font-black text-purple-600 dark:text-purple-300">${rangePoints} pts</span>
                     </div>
                     <div class="bg-orange-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-orange-100 dark:border-slate-700">
@@ -1931,18 +2045,21 @@
                     </div>
                 </div>
 
+                <!-- BLOQUE DEDICADO AL HISTORIAL DE RECOMPENSAS -->
+                <div class="bg-gray-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2">
+                    <h4 class="font-bold text-gray-800 dark:text-gray-200 flex items-center space-x-1.5">
+                        <span>🎁 Recompensas y Descansos Reclamados</span>
+                    </h4>
+                    <div class="space-y-2 max-h-36 overflow-y-auto pr-1 pt-1">
+                        ${rewardsHTML}
+                    </div>
+                </div>
+
                 <div class="bg-gray-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-3">
                     <h4 class="font-bold text-gray-800 dark:text-gray-200">📊 Distribución de Puntos por Categoría</h4>
                     <div class="space-y-3 pt-1">
                         ${catBarsHTML}
                     </div>
-                </div>
-
-                <div class="bg-gray-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-gray-100 dark:border-slate-700/60 space-y-2">
-                    <h4 class="font-bold text-gray-800 dark:text-gray-200">📌 Resumen de Actividad Global</h4>
-                    <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
-                        Durante <strong>${rangeTitleText}</strong> has completado un total de <strong>${rangeCompletedTasks}</strong> tareas de <strong>${rangeTotalTasks}</strong> planificadas. ¡Sigue manteniendo tu ritmo de alta productividad!
-                    </p>
                 </div>
             `;
         }
@@ -2022,22 +2139,22 @@
             body.style.backgroundColor = '';
 
             if (theme === 'pastel-day') {
-                body.className = "bg-[#fcf8f7] text-gray-700 min-h-screen flex flex-col";
+                body.className = "text-gray-700 min-h-screen flex flex-col relative z-10 bg-[#fcf8f7]";
                 localStorage.setItem('my_planner_theme', 'pastel-day');
                 localStorage.removeItem('my_planner_custom_bg');
                 localStorage.removeItem('my_planner_custom_primary');
             } else if (theme === 'pastel-night') {
-                body.className = "bg-slate-900 text-gray-100 min-h-screen flex flex-col dark";
+                body.className = "text-gray-100 min-h-screen flex flex-col dark relative z-10 bg-slate-900";
                 localStorage.setItem('my_planner_theme', 'pastel-night');
                 localStorage.removeItem('my_planner_custom_bg');
                 localStorage.removeItem('my_planner_custom_primary');
             } else if (theme === 'matcha') {
-                body.className = "bg-[#f4f7f4] text-gray-700 min-h-screen flex flex-col";
+                body.className = "text-gray-700 min-h-screen flex flex-col relative z-10 bg-[#f4f7f4]";
                 localStorage.setItem('my_planner_theme', 'matcha');
                 localStorage.removeItem('my_planner_custom_bg');
                 localStorage.removeItem('my_planner_custom_primary');
             } else if (theme === 'lavender') {
-                body.className = "bg-[#f3eef8] text-purple-950 min-h-screen flex flex-col";
+                body.className = "text-purple-950 min-h-screen flex flex-col relative z-10 bg-[#f3eef8]";
                 localStorage.setItem('my_planner_theme', 'lavender');
                 localStorage.removeItem('my_planner_custom_bg');
                 localStorage.removeItem('my_planner_custom_primary');
@@ -2052,8 +2169,7 @@
             
             if (saved === 'custom' && customBg) {
                 document.getElementById('themeSelector').value = 'custom';
-                document.getElementById('mainBody').className = "text-gray-700 min-h-screen flex flex-col";
-                document.getElementById('mainBody').style.backgroundColor = '';
+                document.getElementById('mainBody').className = "text-gray-700 min-h-screen flex flex-col relative z-10";
                 document.getElementById('mainBody').style.backgroundColor = customBg;
             } else {
                 document.getElementById('themeSelector').value = saved;
@@ -2073,10 +2189,10 @@
 
         function applyCustomColors() {
             const bg = document.getElementById('customBg').value;
-            const primary = document.getElementById('customPrimary.value') || document.getElementById('customPrimary').value;
+            const primary = document.getElementById('customPrimary').value;
             const body = document.getElementById('mainBody');
             
-            body.className = "text-gray-700 min-h-screen flex flex-col";
+            body.className = "text-gray-700 min-h-screen flex flex-col relative z-10";
             body.style.backgroundColor = bg;
             
             localStorage.setItem('my_planner_theme', 'custom');
