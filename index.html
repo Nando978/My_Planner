@@ -78,7 +78,7 @@
         }
         .animate-flame { animation: flamePulse 1.2s ease-in-out infinite; display: inline-block; }
 
-        /* CAPA DE ANIMACIONES ATMOSFÉRICAS Y ESCENAS */
+        /* CAPA DE ANIMACIONES ATMOSFÉRICAS Y ESCENAS DE VÍDEO */
         #atmosphericLayer {
             position: fixed;
             top: 0;
@@ -102,101 +102,64 @@
             100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
-        /* ESCENAS CINEMÁTICAS TIPO VÍDEO (REDISEÑADAS) */
-        #cinemaCanvas {
+        /* ESCENAS CINEMÁTICAS TIPO VÍDEO */
+        @keyframes pixelNebulaDrift {
+            0% { transform: translateX(0) translateY(0); opacity: 0.4; }
+            50% { opacity: 0.8; }
+            100% { transform: translateX(-100vw) translateY(-20vh); opacity: 0.4; }
+        }
+        .pixel-nebula-bg {
             position: absolute;
-            top: 0;
+            top: -20vh;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 200vw;
+            height: 140vh;
+            background-image: 
+                radial-gradient(ellipse at 30% 40%, rgba(147, 51, 234, 0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(236, 72, 153, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
+            animation: pixelNebulaDrift 25s linear infinite;
             pointer-events: none;
         }
-
-        /* 1. Nebulosa Realista Profunda */
-        @keyframes nebulaPulse {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.75; }
-            50% { transform: scale(1.12) rotate(3deg); opacity: 0.95; }
-        }
-        .nebula-volumetric {
+        .pixel-star {
             position: absolute;
-            inset: -15%;
-            background: 
-                radial-gradient(ellipse at 25% 35%, rgba(139, 92, 246, 0.35) 0%, transparent 55%),
-                radial-gradient(ellipse at 75% 65%, rgba(236, 72, 153, 0.28) 0%, transparent 55%),
-                radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.22) 0%, transparent 60%);
-            filter: blur(28px);
-            animation: nebulaPulse 18s ease-in-out infinite;
+            background: #fff;
+            border-radius: 50%;
+            animation: starTwinkle 2s ease-in-out infinite alternate;
+        }
+        @keyframes starTwinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.3); }
         }
 
-        /* 2. Olas Oceánicas Multicapa con SVG Fluido */
-        @keyframes waveSlideLeft {
+        @keyframes oceanWaveAnim1 {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
-        @keyframes waveSlideRight {
+        @keyframes oceanWaveAnim2 {
             0% { transform: translateX(-50%); }
-            100% { transform: translateX(0); }
+            100% { transform: translateX(0%); }
         }
-        .ocean-wave-wrapper {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 180px;
-            overflow: hidden;
-            pointer-events: none;
-        }
-        .ocean-svg-track {
+        .ocean-layer-1 {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 200%;
-            height: 100%;
-            display: flex;
+            height: 90px;
+            background: repeating-linear-gradient(45deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.15) 20px, rgba(14, 116, 144, 0.2) 20px, rgba(14, 116, 144, 0.2) 40px);
+            border-top: 2px solid rgba(56, 189, 248, 0.4);
+            animation: oceanWaveAnim1 10s linear infinite;
         }
-        .ocean-track-back {
-            animation: waveSlideRight 16s linear infinite;
-            opacity: 0.45;
-        }
-        .ocean-track-front {
-            animation: waveSlideLeft 10s linear infinite;
-            opacity: 0.75;
+        .ocean-layer-2 {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 130px;
+            background: linear-gradient(to top, rgba(3, 105, 161, 0.25), transparent);
+            animation: oceanWaveAnim2 15s linear infinite;
         }
 
-        /* 4. Portal Cósmico Activo con Rayos de Energía */
-        @keyframes portalRotate {
-            0% { transform: translate(-50%, -50%) rotate(0deg) scale(0.95); }
-            50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.05); }
-            100% { transform: translate(-50%, -50%) rotate(360deg) scale(0.95); }
-        }
-        @keyframes portalReverse {
-            0% { transform: translate(-50%, -50%) rotate(360deg); }
-            100% { transform: translate(-50%, -50%) rotate(0deg); }
-        }
-        .cosmic-portal-core {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 420px;
-            height: 420px;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, transparent, rgba(168, 85, 247, 0.35), rgba(56, 189, 248, 0.4), rgba(236, 72, 153, 0.3), transparent);
-            filter: blur(18px);
-            animation: portalRotate 14s linear infinite;
-        }
-        .cosmic-portal-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            border: 2px dashed rgba(192, 132, 252, 0.45);
-            box-shadow: 0 0 40px rgba(147, 51, 234, 0.3), inset 0 0 30px rgba(56, 189, 248, 0.3);
-            animation: portalReverse 10s linear infinite;
-        }
-
-        /* Escenas Temporadas: Halloween, Navidad, Pascua, Otoño */
         @keyframes seasonalSceneMove {
             0% { transform: translateY(-10px) translateX(0) rotate(0deg); opacity: 0; }
             20% { opacity: 0.9; }
@@ -259,7 +222,6 @@
                     </select>
                 </div>
 
-                <!-- SELECTOR DE ATMÓSFERA Y ESCENAS -->
                 <div class="relative">
                     <select id="atmosphereSelector" onchange="changeAtmosphere(this.value)" class="bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-semibold px-3 py-2 rounded-xl border border-purple-200 dark:border-purple-800 outline-none cursor-pointer">
                         <option value="none">✨ Sin Animación</option>
@@ -281,9 +243,9 @@
                         </optgroup>
                         <optgroup label="🎬 Animaciones Video / Creadas">
                             <option value="scene-nebula">🌌 Nebulosa de Píxeles (Realista)</option>
-                            <option value="scene-fireworks">🎆 Fuegos Artificiales</option>
                             <option value="scene-waves">🌊 Olas Oceánicas en Vivo</option>
-                            <option value="scene-portal">🔮 Portal Cósmico</option>
+                            <option value="scene-fireworks">🎆 Fuegos Artificiales</option>
+                            <option value="scene-portal">🔮 Portal Cósmico Activo</option>
                         </optgroup>
                         <optgroup label="🍂 Temporadas del Año (Vídeo)">
                             <option value="season-halloween">🎃 Halloween Cinemático</option>
@@ -770,189 +732,66 @@
             layer.innerHTML = '';
             if (currentAtmosphere === 'none') return;
 
-            if (window.activeCinemaLoop) {
-                cancelAnimationFrame(window.activeCinemaLoop);
-                window.activeCinemaLoop = null;
-            }
-
-            // 1. NEBULOSA DE PÍXELES (REALISTA CON ESTRELLAS EN PROFUNDIDAD)
+            // 1. NEBULOSA REAL EN PÍXELES
             if (currentAtmosphere === 'scene-nebula') {
-                const bg = document.createElement('div');
-                bg.className = 'nebula-volumetric';
-                layer.appendChild(bg);
+                const nebulaBg = document.createElement('div');
+                nebulaBg.className = 'pixel-nebula-bg';
+                layer.appendChild(nebulaBg);
 
-                const canvas = document.createElement('canvas');
-                canvas.id = 'cinemaCanvas';
-                layer.appendChild(canvas);
-                const ctx = canvas.getContext('2d');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-
-                const stars = Array.from({ length: 90 }, () => ({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 2.5 + 0.8,
-                    speed: Math.random() * 0.4 + 0.1,
-                    alpha: Math.random(),
-                    dir: Math.random() > 0.5 ? 0.015 : -0.015,
-                    color: ['#ffffff', '#e9d5ff', '#bae6fd', '#fbcfe8'][Math.floor(Math.random() * 4)]
-                }));
-
-                function drawNebula() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    stars.forEach(s => {
-                        s.x -= s.speed;
-                        if (s.x < 0) s.x = canvas.width;
-                        s.alpha += s.dir;
-                        if (s.alpha >= 1 || s.alpha <= 0.15) s.dir *= -1;
-
-                        ctx.fillStyle = s.color;
-                        ctx.globalAlpha = s.alpha;
-                        ctx.fillRect(Math.floor(s.x), Math.floor(s.y), Math.ceil(s.size), Math.ceil(s.size));
-                    });
-                    window.activeCinemaLoop = requestAnimationFrame(drawNebula);
+                for (let i = 0; i < 40; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'pixel-star';
+                    star.style.top = `${Math.random() * 100}vh`;
+                    star.style.left = `${Math.random() * 100}vw`;
+                    const size = Math.random() * 3 + 1;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.animationDelay = `${Math.random() * 3}s`;
+                    layer.appendChild(star);
                 }
-                drawNebula();
                 return;
             }
 
-            // 2. FUEGOS ARTIFICIALES (EXPLOSIONES REALISTAS CON GRAVEDAD)
-            if (currentAtmosphere === 'scene-fireworks') {
-                const canvas = document.createElement('canvas');
-                canvas.id = 'cinemaCanvas';
-                layer.appendChild(canvas);
-                const ctx = canvas.getContext('2d');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-
-                let particles = [];
-                const palette = ['#f43f5e', '#a855f7', '#38bdf8', '#10b981', '#fbbf24', '#fb7185'];
-
-                function spawnFirework() {
-                    const cx = Math.random() * (canvas.width * 0.8) + canvas.width * 0.1;
-                    const cy = Math.random() * (canvas.height * 0.45) + canvas.height * 0.1;
-                    const color = palette[Math.floor(Math.random() * palette.length)];
-                    const count = 42;
-
-                    for (let i = 0; i < count; i++) {
-                        const angle = (Math.PI * 2 / count) * i;
-                        const speed = Math.random() * 3.5 + 1.5;
-                        particles.push({
-                            x: cx,
-                            y: cy,
-                            vx: Math.cos(angle) * speed,
-                            vy: Math.sin(angle) * speed,
-                            alpha: 1,
-                            color: color,
-                            decay: Math.random() * 0.015 + 0.012
-                        });
-                    }
-                }
-
-                let tick = 0;
-                function animateFireworks() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    if (tick % 65 === 0) spawnFirework();
-                    tick++;
-
-                    for (let i = particles.length - 1; i >= 0; i--) {
-                        const p = particles[i];
-                        p.x += p.vx;
-                        p.y += p.vy;
-                        p.vy += 0.04;
-                        p.vx *= 0.98;
-                        p.alpha -= p.decay;
-
-                        if (p.alpha <= 0) {
-                            particles.splice(i, 1);
-                            continue;
-                        }
-
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
-                        ctx.fillStyle = p.color;
-                        ctx.globalAlpha = p.alpha;
-                        ctx.fill();
-                    }
-                    window.activeCinemaLoop = requestAnimationFrame(animateFireworks);
-                }
-                spawnFirework();
-                animateFireworks();
-                return;
-            }
-
-            // 3. OLAS OCEÁNICAS EN VIVO (CURVAS SVG FLUIDAS)
+            // 2. OLAS OCEÁNICAS REALES
             if (currentAtmosphere === 'scene-waves') {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'ocean-wave-wrapper';
-                wrapper.innerHTML = `
-                    <div class="ocean-svg-track ocean-track-back">
-                        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-1/2 h-full">
-                            <path fill="#0284c7" d="M0,160 C320,260 420,60 720,160 C1020,260 1120,60 1440,160 L1440,320 L0,320 Z"></path>
-                        </svg>
-                        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-1/2 h-full">
-                            <path fill="#0284c7" d="M0,160 C320,260 420,60 720,160 C1020,260 1120,60 1440,160 L1440,320 L0,320 Z"></path>
-                        </svg>
-                    </div>
-                    <div class="ocean-svg-track ocean-track-front">
-                        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-1/2 h-full">
-                            <path fill="#38bdf8" d="M0,200 C360,100 540,280 720,200 C900,120 1080,280 1440,200 L1440,320 L0,320 Z"></path>
-                        </svg>
-                        <svg viewBox="0 0 1440 320" preserveAspectRatio="none" class="w-1/2 h-full">
-                            <path fill="#38bdf8" d="M0,200 C360,100 540,280 720,200 C900,120 1080,280 1440,200 L1440,320 L0,320 Z"></path>
-                        </svg>
-                    </div>
-                `;
-                layer.appendChild(wrapper);
+                const waveBg = document.createElement('div');
+                waveBg.className = 'ocean-layer-2';
+                const waveFg = document.createElement('div');
+                waveFg.className = 'ocean-layer-1';
+                layer.appendChild(waveBg);
+                layer.appendChild(waveFg);
                 return;
             }
 
-            // 4. PORTAL CÓSMICO ACTIVO (VÓRTICE GIRATORIO)
-            if (currentAtmosphere === 'scene-portal') {
-                const core = document.createElement('div');
-                core.className = 'cosmic-portal-core';
-                const ring = document.createElement('div');
-                ring.className = 'cosmic-portal-ring';
-                layer.appendChild(core);
-                layer.appendChild(ring);
-
-                const canvas = document.createElement('canvas');
-                canvas.id = 'cinemaCanvas';
-                layer.appendChild(canvas);
-                const ctx = canvas.getContext('2d');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-
-                const orbs = Array.from({ length: 35 }, () => ({
-                    angle: Math.random() * Math.PI * 2,
-                    radius: Math.random() * 240 + 40,
-                    speed: Math.random() * 0.02 + 0.01,
-                    size: Math.random() * 3 + 1.5,
-                    color: Math.random() > 0.5 ? '#c084fc' : '#38bdf8'
-                }));
-
-                function drawPortal() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    const centerX = canvas.width / 2;
-                    const centerY = canvas.height / 2;
-
-                    orbs.forEach(o => {
-                        o.angle += o.speed;
-                        o.radius -= 0.35;
-                        if (o.radius < 15) o.radius = 250;
-
-                        const x = centerX + Math.cos(o.angle) * o.radius;
-                        const y = centerY + Math.sin(o.angle) * o.radius;
-
-                        ctx.beginPath();
-                        ctx.arc(x, y, o.size, 0, Math.PI * 2);
-                        ctx.fillStyle = o.color;
-                        ctx.globalAlpha = Math.min(1, o.radius / 100);
-                        ctx.fill();
-                    });
-                    window.activeCinemaLoop = requestAnimationFrame(drawPortal);
+            // 3. FUEGOS ARTIFICIALES
+            if (currentAtmosphere === 'scene-fireworks') {
+                const colors = ['#f43f5e', '#a855f7', '#3b82f6', '#10b981', '#fbbf24'];
+                for (let i = 0; i < 5; i++) {
+                    const fw = document.createElement('div');
+                    fw.style.position = 'absolute';
+                    fw.style.top = `${Math.random() * 50 + 15}%`;
+                    fw.style.left = `${Math.random() * 80 + 10}%`;
+                    fw.innerHTML = `<svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="${colors[i]}" stroke-width="2"><path d="M12 2v20M2 12h20M5 5l14 14M5 19L19 5"/></svg>`;
+                    fw.style.animation = `fireworkBurst 2s ease-out infinite`;
+                    fw.style.animationDelay = `${i * 0.4}s`;
+                    layer.appendChild(fw);
                 }
-                drawPortal();
+                return;
+            }
+
+            // 4. PORTAL CÓSMICO
+            if (currentAtmosphere === 'scene-portal') {
+                const portal = document.createElement('div');
+                portal.style.position = 'absolute';
+                portal.style.top = '50%';
+                portal.style.left = '50%';
+                portal.style.width = '500px';
+                portal.style.height = '500px';
+                portal.style.margin = '-250px 0 0 -250px';
+                portal.style.borderRadius = '50%';
+                portal.style.background = 'radial-gradient(circle, rgba(147,51,234,0.3) 0%, rgba(59,130,246,0.2) 50%, transparent 80%)';
+                portal.style.animation = 'portalSpin 12s linear infinite';
+                layer.appendChild(portal);
                 return;
             }
 
@@ -1837,6 +1676,118 @@
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(49,46,129,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(99,102,241,0.4);">
                         <div style="font-size: 10px; margin-bottom: 2px;">🛸 🐄</div>
                         <div id="pipTimerDisplay" style="font-size: 28px; font-weight: 900; font-family: monospace; color: #34d399;">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-xmas') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-red-950/60 to-emerald-950/60 p-3 rounded-2xl border border-red-500/30">
+                        <div class="text-[11px] text-red-300 font-bold mb-1">🎄 🎅 Navidad en Marcha 🎅 🎄</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-red-200 tracking-widest">${timeStr}</div>
+                        <div class="text-[10px] text-emerald-300/80 mt-1">✨ ¡Magia y alegría! ✨</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(127,29,29,0.7), rgba(6,78,59,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(239,68,68,0.4);">
+                        <div style="font-size: 9px; color: #fca5a5; font-weight: bold; margin-bottom: 2px;">🎄 Navidad</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #fee2e2;">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-autumn') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-amber-950/60 to-orange-900/50 p-3 rounded-2xl border border-orange-500/30">
+                        <div class="text-[11px] text-orange-300 font-bold mb-1">🍁 🍂 Otoño Acogedor 🍂 🍁</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-orange-200 tracking-widest">${timeStr}</div>
+                        <div class="text-[10px] text-amber-300/80 mt-1">☕ Hojas y café cálido</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(120,53,15,0.7), rgba(154,52,18,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(249,115,22,0.4);">
+                        <div style="font-size: 9px; color: #fdba74; font-weight: bold; margin-bottom: 2px;">🍁 Otoño</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #ffedd5;">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-garden') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-emerald-950/60 to-green-900/50 p-3 rounded-2xl border border-emerald-500/30">
+                        <div class="text-[11px] text-emerald-300 font-bold mb-1">🌻 🌿 Jardín Botánico 🌿 🌻</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-emerald-200 tracking-widest">${timeStr}</div>
+                        <div class="text-[10px] text-green-300/80 mt-1">🌸 Creciendo paso a paso</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(6,78,59,0.7), rgba(20,83,45,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(16,185,129,0.4);">
+                        <div style="font-size: 9px; color: #6ee7b7; font-weight: bold; margin-bottom: 2px;">🌻 Jardín</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #d1fae5;">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-halloween') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-purple-950/70 to-zinc-950/80 p-3 rounded-2xl border border-purple-500/40">
+                        <div class="text-[11px] text-purple-300 font-bold mb-1">🎃 👻 Halloween Misterio 👻 🎃</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-purple-200 tracking-widest">${timeStr}</div>
+                        <div class="text-[10px] text-purple-400/80 mt-1">🦇 Dulce o truco activo</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(88,28,135,0.7), rgba(9,9,11,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(168,85,247,0.4);">
+                        <div style="font-size: 9px; color: #d8b4fe; font-weight: bold; margin-bottom: 2px;">🎃 Halloween</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #f3e8ff;">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-love') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-pink-950/60 to-rose-950/60 p-3 rounded-2xl border border-pink-500/30">
+                        <div class="text-[11px] text-pink-300 font-bold mb-1">💖 🌸 Amor y Amistad 🌸 💖</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-pink-200 tracking-widest">${timeStr}</div>
+                        <div class="text-[10px] text-rose-300/80 mt-1">✨ Conexión y afecto</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(131,24,67,0.7), rgba(159,18,57,0.8)); padding: 8px; border-radius: 12px; border: 1px solid rgba(244,63,94,0.4);">
+                        <div style="font-size: 9px; color: #fecdd3; font-weight: bold; margin-bottom: 2px;">💖 Amor</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #ffe4e6;">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-rain') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-blue-950/70 to-slate-950/80 p-3 rounded-2xl border border-blue-500/30">
+                        <div class="text-[11px] text-blue-300 font-bold mb-1">🌧️ 💧 Lluvia Relajante 💧 🌧️</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-blue-200 tracking-widest">${timeStr}</div>
+                        <div class="text-[10px] text-blue-400/80 mt-1">☕ Sonido de gotas</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(30,58,138,0.7), rgba(15,23,42,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(59,130,246,0.4);">
+                        <div style="font-size: 9px; color: #93c5fd; font-weight: bold; margin-bottom: 2px;">🌧️ Lluvia</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #eff6ff;">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-fire') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-red-950/75 to-orange-950/75 p-3 rounded-2xl border border-orange-500/40">
+                        <div class="text-[11px] text-orange-300 font-bold mb-1">🔥 🪵 Fuego Interno 🪵 🔥</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-orange-200 tracking-widest">${timeStr}</div>
+                        <div class="text-[10px] text-amber-400/80 mt-1">✨ Chispa de enfoque</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(127,29,29,0.8), rgba(124,45,18,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(249,115,22,0.4);">
+                        <div style="font-size: 9px; color: #fed7aa; font-weight: bold; margin-bottom: 2px;">🔥 Fuego</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #fff7ed;">${timeStr}</div>
+                    </div>
+                `;
+            } else if (currentTimerStyle === 'style-space') {
+                innerHTMLMain = `
+                    <div class="flex flex-col items-center justify-center bg-gradient-to-r from-violet-950/80 to-indigo-950/80 p-3 rounded-2xl border border-violet-500/40">
+                        <div class="text-[11px] text-violet-300 font-bold mb-1">🚀 🌌 Espacio Profundo 🌌 🚀</div>
+                        <div id="mainTimerDisplay" class="text-3xl font-black font-mono text-violet-200 tracking-widest">${timeStr}</div>
+                        <div class="text-[10px] text-indigo-300/80 mt-1">✨ Más allá de las estrellas</div>
+                    </div>
+                `;
+                innerHTMLPip = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(76,29,149,0.8), rgba(49,46,129,0.9)); padding: 8px; border-radius: 12px; border: 1px solid rgba(139,92,246,0.4);">
+                        <div style="font-size: 9px; color: #ddd6fe; font-weight: bold; margin-bottom: 2px;">🚀 Espacio</div>
+                        <div id="pipTimerDisplay" style="font-size: 30px; font-weight: 900; font-family: monospace; color: #f5f3ff;">${timeStr}</div>
                     </div>
                 `;
             } else {
