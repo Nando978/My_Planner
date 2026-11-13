@@ -558,13 +558,24 @@
             
             <div id="rewardTimerSection" class="hidden">
                 <div id="rewardTimerDisplay" class="text-4xl font-black text-purple-600 dark:text-purple-300 font-mono py-2">60:00</div>
-                <button onclick="startRewardTimer()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-sm transition mb-2">Iniciar Temporizador</button>
+                <button id="startRewardTimerBtn" onclick="startRewardTimer()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-sm transition mb-2">Iniciar Temporizador</button>
             </div>
 
             <div class="flex space-x-3 pt-2">
-                <button onclick="closeRewardModal()" class="w-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm transition">Cerrar & Disfrutar</button>
+                <button onclick="minimizeRewardModal()" class="w-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 font-bold py-2.5 rounded-xl text-sm transition">Cerrar & Disfrutar</button>
             </div>
         </div>
+    </div>
+
+    <!-- MINI TARJETA FLOTANTE DE RECOMPENSA EN CURSO -->
+    <div id="floatingRewardBadge" class="fixed bottom-5 right-5 z-40 hidden bg-slate-900/95 text-white border border-purple-500/40 rounded-2xl px-4 py-3 shadow-2xl backdrop-blur-md flex items-center space-x-3">
+        <span class="text-xl">🎁</span>
+        <div class="text-left">
+            <div id="floatingRewardTitle" class="text-[11px] font-bold text-purple-300 truncate max-w-[140px]">Recompensa</div>
+            <div id="floatingRewardTimer" class="text-lg font-black font-mono text-emerald-300 leading-tight">60:00</div>
+        </div>
+        <button onclick="reopenRewardModal()" class="bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-xl transition" title="Ver ventana">Abrir</button>
+        <button onclick="finishRewardEarly()" class="text-gray-400 hover:text-rose-400 text-base font-bold px-1" title="Finalizar tiempo">&times;</button>
     </div>
 
     <!-- MODAL HISTORIAL Y LOGROS -->
@@ -793,22 +804,7 @@
                     updateTimerDisplay(true);
                 }
 
-                if (rewardTimerEndTime) {
-                    const remaining = Math.max(0, Math.ceil((rewardTimerEndTime - Date.now()) / 1000));
-                    if (remaining > 0) {
-                        rewardSecondsLeft = remaining;
-                        const savedRewardTitle = localStorage.getItem('my_planner_reward_title') || 'Recompensa Activa';
-                        document.getElementById('rewardModalTitle').innerText = `¡${savedRewardTitle} en curso!`;
-                        document.getElementById('rewardModalDesc').innerText = `Tu temporizador de recompensa sigue corriendo en tiempo real.`;
-                        updateRewardTimerDisplay();
-                        document.getElementById('rewardTimerSection').classList.remove('hidden');
-                        document.getElementById('rewardModal').classList.remove('hidden');
-                        startRewardTimer(true);
-                    } else {
-                        clearRewardTimerStorage();
-                    }
-                }
-
+                restoreRewardTimerOnLoad();
                 updatePointsAndProgress();
             } catch (error) {
                 console.error("Error al iniciar:", error);
@@ -1492,6 +1488,7 @@
             
             const timerSection = document.getElementById('rewardTimerSection');
             const descEl = document.getElementById('rewardModalDesc');
+            const startBtn = document.getElementById('startRewardTimerBtn');
 
             clearRewardTimerStorage();
 
@@ -1499,6 +1496,9 @@
                 descEl.innerText = `Has gastado ${goal.target} pts y obtenido ${goal.minutes} minutos para "${goal.title}".`;
                 rewardSecondsLeft = goal.minutes * 60;
                 localStorage.setItem('my_planner_reward_title', goal.title);
+                localStorage.setItem('my_planner_reward_pending', String(rewardSecondsLeft));
+                localStorage.setItem('my_planner_reward_minimized', 'false');
+                if (startBtn) startBtn.classList.remove('hidden');
                 updateRewardTimerDisplay();
                 timerSection.classList.remove('hidden');
             } else {
@@ -1509,18 +1509,76 @@
             document.getElementById('rewardModal').classList.remove('hidden');
         }
 
+        function restoreRewardTimerOnLoad() {
+            const savedRewardTitle = localStorage.getItem('my_planner_reward_title');
+            const isMinimized = localStorage.getItem('my_planner_reward_minimized') === 'true';
+            const pendingSeconds = localStorage.getItem('my_planner_reward_pending');
+            const startBtn = document.getElementById('startRewardTimerBtn');
+
+            if (rewardTimerEndTime) {
+                const remaining = Math.max(0, Math.ceil((rewardTimerEndTime - Date.now()) / 1000));
+                if (remaining > 0) {
+                    rewardSecondsLeft = remaining;
+                    document.getElementById('rewardModalTitle').innerText = `¡${savedRewardTitle || 'Recompensa'} en curso!`;
+                    document.getElementById('rewardModalDesc').innerText = `Tu temporizador de recompensa sigue corriendo en tiempo real.`;
+                    if (startBtn) startBtn.classList.add('hidden');
+                    updateRewardTimerDisplay();
+                    document.getElementById('rewardTimerSection').classList.remove('hidden');
+
+                    if (isMinimized) {
+                        document.getElementById('floatingRewardTitle').innerText = savedRewardTitle || 'Recompensa';
+                        document.getElementById('floatingRewardBadge').classList.remove('hidden');
+                    } else {
+                        document.getElementById('rewardModal').classList.remove('hidden');
+                    }
+                    startRewardTimer(true);
+                } else {
+                    clearRewardTimerStorage();
+                }
+            } else if (pendingSeconds && savedRewardTitle) {
+                rewardSecondsLeft = parseInt(pendingSeconds);
+                if (rewardSecondsLeft > 0) {
+                    document.getElementById('rewardModalTitle').innerText = `¡${savedRewardTitle} Desbloqueada!`;
+                    document.getElementById('rewardModalDesc').innerText = `Tu recompensa está lista. Pulsa iniciar para comenzar tu tiempo.`;
+                    if (startBtn) startBtn.classList.remove('hidden');
+                    updateRewardTimerDisplay();
+                    document.getElementById('rewardTimerSection').classList.remove('hidden');
+
+                    if (isMinimized) {
+                        document.getElementById('floatingRewardTitle').innerText = savedRewardTitle;
+                        document.getElementById('floatingRewardBadge').classList.remove('hidden');
+                    } else {
+                        document.getElementById('rewardModal').classList.remove('hidden');
+                    }
+                } else {
+                    clearRewardTimerStorage();
+                }
+            }
+        }
+
         function clearRewardTimerStorage() {
             clearInterval(rewardTimerInterval);
             rewardTimerInterval = null;
             rewardTimerEndTime = null;
             localStorage.removeItem('my_planner_reward_timer_end');
             localStorage.removeItem('my_planner_reward_title');
+            localStorage.removeItem('my_planner_reward_pending');
+            localStorage.removeItem('my_planner_reward_minimized');
+            const badge = document.getElementById('floatingRewardBadge');
+            if (badge) badge.classList.add('hidden');
+        }
+
+        function formatRewardTime() {
+            const m = Math.floor(rewardSecondsLeft / 60);
+            const s = rewardSecondsLeft % 60;
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
 
         function updateRewardTimerDisplay() {
-            const m = Math.floor(rewardSecondsLeft / 60);
-            const s = rewardSecondsLeft % 60;
-            document.getElementById('rewardTimerDisplay').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            const formatted = formatRewardTime();
+            document.getElementById('rewardTimerDisplay').innerText = formatted;
+            const floatingTimer = document.getElementById('floatingRewardTimer');
+            if (floatingTimer) floatingTimer.innerText = formatted;
         }
 
         function syncRewardTimer() {
@@ -1531,12 +1589,33 @@
 
             if (rewardSecondsLeft <= 0) {
                 clearRewardTimerStorage();
+                document.getElementById('rewardModal').classList.add('hidden');
                 playAlarmBeep();
                 alert('🎉 ¡Tu tiempo de recompensa ha concluido!');
             }
         }
 
-        function closeRewardModal() {
+        function minimizeRewardModal() {
+            document.getElementById('rewardModal').classList.add('hidden');
+            const savedRewardTitle = localStorage.getItem('my_planner_reward_title');
+            const hasActiveOrPending = rewardTimerEndTime || localStorage.getItem('my_planner_reward_pending');
+
+            if (hasActiveOrPending && savedRewardTitle && rewardSecondsLeft > 0) {
+                localStorage.setItem('my_planner_reward_minimized', 'true');
+                document.getElementById('floatingRewardTitle').innerText = savedRewardTitle;
+                updateRewardTimerDisplay();
+                document.getElementById('floatingRewardBadge').classList.remove('hidden');
+            }
+        }
+
+        function reopenRewardModal() {
+            localStorage.setItem('my_planner_reward_minimized', 'false');
+            document.getElementById('floatingRewardBadge').classList.add('hidden');
+            updateRewardTimerDisplay();
+            document.getElementById('rewardModal').classList.remove('hidden');
+        }
+
+        function finishRewardEarly() {
             clearRewardTimerStorage();
             document.getElementById('rewardModal').classList.add('hidden');
         }
@@ -1544,9 +1623,13 @@
         function startRewardTimer(isAutoResume = false) {
             if (rewardTimerInterval) return;
 
+            const startBtn = document.getElementById('startRewardTimerBtn');
+            if (startBtn) startBtn.classList.add('hidden');
+
             if (!isAutoResume || !rewardTimerEndTime) {
                 rewardTimerEndTime = Date.now() + (rewardSecondsLeft * 1000);
                 localStorage.setItem('my_planner_reward_timer_end', rewardTimerEndTime);
+                localStorage.removeItem('my_planner_reward_pending');
             }
 
             syncRewardTimer();
