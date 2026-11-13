@@ -751,6 +751,7 @@
         let isRunning = localStorage.getItem('my_planner_is_running') === 'true';
         let rewardTimerInterval = null;
         let rewardSecondsLeft = 3600;
+        let rewardTimerEndTime = localStorage.getItem('my_planner_reward_timer_end') ? parseInt(localStorage.getItem('my_planner_reward_timer_end')) : null;
         let currentMood = '🌟 Excelente';
         let pipWindow = null;
         let alarmInterval = null;
@@ -792,9 +793,31 @@
                     updateTimerDisplay(true);
                 }
 
+                if (rewardTimerEndTime) {
+                    const remaining = Math.max(0, Math.ceil((rewardTimerEndTime - Date.now()) / 1000));
+                    if (remaining > 0) {
+                        rewardSecondsLeft = remaining;
+                        const savedRewardTitle = localStorage.getItem('my_planner_reward_title') || 'Recompensa Activa';
+                        document.getElementById('rewardModalTitle').innerText = `¡${savedRewardTitle} en curso!`;
+                        document.getElementById('rewardModalDesc').innerText = `Tu temporizador de recompensa sigue corriendo en tiempo real.`;
+                        updateRewardTimerDisplay();
+                        document.getElementById('rewardTimerSection').classList.remove('hidden');
+                        document.getElementById('rewardModal').classList.remove('hidden');
+                        startRewardTimer(true);
+                    } else {
+                        clearRewardTimerStorage();
+                    }
+                }
+
                 updatePointsAndProgress();
             } catch (error) {
                 console.error("Error al iniciar:", error);
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && rewardTimerEndTime) {
+                syncRewardTimer();
             }
         });
 
@@ -1470,14 +1493,13 @@
             const timerSection = document.getElementById('rewardTimerSection');
             const descEl = document.getElementById('rewardModalDesc');
 
+            clearRewardTimerStorage();
+
             if (goal.type === 'time' && goal.minutes > 0) {
                 descEl.innerText = `Has gastado ${goal.target} pts y obtenido ${goal.minutes} minutos para "${goal.title}".`;
                 rewardSecondsLeft = goal.minutes * 60;
-                
-                const m = Math.floor(rewardSecondsLeft / 60);
-                const s = rewardSecondsLeft % 60;
-                document.getElementById('rewardTimerDisplay').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                
+                localStorage.setItem('my_planner_reward_title', goal.title);
+                updateRewardTimerDisplay();
                 timerSection.classList.remove('hidden');
             } else {
                 descEl.innerText = `¡Has gastado ${goal.target} pts! Disfruta de tu recompensa (${goal.title}).`;
@@ -1487,27 +1509,48 @@
             document.getElementById('rewardModal').classList.remove('hidden');
         }
 
-        function closeRewardModal() {
+        function clearRewardTimerStorage() {
             clearInterval(rewardTimerInterval);
             rewardTimerInterval = null;
+            rewardTimerEndTime = null;
+            localStorage.removeItem('my_planner_reward_timer_end');
+            localStorage.removeItem('my_planner_reward_title');
+        }
+
+        function updateRewardTimerDisplay() {
+            const m = Math.floor(rewardSecondsLeft / 60);
+            const s = rewardSecondsLeft % 60;
+            document.getElementById('rewardTimerDisplay').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function syncRewardTimer() {
+            if (!rewardTimerEndTime) return;
+            const remaining = Math.max(0, Math.ceil((rewardTimerEndTime - Date.now()) / 1000));
+            rewardSecondsLeft = remaining;
+            updateRewardTimerDisplay();
+
+            if (rewardSecondsLeft <= 0) {
+                clearRewardTimerStorage();
+                playAlarmBeep();
+                alert('🎉 ¡Tu tiempo de recompensa ha concluido!');
+            }
+        }
+
+        function closeRewardModal() {
+            clearRewardTimerStorage();
             document.getElementById('rewardModal').classList.add('hidden');
         }
 
-        function startRewardTimer() {
+        function startRewardTimer(isAutoResume = false) {
             if (rewardTimerInterval) return;
-            rewardTimerInterval = setInterval(() => {
-                if (rewardSecondsLeft > 0) {
-                    rewardSecondsLeft--;
-                    const m = Math.floor(rewardSecondsLeft / 60);
-                    const s = rewardSecondsLeft % 60;
-                    document.getElementById('rewardTimerDisplay').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                } else {
-                    clearInterval(rewardTimerInterval);
-                    rewardTimerInterval = null;
-                    playAlarmBeep();
-                    alert('🎉 ¡Tu tiempo de recompensa ha concluido!');
-                }
-            }, 1000);
+
+            if (!isAutoResume || !rewardTimerEndTime) {
+                rewardTimerEndTime = Date.now() + (rewardSecondsLeft * 1000);
+                localStorage.setItem('my_planner_reward_timer_end', rewardTimerEndTime);
+            }
+
+            syncRewardTimer();
+            rewardTimerInterval = setInterval(syncRewardTimer, 1000);
         }
 
         async function toggleFloatingWidget() {
